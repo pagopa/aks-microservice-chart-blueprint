@@ -1,10 +1,10 @@
-name: helm
+name: check_helm
 
 on:
   push:
 
 jobs:
-  helm:
+  check_helm:
     runs-on: ubuntu-latest
 
     steps:
