@@ -1,4 +1,4 @@
-name: Static Analysis
+name: helm
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: setup_python
-        uses: actions/python@v1
+        uses: actions/setup-python@v2
 
       - name: setup_checkcov
         run: |
