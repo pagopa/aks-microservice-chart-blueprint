@@ -19,7 +19,7 @@ jobs:
 
       - name: setup_checkcov
         run: |
-          pip install -U checkcov
+          pip install -U checkcov==latest
 
       - name: setup_helm
         run: |
