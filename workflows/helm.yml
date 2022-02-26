@@ -1,0 +1,28 @@
+name: Static Analysis
+
+on:
+  push:
+
+jobs:
+  static_analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: setup_python
+        uses: actions/python@v1
+
+      - name: setup_checkcov
+        run: |
+          pip install -U checkcov
+
+      - name: setup_helm
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+
+      - name: run_sec
+        run: |
+          bash -c 'find -iname chart.yaml' | xargs -n1 -I% bash -c " dirname %" | xargs -n1 -I% bash -c "helm template % > %.yaml && checkov -f %.yaml --framework kubernetes || true" --
