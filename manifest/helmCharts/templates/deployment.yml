@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pdnd-interop-uservice-user-registry-management
+  name: pdnd-interop-uservice-user-registry-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pdnd-interop-uservice-user-registry-management
+  template:
+    metadata:
+      labels:
+        app: pdnd-interop-uservice-user-registry-management
+        actorSystemName: pdnd-interop-uservice-user-registry-management
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: pdnd-interop-uservice-user-registry-management
+          image: {{ .Values.containerRegistry }}/{{ .Values.imageRepository }}
+          command: ["bin/pdnd-interop-uservice-user-registry-management"]
+          args: ["-Dconfig.override_with_env_vars=true"]
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: management
+            periodSeconds: 10
+            failureThreshold: 5
+            initialDelaySeconds: 30
+          livenessProbe:
+            httpGet:
+              path: "/alive"
+              port: management
+            periodSeconds: 10
+            failureThreshold: 5
+            initialDelaySeconds: 30
+          ports:
+            - name: management
+              containerPort: 8558
+              protocol: TCP
+            - name: http
+              containerPort: 8088
+              protocol: TCP
+            - name: monitoring
+              containerPort: 9095
+              protocol: TCP
+          securityContext:
+            runAsUser: 1001
+            allowPrivilegeEscalation: false
+          envFrom:
+            - secretRef:
+                name: application-insights
+            - secretRef:
+                name: postgres
+            - secretRef:
+                name: uservice-user-registry-management
+            - configMapRef:
+                name: uservice-user-registry-management
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: REQUIRED_CONTACT_POINT_NR
+              value: "1"
