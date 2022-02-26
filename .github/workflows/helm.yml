@@ -15,7 +15,7 @@ jobs:
 
       - name: setup_checkcov
         run: |
-          pip install -U checkcov
+          pip install checkcov
 
       - name: setup_helm
         run: |
