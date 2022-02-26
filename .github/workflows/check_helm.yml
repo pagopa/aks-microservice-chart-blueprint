@@ -19,7 +19,6 @@ jobs:
 
       - name: setup_checkcov
         run: |
-          # pip install -U --no-cache-dir checkcov
           python -m pip install -U checkov
 
       - name: setup_helm
