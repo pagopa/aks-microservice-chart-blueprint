@@ -12,10 +12,12 @@ jobs:
 
       - name: setup_python
         uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
 
       - name: setup_checkcov
         run: |
-          pip install checkcov
+          pip install -U checkcov
 
       - name: setup_helm
         run: |
