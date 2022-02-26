@@ -1,21 +1,25 @@
-name: Static Analysis
+name: check_helm
 
 on:
   push:
 
 jobs:
-  static_analysis:
+  check_helm:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
       - name: setup_python
-        uses: actions/python@v1
+        uses: actions/setup-python@v2
+
+      - name: setup_pip
+        run: |
+          python -m ensurepip --upgrade
 
       - name: setup_checkcov
         run: |
-          pip install -U checkcov
+          python -m pip install -U checkov
 
       - name: setup_helm
         run: |
