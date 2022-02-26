@@ -4,7 +4,7 @@ on:
   push:
 
 jobs:
-  static_analysis:
+  helm:
     runs-on: ubuntu-latest
 
     steps:
