@@ -11,15 +11,14 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: setup_python
-        uses: actions/setup-python@v2
-
-      - name: setup_pip
         run: |
+          apt-get update
+          apt-get -y install python python-pip
           python -m ensurepip --upgrade
 
       - name: setup_checkcov
         run: |
-          pip install --no-cache-dir checkcov==latest
+          pip install --no-cache-dir checkcov
 
       - name: setup_helm
         run: |
