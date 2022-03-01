@@ -29,16 +29,40 @@ jobs:
 
       - name: run_checkov_local
         run: |
-          [ -f ./helm/values_local.yaml ] && checkov -d ./helm --framework helm --var-file ./helm/values_local.yaml
+          FILE=./helm/values-local.yaml
+          if [ -f "$FILE" ]; then
+            checkov -d ./helm --framework helm --var-file "$FILE"
+          else 
+            echo "$FILE does not exist."
+            exit 0
+          fi
 
       - name: run_checkov_dev
         run: |
-          [ -f ./helm/values_dev.yaml ] && checkov -d ./helm --framework helm --var-file ./helm/values_dev.yaml
+          FILE=./helm/values-dev.yaml
+          if [ -f "$FILE" ]; then
+            checkov -d ./helm --framework helm --var-file "$FILE"
+          else 
+            echo "$FILE does not exist."
+            exit 0
+          fi
 
       - name: run_checkov_uat
         run: |
-          [ -f ./helm/values_uat.yaml ] && checkov -d ./helm --framework helm --var-file ./helm/values_uat.yaml
+          FILE=./helm/values-uat.yaml
+          if [ -f "$FILE" ]; then
+            checkov -d ./helm --framework helm --var-file "$FILE"
+          else 
+            echo "$FILE does not exist."
+            exit 0
+          fi
 
       - name: run_checkov_prod
         run: |
-          [ -f ./helm/values_prod.yaml ] && checkov -d ./helm --framework helm --var-file ./helm/values_prod.yaml
+          FILE=./helm/values-prod.yaml
+          if [ -f "$FILE" ]; then
+            checkov -d ./helm --framework helm --var-file "$FILE"
+          else 
+            echo "$FILE does not exist."
+            exit 0
+          fi
