@@ -41,15 +41,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /.well-known/live
+              path: /live
               port: http
           readinessProbe:
             httpGet:
-              path: /.well-known/ready
-              port: http
-          startupProbe:
-            httpGet:
-              path: /.well-known/boot
+              path: /ready
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

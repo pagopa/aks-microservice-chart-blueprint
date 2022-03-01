@@ -1,16 +1,14 @@
-replicaCount: 1
+replicaCount: 2
 
 image:
-  repository: reloader
-  pullPolicy: Never
-  tag: "latest"
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
-  create: true
+  create: false
   annotations: {}
   name: ""
 
@@ -32,11 +30,9 @@ resources:
     memory: "128Mi"
     cpu: "500m"
 
-envSecret:
-  PASS: mysecret
+envSecret: {}
 
-envConfig:
-  USER: myuser
+envConfig: {}
 
 autoscaling:
   enabled: false

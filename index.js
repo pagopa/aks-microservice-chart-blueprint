@@ -6,15 +6,15 @@ app.get('/', (req, res) => {
   res.send(`${process.env.USER} : ${process.env.PASS}`);
 });
 
-app.get('/.well-known/live', (req, res) => {
+app.get('/live', (req, res) => {
   res.send('ok');
 });
 
-app.get('/.well-known/ready', (req, res) => {
+app.get('/ready', (req, res) => {
   res.send('ok');
 });
 
-app.get('/.well-known/boot', (req, res) => {
+app.get('/startup', (req, res) => {
   res.send('ok');
 });
 
