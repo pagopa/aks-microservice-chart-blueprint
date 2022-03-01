@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: reloader
+  pullPolicy: Never
+  tag: "1.0.0"
+
+service:
+  type: NodePort
+
+envSecret:
+  PASS: mysecret
+
+envConfig:
+  USER: myuser
