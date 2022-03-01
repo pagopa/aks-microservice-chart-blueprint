@@ -27,6 +27,18 @@ jobs:
           chmod 700 get_helm.sh
           ./get_helm.sh
 
-      - name: run_sec
+      - name: run_checkov_local
         run: |
-          bash -c 'find -iname chart.yaml' | xargs -n1 -I% bash -c " dirname %" | xargs -n1 -I% bash -c "helm template % > %.yaml && checkov -f %.yaml --framework kubernetes --
+          checkov -d ./helm --framework helm --var-file ./helm/values_local.yaml
+
+      - name: run_checkov_dev
+        run: |
+          checkov -d ./helm --framework helm --var-file ./helm/values_dev.yaml
+
+      - name: run_checkov_uat
+        run: |
+          checkov -d ./helm --framework helm --var-file ./helm/values_uat.yaml
+
+      - name: run_checkov_prod
+        run: |
+          checkov -d ./helm --framework helm --var-file ./helm/values_prod.yaml
