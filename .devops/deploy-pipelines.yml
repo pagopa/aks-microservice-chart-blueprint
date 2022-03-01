@@ -20,7 +20,6 @@ variables:
 
   # Image Repository Name
   imageRepository: '$(K8S_IMAGE_REPOSITORY_NAME)'
-  deployNamespace: '$(DEPLOY_NAMESPACE)'
   settingsXmlROsecureFileName: '$(SETTINGS_XML_RO_SECURE_FILE_NAME)'
 
 
@@ -118,7 +117,6 @@ stages:
                   displayName: Helm upgrade
                   inputs:
                     kubernetesServiceEndpoint: ${{ variables.kubernetesServiceConnection }}
-                    namespace: '$(deployNamespace)'
                     command: upgrade
                     chartType: filepath
                     chartPath: $(Pipeline.Workspace)/helm
