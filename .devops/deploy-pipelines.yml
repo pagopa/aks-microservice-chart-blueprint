@@ -117,6 +117,7 @@ stages:
                   displayName: Helm upgrade
                   inputs:
                     kubernetesServiceEndpoint: ${{ variables.kubernetesServiceConnection }}
+                    namespace: helm-template # parametrize
                     command: upgrade
                     chartType: filepath
                     chartPath: $(Pipeline.Workspace)/helm
