@@ -55,7 +55,7 @@ variables:
 
 stages:
   - stage: 'Build'
-    displayName: 'Build_and_Pusblih_to_${{ variables.environment }}'
+    displayName: 'Build_and_Publish_to_${{ variables.environment }}'
     condition: and(succeeded(), not(${{ parameters.skipBuild }} ))
     jobs:
       - job: Build
