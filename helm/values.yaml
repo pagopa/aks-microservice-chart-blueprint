@@ -30,8 +30,6 @@ resources:
     memory: "128Mi"
     cpu: "500m"
 
-envSecret: {}
-
 envConfig: {}
 
 autoscaling:
