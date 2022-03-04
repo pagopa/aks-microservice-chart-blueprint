@@ -126,4 +126,4 @@ stages:
                     valueFile: "$(Pipeline.Workspace)/helm/$(helmValues)"
                     install: true
                     waitForExecution: true
-                    arguments: "--timeout 2m0s"
+                    arguments: "--timeout 5m0s"
