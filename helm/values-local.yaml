@@ -34,6 +34,9 @@ resources:
 envConfig:
   USER: myuser
 
+envSecret:
+  PASS: helm-template-password
+
 autoscaling:
   enabled: false
   minReplicas: 1

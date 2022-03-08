@@ -49,6 +49,13 @@ spec:
               mountPath: "/mnt/secrets-store"
               readOnly: true
           env:
+            {{- range $name, $value := .Values.envSecret }}
+            - name: {{ $name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $value }}
+            {{- end }}
             {{- range $key, $val := .Values.envConfig }}
             - name: {{ $key }}
               valueFrom:

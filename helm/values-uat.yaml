@@ -33,6 +33,8 @@ resources:
 
 envConfig: {}
 
+envSecret: {}
+
 autoscaling:
   enabled: false
   minReplicas: 1

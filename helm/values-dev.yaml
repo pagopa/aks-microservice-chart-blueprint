@@ -31,7 +31,11 @@ resources:
     memory: "128Mi"
     cpu: "250m"
 
-envConfig: {}
+envConfig:
+  USER: my-user
+
+envSecret:
+  PASS: helm-template-password
 
 autoscaling:
   enabled: false
