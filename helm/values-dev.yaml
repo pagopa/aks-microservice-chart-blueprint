@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: dvopladneuacr.azurecr.io/templatemicroserviziok8s
@@ -31,7 +31,16 @@ resources:
     memory: "128Mi"
     cpu: "250m"
 
-envConfig: {}
+envConfig:
+  USER: my-user
+
+envSecret:
+  PASS: helm-template-password
+
+keyvault:
+  name: "dvopla-d-neu-kv"
+  identityId: "ea85faba-9a8a-4f8b-b7a8-c750c1b68de5"
+  tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
 autoscaling:
   enabled: false
@@ -44,3 +53,6 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+reloader:
+  watchGlobally: false

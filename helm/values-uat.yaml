@@ -33,6 +33,13 @@ resources:
 
 envConfig: {}
 
+envSecret: {}
+
+keyvault:
+  name: ""
+  identityId: ""
+  tenantId: ""
+
 autoscaling:
   enabled: false
   minReplicas: 1
