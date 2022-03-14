@@ -42,6 +42,8 @@ keyvault:
   identityId: "ea85faba-9a8a-4f8b-b7a8-c750c1b68de5"
   tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
+tlsSecretProviderClass: ingress-tls
+
 autoscaling:
   enabled: false
   minReplicas: 1

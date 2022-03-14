@@ -40,6 +40,8 @@ keyvault:
   identityId: ""
   tenantId: ""
 
+tlsSecretProviderClass: ""
+
 autoscaling:
   enabled: false
   minReplicas: 1

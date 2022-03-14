@@ -57,6 +57,9 @@ spec:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
+            - name: secrets-store-inline-crt
+              mountPath: "/mnt/secrets-store-crt"
+              readOnly: true
           env:
             {{- range $name, $value := .Values.envSecret }}
             - name: {{ $name }}
@@ -79,6 +82,12 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
+        - name: secrets-store-inline-crt
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.tlsSecretProviderClass }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
