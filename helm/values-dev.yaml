@@ -5,6 +5,7 @@ image:
   tag: "latest"
   pullPolicy: Always
 
+namespace: "helm-template"
 nameOverride: ""
 fullnameOverride: ""
 
