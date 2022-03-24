@@ -28,6 +28,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
+        aadpodidbinding: "{{ .Values.namespace }}-pod-identity"
         {{- include "microservice-chart.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "microservice-chart.serviceAccountName" . }}
