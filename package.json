@@ -1,14 +1,11 @@
 {
-  "name": "reloader-k8s",
+  "name": "microservice-template",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "start": "func start"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "express": "^4.17.3"
+    "azure-function-express": "^2.0.0"
   }
 }
