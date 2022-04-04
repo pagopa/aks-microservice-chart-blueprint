@@ -24,11 +24,11 @@ service:
 
 resources:
   requests:
-    memory: "64Mi"
-    cpu: "50m"
+    memory: "96Mi"
+    cpu: "40m"
   limits:
-    memory: "64Mi"
-    cpu: "50m"
+    memory: "128Mi"
+    cpu: "150m"
 
 envConfig:
   USER: my-user
