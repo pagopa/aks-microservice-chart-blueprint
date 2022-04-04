@@ -1,0 +1,47 @@
+# apiVersion: keda.sh/v1alpha1
+# kind: TriggerAuthentication
+# metadata:
+#   name: {{ include "microservice-chart.fullname" . }}
+# spec:
+#   # secretTargetRef:
+#   #   - parameter: activeDirectoryClientId
+#   #     name: azure-monitor-secrets
+#   #     key: activeDirectoryClientId
+#   #   - parameter: activeDirectoryClientPassword
+#   #     name: azure-monitor-secrets
+#   #     key: activeDirectoryClientPassword
+#   podIdentity:
+#       provider: azure
+# ---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 3 }}
+spec:
+  scaleTargetRef:
+    name: {{ include "microservice-chart.fullname" . }}
+  minReplicaCount: 1
+  maxReplicaCount: 9
+  triggers:
+    # - type: azure-monitor
+    #   metadata:
+    #     resourceURI: Microsoft.ContainerService/managedClusters/azureMonitorCluster
+    #     tenantId: xxx-xxx-xxx-xxx-xxx
+    #     subscriptionId: yyy-yyy-yyy-yyy-yyy
+    #     resourceGroupName: azureMonitor
+    #     metricName: pod_custom_metric
+    #     metricNamespace: pod_custom_metrics_namespace # required when monitoring custom metrics
+    #     metricFilter: namespace eq 'default'
+    #     metricAggregationInterval: "-1:1:0"
+    #     metricAggregationType: Average
+    #     targetValue: "0"
+    #   authenticationRef:
+    #     name: {{ include "microservice-chart.fullname" . }}
+    - type: cron
+      metadata:
+        timezone: Europe/Rome
+        start: 45 * * * *
+        end: 0 * * * *
+        desiredReplicas: "2"
