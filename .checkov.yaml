@@ -1,6 +1,7 @@
 output: github_failed_only
 skip-check:
-  - CKV_K8S_23 # to analize
-  - CKV_K8S_35 # to analize
-  - CKV_K8S_40 # to analize
-  - CKV_K8S_43 # to analize
+  # https://pagopa.atlassian.net/wiki/spaces/DEVOPS/pages/474546518/Checkov+ignore+v0.0.0?focusedCommentId=487031214#comment-487031214
+  - CKV_K8S_23
+  - CKV_K8S_35
+  - CKV_K8S_40
+  - CKV_K8S_43
