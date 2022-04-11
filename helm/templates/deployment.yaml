@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "microservice-chart.fullname" . }}
+  namespace: {{ .Values.namespace }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
