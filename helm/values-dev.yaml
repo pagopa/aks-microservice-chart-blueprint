@@ -16,7 +16,10 @@ podAnnotations: {}
 
 podSecurityContext: {}
 
-securityContext: {}
+securityContext:
+  capabilities:
+    drop:
+      - ALL
 
 service:
   type: ClusterIP
