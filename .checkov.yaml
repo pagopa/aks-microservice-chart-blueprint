@@ -1,0 +1,5 @@
+skip-check:
+  - CKV_K8S_23 # to analize
+  - CKV_K8S_35 # to analize
+  - CKV_K8S_40 # to analize
+  - CKV_K8S_43 # to analize
