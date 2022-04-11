@@ -17,6 +17,7 @@ podAnnotations: {}
 podSecurityContext: {}
 
 securityContext:
+  allowPrivilegeEscalation: false
   capabilities:
     drop:
       - ALL
