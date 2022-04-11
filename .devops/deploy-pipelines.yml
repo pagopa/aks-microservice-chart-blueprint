@@ -74,8 +74,8 @@ stages:
               buildContext: '$(Build.Repository.LocalPath)'
               tags: |
                 $(Build.BuildId)
+                $(Build.SourceVersion)
                 latest
-                1.0.0
   - stage: 'Serving_helm'
     displayName: 'Serving_Helm'
     dependsOn: Build
