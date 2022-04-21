@@ -1,6 +1,6 @@
 image:
   repository: dvopladneuacr.azurecr.io/templatemicroserviziok8s
-  tag: "latest"
+  tag: "1dd0109082e799bd5ee4474de2433a91d2b95fc5"
   pullPolicy: Always
 
 namespace: "helm-template"
@@ -14,9 +14,12 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
 
-securityContext: {}
+securityContext:
+  allowPrivilegeEscalation: false
 
 service:
   type: ClusterIP
