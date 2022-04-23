@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+usage() {
+  cat 1>&2 <<EOF
+Setup local enviornment with ASDF. It installs NodeJS and Helm.
+
+USAGE:
+    setup [-h]
+
+FLAGS:
+    -h, --help                Prints help information
+EOF
+}
+
+parse_cli() {
+  while test $# -gt 0; do
+    key="$1"
+    case "$key" in
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      *)
+        die "Unexpected argument: $1"
+        ;;
+    esac
+    shift
+  done
+}
+
+require_dependency() {
+  dependency="$1"
+  if [ "$(command -v "$dependency")" == "" ]; then
+    die "Missing dependency: $dependency. Please install it manually."
+  fi
+}
+
+install_vm() {
+  if [ "$(command -v asdf)" == "" ]; then
+    git clone "https://github.com/asdf-vm/asdf.git" "$HOME/.asdf"
+    cd "$HOME/.asdf"
+    git config --local advice.detachedHead false
+    git checkout "$(git describe --abbrev=0 --tags)"
+    echo ". $HOME/.asdf/asdf.sh" >> "$HOME/.profile"
+    # shellcheck disable=SC1091
+    source "$HOME/.profile"
+  fi
+}
+
+die() {
+  err_msg="$1"
+  echo "$err_msg" >&2
+  exit 1
+}
+
+main() {
+  parse_cli "$@"
+
+  require_dependency curl
+  require_dependency git
+  install_vm
+
+  asdf plugin add nodejs
+  asdf install nodejs 14.17.3
+  npm install -g azure-functions-core-tools
+
+  asdf plugin add helm
+  asdf install helm 3.8.0
+
+  echo "Setup complete."
+  exit 0
+}
+
+main "$@" || exit 1
