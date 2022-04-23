@@ -1,6 +1,10 @@
 apiVersion: v2
-name: microservice-chart
-description: A Helm chart for PagoPA microservice
+name: secret-microservice-chart
+description: An example of microserivce that takes secrets from KeyVault
 type: application
 version: 0.1.0
-appVersion: "1.16.0"
+appVersion: 1.16.0
+dependencies:
+- name: microservice-chart
+  version: 0.1.0
+  repository: "https://pagopa.github.io/template-microservizio-k8s"
