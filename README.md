@@ -37,7 +37,7 @@ version: 1.0.0
 appVersion: 1.0.0
 dependencies:
 - name: microservice-chart
-  version: 0.1.0
+  version: 1.5.0
   repository: "https://pagopa.github.io/template-microservizio-k8s"
 EOF
 ```
@@ -117,7 +117,11 @@ In the same folder, you can also find a [generic pipeline](example/.devops).
 
 ### Upgrading
 
-WIP
+Change version of the dependency and run the update:
+
+``` shell
+$ cd helm && helm dep update .
+```
 
 ## Advanced
 

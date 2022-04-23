@@ -1,6 +1,6 @@
 dependencies:
 - name: microservice-chart
   repository: https://pagopa.github.io/template-microservizio-k8s
-  version: 0.1.0
-digest: sha256:ffacec0131a551d4c43dd31bc5186b596ad568f818ac3f752920471ea0a6cf7e
-generated: "2022-04-23T08:53:06.699047184+02:00"
+  version: 1.5.0
+digest: sha256:67227f65dcfcb334b69d4b444942e27dbe70d07355e9b1577edd1c3dc82d2a01
+generated: "2022-04-23T18:21:05.468591188+02:00"
