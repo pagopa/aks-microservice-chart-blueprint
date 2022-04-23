@@ -1,4 +1,4 @@
-# Template K8s Microservice
+# K8s Microservice Template
 
 The `template-microservizio-k8s` chart is the best way to release your
 microservice into pagoPA K8s environment. It contains all the required
