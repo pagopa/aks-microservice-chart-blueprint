@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      {{- include "microservice-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      ## Restore this block if you want to handle pod rollout when a configmap
+      ## is updated with Helm instead of Reloader. You also need to configure
+      ## Reloader to ignore configmap
+      #  annotations:
+      #    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      #    {{- with .Values.podAnnotations }}
+      #      {{- toYaml . | nindent 8 }}
+      #    {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        aadpodidbinding: "{{ .Values.namespace }}-pod-identity"
+        {{- include "microservice-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      serviceAccountName: {{ include "microservice-chart.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/live
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+          env:
+            {{- range $name, $value := .Values.envSecret }}
+            - name: {{ $name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $value }}
+            {{- end }}
+            {{- range $key, $val := .Values.envConfig }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "microservice-chart.fullname" $ }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
