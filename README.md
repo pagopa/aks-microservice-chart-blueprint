@@ -25,6 +25,16 @@ Helm chart:
 $ mkdir helm && cd helm
 ```
 
+Add Helm repo:
+
+``` shell
+helm repo add pagopa-microservice https://pagopa.github.io/template-microservizio-k8s
+```
+
+If you had already added this repo earlier, run `helm repo update` to retrieve
+the latest versions of the packages.
+
+
 Add a very basic configuration in `Chart.yaml`:
 
 ``` shell
@@ -137,7 +147,7 @@ $ cd template-microservizio-k8s.git
 $ ./bin/setup
 ```
 
-### Warning
+#### Warning
 
 Setup script installs a version manager tool that may introduce
 compatibility issues in your environment. To prevent any potential
