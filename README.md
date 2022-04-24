@@ -88,6 +88,10 @@ or [Docker](example/Dockerfile).
 
 In the same folder, you can also find a [generic pipeline](example/.devops).
 
+#### Static Application Security Testing
+
+We strongly suggest to perform SAST on your microservice Helm chart. You could take a look to this [GitHub Action](.github/workflows/check_helm.yml).
+
 ### Configuration Properties
 
 | Parameter                                | Description                                                                                        | Default                                         |

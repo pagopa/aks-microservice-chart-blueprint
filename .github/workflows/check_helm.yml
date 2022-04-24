@@ -29,9 +29,10 @@ jobs:
 
       - name: run_checkov_dev
         run: |
-          FILE=./helm/values-dev.yaml
+          FILE=./example/helm/values-dev.yaml
           if [ -f "$FILE" ]; then
-            checkov -d ./helm --framework helm --var-file "$FILE"
+            helm template src -f "$FILE" > "/tmp/GITHUB_RUN_ID.yaml"
+            checkov -f "/tmp/GITHUB_RUN_ID.yaml" --framework kubernetes
           else
             echo "$FILE does not exist."
             exit 0
@@ -39,9 +40,10 @@ jobs:
 
       - name: run_checkov_uat
         run: |
-          FILE=./helm/values-uat.yaml
+          FILE=./example/helm/values-uat.yaml
           if [ -f "$FILE" ]; then
-            checkov -d ./helm --framework helm --var-file "$FILE"
+            helm template src -f "$FILE" > "/tmp/GITHUB_RUN_ID.yaml"
+            checkov -f "/tmp/GITHUB_RUN_ID.yaml" --framework kubernetes
           else
             echo "$FILE does not exist."
             exit 0
@@ -49,9 +51,10 @@ jobs:
 
       - name: run_checkov_prod
         run: |
-          FILE=./helm/values-prod.yaml
+          FILE=./example/helm/values-prod.yaml
           if [ -f "$FILE" ]; then
-            checkov -d ./helm --framework helm --var-file "$FILE"
+            helm template src -f "$FILE" > "/tmp/GITHUB_RUN_ID.yaml"
+            checkov -f "/tmp/GITHUB_RUN_ID.yaml" --framework kubernetes
           else
             echo "$FILE does not exist."
             exit 0
