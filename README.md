@@ -47,7 +47,7 @@ version: 1.0.0
 appVersion: 1.0.0
 dependencies:
 - name: microservice-chart
-  version: 1.5.0
+  version: 1.0.0
   repository: "https://pagopa.github.io/template-microservizio-k8s"
 EOF
 ```
@@ -156,6 +156,10 @@ favourite tool:
 
 - NodeJS 14.17.3
 - Helm 3.8.0
+
+### Publish
+
+The branch `gh-pages` contains the GitHub page content and all released charts. To update the page content use `bin/publish`.
 
 ## Known issues and limitations
 
