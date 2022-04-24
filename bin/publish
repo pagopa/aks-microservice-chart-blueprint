@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+usage() {
+  cat 1>&2 <<EOF
+Publish current README to GitHub pages.
+
+USAGE:
+    publish [-h]
+
+FLAGS:
+    -h, --help                Prints help information
+EOF
+}
+
+parse_cli() {
+  while test $# -gt 0; do
+    key="$1"
+    case "$key" in
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      *)
+        die "Unexpected argument: $1"
+        ;;
+    esac
+    shift
+  done
+}
+
+require_dependency() {
+  dependency="$1"
+  if [ "$(command -v "$dependency")" == "" ]; then
+    die "Missing dependency: $dependency. Please install it manually."
+  fi
+}
+
+pull_readme_diff() {
+  git fetch
+  git checkout gh-pages
+  git checkout origin/main -- README.md
+  git commit -m "Update README.md"
+}
+
+push_gh_pages() {
+  git checkout -
+  git push origin gh-pages
+}
+
+die() {
+  err_msg="$1"
+  echo "$err_msg" >&2
+  exit 1
+}
+
+main() {
+  parse_cli "$@"
+
+  require_dependency git
+  pull_readme_diff
+  push_gh_pages
+
+  echo "Publish complete."
+  exit 0
+}
+
+main "$@" || exit 1
