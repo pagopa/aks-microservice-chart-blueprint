@@ -1,3 +1,7 @@
+[![GitHub Release](https://img.shields.io/github/v/release/pagopa/template-microservizio-k8s?style=flat)](https://github.com/pagopa/template-microservizio-k8s/releases)
+[![GitHub Issues](https://img.shields.io/github/issues/pagopa/template-microservizio-k8s?style=flat)](https://github.com/pagopa/template-microservizio-k8s/issues)
+[![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
+
 # K8s Microservice Template
 
 The `template-microservizio-k8s` chart is the best way to release your
@@ -14,11 +18,11 @@ Some of the key benefits of this chart are:
 
 ## Installation
 
-This is the official, and recommended method to adopt this chart.
+This is the official and recommended method to adopt this chart.
 
 ### Quick start
 
-Create an `helm` folder inside your microservice project in which install the
+Create a `helm` folder inside your microservice project in which install the
 Helm chart:
 
 ``` shell
@@ -73,57 +77,62 @@ $ helm upgrade -i -n mynamespace -f helm/values-dev.yaml mymicroservice helm
 
 ### Example
 
-You can find a working example in the [`example`](example/) folder. It
-is a very simple version of an Azure Function App written in NodeJS.
+In the [`example`](example/) folder, you can find a working example. It
+is an elementary version of an Azure Function App written in NodeJS.
 
 It has three functions:
 
 - `ready` that responds to the readiness probe;
 - `live` that responds to the liveness probe;
-- `secrets` that return a USER and a PASS taken respectly from a K8s ConfigMap
+- `secrets` that return a USER and a PASS taken respectively from a K8s ConfigMap
   and an Azure Key Vault.
 
 To try it locally use either the [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash)
 or [Docker](example/Dockerfile).
 
-In the same folder, you can also find a [generic pipeline](example/.devops).
+You can also find a [generic pipeline](example/.devops).
+
+#### Static Application Security Testing
+
+We strongly suggest performing SAST on your microservice Helm chart. You could
+look at this [GitHub Action](.github/workflows/check_helm.yml).
 
 ### Configuration Properties
 
-| Parameter                                | Description                                                                                        | Default                                         |
-| ---                                      | ---                                                                                                | ---                                             |
-| image.repository                         | Microservice image                                                                                 | `""`                                            |
-| image.tag                                | Microservice image tag                                                                             | `v1.0.0`                                        |
-| image.pullPolicy                         | Microservice image pull policy                                                                     | `Always`                                        |
-| namespace                                | Namespace in which deploy the microservice                                                         | `""`                                            |
-| nameOverride                             | Helm chart name override                                                                           | `""`                                            |
-| fullnameOverride                         | Helm chart fullname override                                                                       | `""`                                            |
-| serviceAccount.create                    | Create a service account                                                                           | `false`                                         |
-| serviceAccount.annotations               | Service account annotations                                                                        | `{}`                                            |
-| serviceAccount.name                      | Service account name                                                                               | `""`                                            |
-| podAnnotations                           | Pod annotations                                                                                    | `{}`                                            |
-| podSecurityContext                       | Pod security context                                                                               |  See `podSecurityContext.seccompProfile.type`   |
-| podSecurityContext.seccompProfile.type   | Pod seccomp profile                                                                                | `RuntimeDefault`                                |
-| securityContext                          | Security Context                                                                                   |  See `securityContext.allowPrivilegeEscalation` |
-| securityContext.allowPrivilegeEscalation | Disable pod privilege escalation                                                                   | `false`                                         |
-| service.type                             | Service type                                                                                       | `ClusterIP`                                     |
-| service.port                             | Service port                                                                                       | `80`                                            |
-| resources.requests.memory                | Pod minimum memory allocation                                                                      | `"96Mi"`                                        |
-| resources.requests.cpu                   | Pod minimum cpu allocation                                                                         | `"40m"`                                         |
-| resources.limits.memory                  | Pod maximum memory allocation                                                                      | `"128Mi"`                                       |
-| resources.limits.cpu                     | Pod maximum cpu allocation                                                                         | `"150m"`                                        |
-| autoscaling.minReplica                   | Autoscaling minimum replicas                                                                       | `1`                                             |
-| autoscaling.maxReplica                   | Autoscaling maximum replicas                                                                       | `1`                                             |
-| autoscaling.pollingInterval              | Autoscaling event polling intervall                                                                | `30` seconds                                    |
-| autoscaling.cooldownPeriod               | Autoscaling cooldown period                                                                        | `300` seconds                                   |
-| autoscaling.triggers                     | Autoscaling triggers as per [https://keda.sh/docs/2.6/scalers/](https://keda.sh/docs/2.6/scalers/) | `[]`                                            |
-| envConfig                                | Map like `<env_name>: <value>`                                                                     | `{}`                                            |
-| envSecret                                | Map like `<env_name>: <key_vault_key>`                                                             | `{}`                                            |
-| keyvault.name                            | Azure Key Vault name from which retrieve secrets                                                   | `""`                                            |
-| keyvault.tenantId                        | Azure tenant id of the Key Vault                                                                   | `""`                                            |
-| nodeSelector                             | K8s node selectors                                                                                 | `{}`                                            |
-| tolerations                              | Pod taints toleration                                                                              | `[]`                                            |
-| affinity                                 | Pod labels affinity                                                                                | `{}`                                            |
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `image.repository` | Microservice image | `""` |
+| `image.tag` | Microservice image tag | `v1.0.0` |
+| `image.pullPolicy` | Microservice image pull policy | `Always` |
+| `namespace` | Namespace in which deploy the microservice | `""` |
+| `nameOverride` | Helm chart name override | `""` |
+| `fullnameOverride` | Helm chart fullname override | `""` |
+| `serviceAccount.create` | Create a service account | `false` |
+| `serviceAccount.annotations` | Service account annotations | `{}` |
+| `serviceAccount.name` | Service account name | `""` |
+| `podAnnotations` | Pod annotations | `{}` |
+| `podSecurityContext` | Pod security context | - |
+| `podSecurityContext.seccompProfile.type` | Pod seccomp profile | `RuntimeDefault` |
+| `securityContext` | Security Context | - |
+| `securityContext.allowPrivilegeEscalation` | Disable pod privilege escalation | `false` |
+| `service.type` | Service type | `ClusterIP` |
+| `service.port` | Service port | `80` |
+| `resources.requests.memory` | Pod minimum memory allocation | `"96Mi"` |
+| `resources.requests.cpu` | Pod minimum cpu allocation | `"40m"` |
+| `resources.limits.memory` | Pod maximum memory allocation | `"128Mi"` |
+| `resources.limits.cpu` | Pod maximum cpu allocation | `"150m"` |
+| `autoscaling.minReplica` | Autoscaling minimum replicas | `1` |
+| `autoscaling.maxReplica` | Autoscaling maximum replicas | `1` |
+| `autoscaling.pollingInterval` | Autoscaling event polling intervall | `30` seconds |
+| `autoscaling.cooldownPeriod` | Autoscaling cooldown period | `300` seconds |
+| `autoscaling.triggers` | Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/) | `[]` |
+| `envConfig` | Map like `<env_name>: <value>` | `{}` |
+| `envSecret` | Map like `<env_name>: <key_vault_key>` | `{}` |
+| `keyvault.name` | Azure Key Vault name from which retrieve secrets | `""` |
+| `keyvault.tenantId` | Azure tenant id of the Key Vault | `""` |
+| `nodeSelector` | K8s node selectors | `{}` |
+| `tolerations` | Pod taints toleration | `[]` |
+| `affinity` | Pod labels affinity | `{}` |
 
 ### Upgrading
 
@@ -159,14 +168,14 @@ favourite tool:
 
 ### Publish
 
-The branch `gh-pages` contains the GitHub page content and all released charts. To update the page content use `bin/publish`.
+The branch `gh-pages` contains the GitHub page content and all released charts.
+To update the page content, use `bin/publish`.
 
 ## Known issues and limitations
 
 - None.
 
-## Roadmap
+## ToDo
 
-- Handle version with GitHub releases;
-- Remove some properties and hardcode them (like `image.pullPolicy`);
-- Make some properties mandatory.
+- Should we remove some properties and hardcode them (like `image.pullPolicy`)?
+
