@@ -27,35 +27,12 @@ jobs:
           chmod 700 get_helm.sh
           ./get_helm.sh
 
-      - name: run_checkov_dev
+      - name: run_checkov
         run: |
-          FILE=./example/helm/values-dev.yaml
-          if [ -f "$FILE" ]; then
-            helm template src -f "$FILE" > "/tmp/GITHUB_RUN_ID.yaml"
-            checkov -f "/tmp/GITHUB_RUN_ID.yaml" --framework kubernetes
+          FILE=./util/values.checkov.yaml
+          if [ -f "${FILE}" ]; then
+            checkov -d src --var-file "${FILE}" --framework helm
           else
-            echo "$FILE does not exist."
-            exit 0
-          fi
-
-      - name: run_checkov_uat
-        run: |
-          FILE=./example/helm/values-uat.yaml
-          if [ -f "$FILE" ]; then
-            helm template src -f "$FILE" > "/tmp/GITHUB_RUN_ID.yaml"
-            checkov -f "/tmp/GITHUB_RUN_ID.yaml" --framework kubernetes
-          else
-            echo "$FILE does not exist."
-            exit 0
-          fi
-
-      - name: run_checkov_prod
-        run: |
-          FILE=./example/helm/values-prod.yaml
-          if [ -f "$FILE" ]; then
-            helm template src -f "$FILE" > "/tmp/GITHUB_RUN_ID.yaml"
-            checkov -f "/tmp/GITHUB_RUN_ID.yaml" --framework kubernetes
-          else
-            echo "$FILE does not exist."
+            echo "${FILE} does not exist."
             exit 0
           fi
