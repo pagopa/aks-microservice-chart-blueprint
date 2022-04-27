@@ -40,10 +40,11 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Update chart version
+        env:
+          VERSION: ${{ steps.semantic.outputs.new_release_version }}
         run: |
-          VERSION=${{ steps.semantic.outputs.new_release_version }}
           cat src/Chart.yaml | sed -i "s/version: .*/version: ${VERSION}"
-          git commit -am "build: Update chart version"
+          git commit -am "chore: Update chart version"
           git push origin main
 
       - name: Run chart-releaser
