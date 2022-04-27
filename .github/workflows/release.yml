@@ -43,7 +43,7 @@ jobs:
         env:
           VERSION: ${{ steps.semantic.outputs.new_release_version }}
         run: |
-          cat src/Chart.yaml | sed -i "s/version: .*/version: ${VERSION}"
+          cat src/Chart.yaml | sed -i "s/version: .*/version: ${VERSION}/g"
           git commit -am "chore: Update chart version"
           git push origin main
 
