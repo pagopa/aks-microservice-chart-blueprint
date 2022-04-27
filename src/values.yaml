@@ -36,7 +36,7 @@ resources:
 autoscaling:
   minReplica: 1
   maxReplica: 1
-  pollingInterval: 30 # seconds
+  pollingInterval: 10 # seconds
   cooldownPeriod: 300 # seconds
   triggers: []
 
