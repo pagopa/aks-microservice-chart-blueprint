@@ -27,32 +27,12 @@ jobs:
           chmod 700 get_helm.sh
           ./get_helm.sh
 
-      - name: run_checkov_dev
+      - name: run_checkov
         run: |
-          FILE=./helm/values-dev.yaml
-          if [ -f "$FILE" ]; then
-            checkov -d ./helm --framework helm --var-file "$FILE"
+          FILE=./util/values.checkov.yaml
+          if [ -f "${FILE}" ]; then
+            checkov -d src --var-file "${FILE}" --framework helm
           else
-            echo "$FILE does not exist."
-            exit 0
-          fi
-
-      - name: run_checkov_uat
-        run: |
-          FILE=./helm/values-uat.yaml
-          if [ -f "$FILE" ]; then
-            checkov -d ./helm --framework helm --var-file "$FILE"
-          else
-            echo "$FILE does not exist."
-            exit 0
-          fi
-
-      - name: run_checkov_prod
-        run: |
-          FILE=./helm/values-prod.yaml
-          if [ -f "$FILE" ]; then
-            checkov -d ./helm --framework helm --var-file "$FILE"
-          else
-            echo "$FILE does not exist."
+            echo "${FILE} does not exist."
             exit 0
           fi

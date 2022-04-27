@@ -68,5 +68,3 @@ tolerations: []
 
 affinity: {}
 
-reloader:
-  watchGlobally: false

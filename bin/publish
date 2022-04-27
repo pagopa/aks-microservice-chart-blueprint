@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+usage() {
+  cat 1>&2 <<EOF
+Publish current README to GitHub pages.
+
+USAGE:
+    publish [-h] [-t branch]
+
+FLAGS:
+    -h, --help                Prints help information
+    -t, --target-branch       The branch to take the content from, default: origin/main
+EOF
+}
+
+parse_cli() {
+  target="origin/main"
+
+  while test $# -gt 0; do
+    key="$1"
+    case "$key" in
+      -t|--target-branch)
+        target="${2-}"
+        shift
+        ;;
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      *)
+        die "Unexpected argument: $1"
+        ;;
+    esac
+    shift
+  done
+}
+
+require_dependency() {
+  dependency="$1"
+  if [ "$(command -v "$dependency")" == "" ]; then
+    die "Missing dependency: $dependency. Please install it manually."
+  fi
+}
+
+require_empty_unstaged() {
+  git diff --exit-code 1>/dev/null 2>&1 || \
+    die "You must stash or commit changes before publish."
+}
+
+update_gh_pages() {
+  git fetch
+  git checkout gh-pages
+  git checkout "$target" -- README.md
+  git commit -m "Update README.md"
+  git checkout -
+  git push origin gh-pages
+}
+
+die() {
+  err_msg="$1"
+  echo "$err_msg" >&2
+  exit 1
+}
+
+main() {
+  parse_cli "$@"
+
+  require_dependency git
+  require_empty_unstaged
+  update_gh_pages
+
+  echo "Publish complete."
+  exit 0
+}
+
+main "$@" || exit 1
