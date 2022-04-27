@@ -39,9 +39,14 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      - name: Update chart version
+        run: |
+          VERSION=${{ steps.semantic.outputs.new_release_version }}
+          cat src/Chart.yaml | sed -i "s/version: .*/version: ${VERSION}"
+          git commit -am "build: Update chart version"
+          git push origin main
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.1.0
-        with:
-          version: ${{ steps.semantic.outputs.new_release_version }}
         env:
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
