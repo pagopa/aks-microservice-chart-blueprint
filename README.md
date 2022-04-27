@@ -32,7 +32,7 @@ $ mkdir helm && cd helm
 Add Helm repo:
 
 ``` shell
-helm repo add pagopa-microservice https://pagopa.github.io/template-microservizio-k8s
+$ helm repo add pagopa-microservice https://pagopa.github.io/template-microservizio-k8s
 ```
 
 If you had already added this repo earlier, run `helm repo update` to retrieve
