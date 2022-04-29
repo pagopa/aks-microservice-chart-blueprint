@@ -180,4 +180,4 @@ To update the page content, use `bin/publish`.
 - Should we remove some properties and hardcode them (like `image.pullPolicy`)?
 
 
-
+pippo
