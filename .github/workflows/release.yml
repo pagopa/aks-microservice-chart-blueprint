@@ -23,17 +23,6 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Release
-        uses: cycjimmy/semantic-release-action@v2
-        id: semantic
-        with:
-          semantic_version: 18.0.0
-          extra_plugins: |
-            @semantic-release/release-notes-generator@10.0.3
-            @semantic-release/git@10.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
