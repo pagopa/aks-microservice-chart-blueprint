@@ -7,6 +7,7 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     reloader.stakater.com/auto: "true"
+    pagopa.it/temp: "true"
 spec:
   selector:
     matchLabels:
