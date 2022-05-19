@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
 data:
-  {{ toYaml .Values.envConfig }}
+  {{- toYaml .Values.envConfig | nindent 2 }}
 
