@@ -1,12 +1,15 @@
 microservice-chart:
+  namespace: ""
+  nameOverride: ""
+  fullnameOverride: ""
+
   image:
     repository: ""
     pullPolicy: Always
     tag: "1.0.0"
 
-  namespace: ""
-  nameOverride: ""
-  fullnameOverride: ""
+  ingress:
+    host: ""
 
   serviceAccount:
     create: false

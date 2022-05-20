@@ -41,7 +41,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.image.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -72,6 +72,22 @@ spec:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
             {{- end }}
+        - name: crt-mounter
+          securityContext:
+            allowPrivilegeEscalation: false
+          image: alpine:latest
+          command: ['tail', '-f', '/dev/null']
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: 50m
+            limits:
+              memory: 32Mi
+              cpu: 100m
+          volumeMounts:
+            - name: secrets-store-inline-crt
+              mountPath: "/mnt/secrets-store-crt"
+              readOnly: true
       volumes:
         - name: secrets-store-inline
           csi:
@@ -79,6 +95,12 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
+        - name: secrets-store-inline-crt
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.ingress.host | replace "." "-" }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
