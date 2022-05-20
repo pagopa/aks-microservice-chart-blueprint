@@ -1,10 +1,10 @@
-[![GitHub Release](https://img.shields.io/github/v/release/pagopa/template-microservizio-k8s?style=flat)](https://github.com/pagopa/template-microservizio-k8s/releases)
-[![GitHub Issues](https://img.shields.io/github/issues/pagopa/template-microservizio-k8s?style=flat)](https://github.com/pagopa/template-microservizio-k8s/issues)
+[![GitHub Release](https://img.shields.io/github/v/release/pagopa/aks-microservice-chart-blueprint?style=flat)](https://github.com/pagopa/aks-microservice-chart-blueprint/releases)
+[![GitHub Issues](https://img.shields.io/github/issues/pagopa/aks-microservice-chart-blueprint?style=flat)](https://github.com/pagopa/aks-microservice-chart-blueprint/issues)
 [![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
 
 # K8s Microservice Template
 
-The `template-microservizio-k8s` chart is the best way to release your
+The `aks-microservice-chart-blueprint` chart is the best way to release your
 microservice into pagoPA K8s environment. It contains all the required
 components to get started, and it has several architectural aspects already
 configured.
@@ -32,7 +32,7 @@ $ mkdir helm && cd helm
 Add Helm repo:
 
 ``` shell
-$ helm repo add pagopa-microservice https://pagopa.github.io/template-microservizio-k8s
+$ helm repo add pagopa-microservice https://pagopa.github.io/aks-microservice-chart-blueprint
 ```
 
 If you had already added this repo earlier, run `helm repo update` to retrieve
@@ -52,7 +52,7 @@ appVersion: 1.0.0
 dependencies:
 - name: microservice-chart
   version: 1.0.0
-  repository: "https://pagopa.github.io/template-microservizio-k8s"
+  repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
 EOF
 ```
 
@@ -151,8 +151,8 @@ For more information, visit the [complete documentation](https://pagopa.atlassia
 Clone the repository and run the setup script:
 
 ``` shell
-$ git clone git@github.com:pagopa/template-microservizio-k8s.git
-$ cd template-microservizio-k8s.git
+$ git clone git@github.com:pagopa/aks-microservice-chart-blueprint.git
+$ cd aks-microservice-chart-blueprint.git
 $ ./bin/setup
 ```
 
