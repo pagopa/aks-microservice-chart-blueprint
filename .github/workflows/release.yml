@@ -10,6 +10,9 @@ on:
     paths-ignore:
       - 'CODEOWNERS'
       - '**.md'
+      - 'example'
+      - 'util'
+      - 'bin'
 
 jobs:
   release:

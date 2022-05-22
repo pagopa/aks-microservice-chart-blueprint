@@ -7,6 +7,9 @@ namespace: "helm-template"
 nameOverride: ""
 fullnameOverride: ""
 
+ingress:
+  host: "helm-template.ingress.devopslab.pagopa.it"
+
 serviceAccount:
   create: false
   annotations: {}
