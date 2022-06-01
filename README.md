@@ -107,6 +107,13 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 | `namespace` | Namespace in which deploy the microservice | Yes | - |
 | `nameOverride` | Helm chart name override | No | `""` |
 | `fullnameOverride` | Helm chart fullname override | No | `""` |
+| `ingress` | | No | - |
+| `ingress.create` | Create an ingress | No | `false` |
+| `ingress.host` | Host of the microservice | Yes | - |
+| `ingress.path` | URL matching pattern | Yes | - |
+| `ingress.pathType` | Path matching rule | No | `ImplementationSpecific` |
+| `ingress.forceSslRedirect` | Redirect HTTP requests | No | `true` |
+| `ingress.rewriteTarget` | Redirect HTTP requests rewrite rule | No | `/$1` |
 | `serviceAccount` | | No | - |
 | `serviceAccount.create` | Create a service account | Yes | `false` |
 | `serviceAccount.annotations` | Service account annotations | No | `{}` |
