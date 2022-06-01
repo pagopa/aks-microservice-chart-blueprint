@@ -4,6 +4,11 @@ image:
   pullPolicy: Always
   port: 80
 
+deployment:
+  create: true
+  livenessProbePath: /live
+  readinessProbePath: /ready
+
 ingress:
   create: false
   host: ""
