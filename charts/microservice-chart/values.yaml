@@ -43,6 +43,7 @@ resources:
     cpu: "150m"
 
 autoscaling:
+  enable: false
   minReplica: 1
   maxReplica: 1
   pollingInterval: 10 # seconds
