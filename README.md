@@ -1,8 +1,4 @@
-[![GitHub Release](https://img.shields.io/github/v/release/pagopa/aks-microservice-chart-blueprint?style=flat)](https://github.com/pagopa/aks-microservice-chart-blueprint/releases)
-[![GitHub Issues](https://img.shields.io/github/issues/pagopa/aks-microservice-chart-blueprint?style=flat)](https://github.com/pagopa/aks-microservice-chart-blueprint/issues)
-[![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
-
-# K8s Microservice Template
+# K8s Microservice Template &middot; [![GitHub Release](https://img.shields.io/github/v/release/pagopa/aks-microservice-chart-blueprint?style=flat)](https://github.com/pagopa/aks-microservice-chart-blueprint/releases) [![GitHub Issues](https://img.shields.io/github/issues/pagopa/aks-microservice-chart-blueprint?style=flat)](https://github.com/pagopa/aks-microservice-chart-blueprint/issues) [![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
 
 The `aks-microservice-chart-blueprint` chart is the best way to release your
 microservice into pagoPA K8s environment. It contains all the required
@@ -26,23 +22,22 @@ Create a `helm` folder inside your microservice project in which install the
 Helm chart:
 
 ``` shell
-$ mkdir helm && cd helm
+mkdir helm && cd helm
 ```
 
 Add Helm repo:
 
 ``` shell
-$ helm repo add pagopa-microservice https://pagopa.github.io/aks-microservice-chart-blueprint
+helm repo add pagopa-microservice https://pagopa.github.io/aks-microservice-chart-blueprint
 ```
 
-If you had already added this repo earlier, run `helm repo update` to retrieve
-the latest versions of the packages.
-
+> If you had already added this repo earlier, run `helm repo update` to retrieve
+  the latest versions of the packages.
 
 Add a very basic configuration in `Chart.yaml`:
 
 ``` shell
-$ cat <<EOF > Chart.yaml
+cat <<EOF > Chart.yaml
 apiVersion: v2
 name: my-microservice
 description: My microservice description
@@ -59,20 +54,20 @@ EOF
 Install the dependency:
 
 ``` shell
-$ helm dep build
+helm dep build
 ```
 
 Create a `values-<env>.yaml` for each environment:
 
 ``` shell
-$ touch values-dev.yaml values-uat.yaml values-prod.yaml
+touch values-dev.yaml values-uat.yaml values-prod.yaml
 ```
 
 Override all values that you need, and form the root of your project install
 the chart:
 
 ``` sh
-$ helm upgrade -i -n mynamespace -f helm/values-dev.yaml mymicroservice helm
+helm upgrade -i -n mynamespace -f helm/values-dev.yaml mymicroservice helm
 ```
 
 ### Example
@@ -106,6 +101,10 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 | `image.pullPolicy` | Microservice image pull policy | No | `Always` |
 | `namespace` | Namespace in which deploy the microservice | Yes | - |
 | `nameOverride` | Helm chart name override | No | `""` |
+| `deployment` | Node attribute for deployment configurations | Yes | `""` |
+| `deployment.create` | Helm chart name override | Yes | `""` |
+| `deployment.livenessProbePath` | Define the liveness prove path | No | `"/live"` |
+| `deployment.readinessProbePath` | Define the readiness prove path | No | `"/ready"` |
 | `fullnameOverride` | Helm chart fullname override | No | `""` |
 | `ingress` | | No | - |
 | `ingress.create` | Create an ingress | No | `false` |
@@ -155,7 +154,7 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 Change version of the dependency and run the update:
 
 ``` shell
-$ cd helm && helm dep update .
+cd helm && helm dep update .
 ```
 
 ## Advanced
@@ -167,12 +166,12 @@ For more information, visit the [complete documentation](https://pagopa.atlassia
 Clone the repository and run the setup script:
 
 ``` shell
-$ git clone git@github.com:pagopa/aks-microservice-chart-blueprint.git
-$ cd aks-microservice-chart-blueprint.git
-$ ./bin/setup
+git clone git@github.com:pagopa/aks-microservice-chart-blueprint.git
+cd aks-microservice-chart-blueprint.git
+sh /bin/setup
 ```
 
-#### Warning
+### Warning
 
 Setup script installs a version manager tool that may introduce
 compatibility issues in your environment. To prevent any potential
@@ -194,4 +193,3 @@ To update the page content, use `bin/publish`.
 ## ToDo
 
 - Should we remove some properties and hardcode them (like `image.pullPolicy`)?
-
