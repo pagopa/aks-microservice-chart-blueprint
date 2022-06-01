@@ -99,40 +99,49 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 
 ### Configuration Properties
 
-| Parameter | Description | Default |
-| --- | --- | --- |
-| `image.repository` | Microservice image | `""` |
-| `image.tag` | Microservice image tag | `v1.0.0` |
-| `image.pullPolicy` | Microservice image pull policy | `Always` |
-| `namespace` | Namespace in which deploy the microservice | `""` |
-| `nameOverride` | Helm chart name override | `""` |
-| `fullnameOverride` | Helm chart fullname override | `""` |
-| `serviceAccount.create` | Create a service account | `false` |
-| `serviceAccount.annotations` | Service account annotations | `{}` |
-| `serviceAccount.name` | Service account name | `""` |
-| `podAnnotations` | Pod annotations | `{}` |
-| `podSecurityContext` | Pod security context | - |
-| `podSecurityContext.seccompProfile.type` | Pod seccomp profile | `RuntimeDefault` |
-| `securityContext` | Security Context | - |
-| `securityContext.allowPrivilegeEscalation` | Disable pod privilege escalation | `false` |
-| `service.type` | Service type | `ClusterIP` |
-| `service.port` | Service port | `80` |
-| `resources.requests.memory` | Pod minimum memory allocation | `"96Mi"` |
-| `resources.requests.cpu` | Pod minimum cpu allocation | `"40m"` |
-| `resources.limits.memory` | Pod maximum memory allocation | `"128Mi"` |
-| `resources.limits.cpu` | Pod maximum cpu allocation | `"150m"` |
-| `autoscaling.minReplica` | Autoscaling minimum replicas | `1` |
-| `autoscaling.maxReplica` | Autoscaling maximum replicas | `1` |
-| `autoscaling.pollingInterval` | Autoscaling event polling intervall | `30` seconds |
-| `autoscaling.cooldownPeriod` | Autoscaling cooldown period | `300` seconds |
-| `autoscaling.triggers` | Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/) | `[]` |
-| `envConfig` | Map like `<env_name>: <value>` | `{}` |
-| `envSecret` | Map like `<env_name>: <key_vault_key>` | `{}` |
-| `keyvault.name` | Azure Key Vault name from which retrieve secrets | `""` |
-| `keyvault.tenantId` | Azure tenant id of the Key Vault | `""` |
-| `nodeSelector` | K8s node selectors | `{}` |
-| `tolerations` | Pod taints toleration | `[]` |
-| `affinity` | Pod labels affinity | `{}` |
+| Parameter | Description | Mandatory | Default |
+| --- | --- | --- | --- |
+| `image.repository` | Microservice image | Yes | - |
+| `image.tag` | Microservice image tag | No | `v1.0.0` |
+| `image.pullPolicy` | Microservice image pull policy | No | `Always` |
+| `namespace` | Namespace in which deploy the microservice | Yes | - |
+| `nameOverride` | Helm chart name override | No | `""` |
+| `fullnameOverride` | Helm chart fullname override | No | `""` |
+| `serviceAccount` | | No | - |
+| `serviceAccount.create` | Create a service account | Yes | `false` |
+| `serviceAccount.annotations` | Service account annotations | No | `{}` |
+| `serviceAccount.name` | Service account name | Yes | - |
+| `podAnnotations` | Pod annotations | No | `{}` |
+| `podSecurityContext` | | No | - |
+| `podSecurityContext.seccompProfile` | | No | - |
+| `podSecurityContext.seccompProfile.type` | Pod seccomp profile | No | `RuntimeDefault` |
+| `securityContext` | Security Context | No | - |
+| `securityContext.allowPrivilegeEscalation` | Disable pod privilege escalation | No | `false` |
+| `service` | | Yes | - |
+| `service.type` | Service type | Yes | `ClusterIP` |
+| `service.port` | Service port | Yes | `80` |
+| `resources` | | No | - |
+| `resources.requests` | | No | - |
+| `resources.requests.memory` | Pod minimum memory allocation | No | `"96Mi"` |
+| `resources.requests.cpu` | Pod minimum cpu allocation | No | `"40m"` |
+| `resources.limits` | | No | - |
+| `resources.limits.memory` | Pod maximum memory allocation | No | `"128Mi"` |
+| `resources.limits.cpu` | Pod maximum cpu allocation | No | `"150m"` |
+| `autoscaling` | | No | - |
+| `autoscaling.enable` | Enable autoscaling | No | `1` |
+| `autoscaling.minReplica` | Autoscaling minimum replicas | No | `1` |
+| `autoscaling.maxReplica` | Autoscaling maximum replicas | No | `1` |
+| `autoscaling.pollingInterval` | Autoscaling event polling intervall | No | `30` seconds |
+| `autoscaling.cooldownPeriod` | Autoscaling cooldown period | No | `300` seconds |
+| `autoscaling.triggers` | Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/) | Yes | - |
+| `envConfig` | Map like `<env_name>: <value>` | No | - |
+| `envSecret` | Map like `<env_name>: <key_vault_key>` | No | - |
+| `keyvault` | | Only if ingress.create or envSecret | - |
+| `keyvault.name` | Azure Key Vault name from which retrieve secrets | Yes | - |
+| `keyvault.tenantId` | Azure tenant id of the Key Vault | Yes | - |
+| `nodeSelector` | K8s node selectors | No | - |
+| `tolerations` | Pod taints toleration | No | - |
+| `affinity` | Pod labels affinity | No | - |
 
 ### Upgrading
 
