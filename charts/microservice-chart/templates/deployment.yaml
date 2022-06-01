@@ -13,14 +13,6 @@ spec:
       {{- include "microservice-chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      ## Restore this block if you want to handle pod rollout when a configmap
-      ## is updated with Helm instead of Reloader. You also need to configure
-      ## Reloader to ignore configmap
-      #  annotations:
-      #    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-      #    {{- with .Values.podAnnotations }}
-      #      {{- toYaml . | nindent 8 }}
-      #    {{- end }}
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}

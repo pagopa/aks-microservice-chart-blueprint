@@ -9,6 +9,7 @@ microservice-chart:
     pullPolicy: Always
 
   ingress:
+    create: true
     host: "helm-template.ingress.devopslab.pagopa.it"
 
   serviceAccount:

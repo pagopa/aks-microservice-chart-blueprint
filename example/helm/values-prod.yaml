@@ -9,6 +9,7 @@ microservice-chart:
     tag: "1.0.0"
 
   ingress:
+    create: false
     host: ""
 
   serviceAccount:
