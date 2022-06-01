@@ -1,3 +1,4 @@
+{{- if .Values.ingress.create -}}
 apiVersion: secrets-store.csi.x-k8s.io/v1
 kind: SecretProviderClass
 metadata:
@@ -26,4 +27,4 @@ spec:
           objectName: {{ .Values.ingress.host | replace "." "-" }}
           objectType: secret
           objectVersion: ""
-
+{{- end }}

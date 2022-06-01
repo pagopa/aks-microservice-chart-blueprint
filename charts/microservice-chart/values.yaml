@@ -5,6 +5,7 @@ image:
   port: 80
 
 ingress:
+  create: false
   host: ""
   path: /(.*)
   pathType: ImplementationSpecific
