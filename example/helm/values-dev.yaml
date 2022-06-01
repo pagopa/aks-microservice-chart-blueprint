@@ -11,6 +11,7 @@ microservice-chart:
   ingress:
     create: true
     host: "helm-template.ingress.devopslab.pagopa.it"
+    path: /(.*)
 
   serviceAccount:
     create: false

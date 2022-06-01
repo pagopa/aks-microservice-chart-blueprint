@@ -7,7 +7,7 @@ image:
 ingress:
   create: false
   host: ""
-  path: /(.*)
+  path: ""
   pathType: ImplementationSpecific
   forceSslRedirect: true
   rewriteTarget: /$1

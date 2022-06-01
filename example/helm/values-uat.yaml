@@ -11,6 +11,7 @@ microservice-chart:
   ingress:
     create: false
     host: ""
+    path: ""
 
   serviceAccount:
     create: false
