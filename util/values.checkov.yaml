@@ -8,6 +8,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 ingress:
+  create: true
   host: "helm-template.ingress.devopslab.pagopa.it"
 
 serviceAccount:
@@ -37,6 +38,7 @@ resources:
     cpu: "150m"
 
 autoscaling:
+  enable: true
   minReplica: 1
   maxReplica: 2
   pollingInterval: 30 # seconds

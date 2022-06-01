@@ -13,14 +13,6 @@ spec:
       {{- include "microservice-chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      ## Restore this block if you want to handle pod rollout when a configmap
-      ## is updated with Helm instead of Reloader. You also need to configure
-      ## Reloader to ignore configmap
-      #  annotations:
-      #    checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-      #    {{- with .Values.podAnnotations }}
-      #      {{- toYaml . | nindent 8 }}
-      #    {{- end }}
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
@@ -53,10 +45,12 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.envSecret }}
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
+          {{- end }}
           env:
             {{- range $name, $value := .Values.envSecret }}
             - name: {{ $name }}
@@ -72,6 +66,7 @@ spec:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
             {{- end }}
+        {{- if .Values.ingress.create }}
         - name: crt-mounter
           securityContext:
             allowPrivilegeEscalation: false
@@ -88,19 +83,24 @@ spec:
             - name: secrets-store-inline-crt
               mountPath: "/mnt/secrets-store-crt"
               readOnly: true
+        {{- end }}
       volumes:
+        {{- if .Values.envSecret }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
+        {{- end }}
+        {{- if .Values.ingress.create }}
         - name: secrets-store-inline-crt
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Values.ingress.host | replace "." "-" }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
