@@ -45,10 +45,12 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.envSecret }}
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
+          {{- end }}
           env:
             {{- range $name, $value := .Values.envSecret }}
             - name: {{ $name }}
@@ -83,12 +85,14 @@ spec:
               readOnly: true
         {{- end }}
       volumes:
+        {{- if .Values.envSecret }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
+        {{- end }}
         {{- if .Values.ingress.create }}
         - name: secrets-store-inline-crt
           csi:
