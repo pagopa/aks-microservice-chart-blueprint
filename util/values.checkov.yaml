@@ -2,6 +2,7 @@ image:
   repository: dvopladneuacr.azurecr.io/templatemicroserviziok8s
   tag: "1dd0109082e799bd5ee4474de2433a91d2b95fc5"
   pullPolicy: Always
+  port: 80
 
 namespace: "helm-template"
 nameOverride: ""

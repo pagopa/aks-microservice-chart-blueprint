@@ -96,15 +96,17 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 
 | Parameter | Description | Mandatory | Default |
 | --- | --- | --- | --- |
+| `image` |  | Yes | - |
 | `image.repository` | Microservice image | Yes | - |
 | `image.tag` | Microservice image tag | No | `v1.0.0` |
 | `image.pullPolicy` | Microservice image pull policy | No | `Always` |
+| `image.port` | Microservice container port | yes | - |
+| `image.livenessProbePath` | Microservice liveness prove path | No | `"/api/live"` |
+| `image.readinessProbePath` | Microservice readiness prove path | No | `"/api/ready"` |
 | `namespace` | Namespace in which deploy the microservice | Yes | - |
 | `nameOverride` | Helm chart name override | No | `""` |
-| `deployment` | Node attribute for deployment configurations | Yes | `""` |
-| `deployment.create` | Helm chart name override | Yes | `""` |
-| `deployment.livenessProbePath` | Define the liveness prove path | No | `"/live"` |
-| `deployment.readinessProbePath` | Define the readiness prove path | No | `"/ready"` |
+| `deployment` | | Yes | - |
+| `deployment.create` | Create deployment descriptor | Yes | `1` |
 | `fullnameOverride` | Helm chart fullname override | No | `""` |
 | `ingress` | | No | - |
 | `ingress.create` | Create an ingress | No | `false` |
@@ -134,7 +136,7 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 | `resources.limits.memory` | Pod maximum memory allocation | No | `"128Mi"` |
 | `resources.limits.cpu` | Pod maximum cpu allocation | No | `"150m"` |
 | `autoscaling` | | No | - |
-| `autoscaling.enable` | Enable autoscaling | No | `1` |
+| `autoscaling.enable` | Enable autoscaling | No | `false` |
 | `autoscaling.minReplica` | Autoscaling minimum replicas | No | `1` |
 | `autoscaling.maxReplica` | Autoscaling maximum replicas | No | `1` |
 | `autoscaling.pollingInterval` | Autoscaling event polling intervall | No | `30` seconds |
@@ -142,6 +144,8 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 | `autoscaling.triggers` | Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/) | Yes | - |
 | `envConfig` | Map like `<env_name>: <value>` | No | - |
 | `envSecret` | Map like `<env_name>: <key_vault_key>` | No | - |
+| `secretProviderClass` |  | Yes | - |
+| `secretProviderClass.create` | Create the secret provider class | Yes | `true` |
 | `keyvault` | | Only if ingress.create or envSecret | - |
 | `keyvault.name` | Azure Key Vault name from which retrieve secrets | Yes | - |
 | `keyvault.tenantId` | Azure tenant id of the Key Vault | Yes | - |

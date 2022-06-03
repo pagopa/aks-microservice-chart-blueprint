@@ -2,12 +2,9 @@ image:
   repository: ""
   tag: "v0.0.0"
   pullPolicy: Always
-  port: 80
 
 deployment:
   create: true
-  livenessProbePath: /live
-  readinessProbePath: /ready
 
 ingress:
   create: false
@@ -36,6 +33,7 @@ securityContext:
   allowPrivilegeEscalation: false
 
 service:
+  create: true
   type: ClusterIP
   port: 80
 
@@ -57,11 +55,18 @@ autoscaling:
 
 envConfig: {}
 
+#
+# Secrets
+#
 envSecret: {}
+
+secretProviderClass:
+  create: true
 
 keyvault:
   name: ""
   tenantId: ""
+###
 
 nodeSelector: {}
 
