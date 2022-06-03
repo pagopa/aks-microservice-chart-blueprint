@@ -8,6 +8,11 @@ namespace: "helm-template"
 nameOverride: ""
 fullnameOverride: ""
 
+deployment:
+  create: true
+  livenessProbePath: /live
+  readinessProbePath: /ready
+
 ingress:
   create: true
   host: "helm-template.ingress.devopslab.pagopa.it"
