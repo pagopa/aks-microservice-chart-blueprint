@@ -7,11 +7,10 @@ microservice-chart:
     repository: dvopladneuacr.azurecr.io/templatemicroserviziok8s
     tag: "1dd0109082e799bd5ee4474de2433a91d2b95fc5"
     pullPolicy: Always
+    port: 80
 
   deployment:
     create: true
-    livenessProbePath: /live
-    readinessProbePath: /ready
 
   ingress:
     create: true
@@ -32,9 +31,10 @@ microservice-chart:
   securityContext:
     allowPrivilegeEscalation: false
 
-  service:
-    type: ClusterIP
-    port: 80
+service:
+  create: true
+  type: ClusterIP
+  port: 80
 
   resources:
     requests:
@@ -69,6 +69,9 @@ microservice-chart:
 
   envSecret:
     PASS: helm-template-password
+
+  secretProviderClass:
+    create: true
 
   keyvault:
     name: "dvopla-d-neu-kv"
