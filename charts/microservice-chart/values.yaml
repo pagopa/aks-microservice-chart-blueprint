@@ -2,6 +2,9 @@ image:
   repository: ""
   tag: "v0.0.0"
   pullPolicy: Always
+  port: 80
+  livenessProbePath: "/api/live"
+  readinessProbePath: "/api/ready"
 
 deployment:
   create: true
