@@ -39,7 +39,8 @@ jobs:
       # issue: https://github.com/helm/chart-releaser-action/issues/113
       - name: force_tags_download
         run: |
-          git pull --tags         
+          git pull --tags
+          git fetch --tags --verbose        
       
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.0
