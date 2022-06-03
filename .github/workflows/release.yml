@@ -36,6 +36,11 @@ jobs:
           chmod 700 get_helm.sh
           ./get_helm.sh
 
+      # issue: https://github.com/helm/chart-releaser-action/issues/113
+      - name: force_tags_download
+        run: |
+          git pull --tags         
+      
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.0
         env:
