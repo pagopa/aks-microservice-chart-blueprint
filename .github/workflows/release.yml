@@ -1,18 +1,25 @@
 name: Release
 
+# on:
+#   # Trigger the workflow on push or pull request,
+#   # but only for the main branch
+#   push:
+#     branches:
+#       - main
+#       - master
+#     paths-ignore:
+#       - 'CODEOWNERS'
+#       - '**.md'
+#       - 'example'
+#       - 'util'
+#       - 'bin'
+
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
-  push:
-    branches:
-      - main
-      - master
-    paths-ignore:
-      - 'CODEOWNERS'
-      - '**.md'
-      - 'example'
-      - 'util'
-      - 'bin'
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
 
 jobs:
   release:
@@ -42,7 +49,7 @@ jobs:
           git pull --tags
           git fetch --tags --verbose        
       
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.4.0
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      # - name: Run chart-releaser
+      #   uses: helm/chart-releaser-action@v1.4.0
+      #   env:
+      #     CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
