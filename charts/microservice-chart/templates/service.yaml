@@ -10,9 +10,9 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: {{ .Values.service.port }}
       protocol: TCP
-      name: http
+      name: app-port-{{ .Values.service.port }}
   selector:
     {{- include "microservice-chart.selectorLabels" . | nindent 4 }}
 {{- end }}
