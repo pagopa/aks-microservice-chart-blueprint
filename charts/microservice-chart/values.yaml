@@ -1,9 +1,27 @@
+namespace: ""
+nameOverride: ""
+fullnameOverride: ""
+
 image:
   repository: ""
   tag: "v0.0.0"
   pullPolicy: Always
-  livenessProbePath: "/api/live"
-  readinessProbePath: "/api/ready"
+
+livenessProbe:
+  httpGet:
+    path: /healthz/live
+    port: 80
+  initialDelaySeconds: 60
+  failureThreshold: 6
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /healthz/ready
+    port: 80
+  initialDelaySeconds: 60
+  failureThreshold: 6
+  periodSeconds: 10
 
 deployment:
   create: true
@@ -21,9 +39,6 @@ ingress:
   forceSslRedirect: true
   rewriteTarget: /$1
 
-namespace: ""
-nameOverride: ""
-fullnameOverride: ""
 
 serviceAccount:
   create: false
