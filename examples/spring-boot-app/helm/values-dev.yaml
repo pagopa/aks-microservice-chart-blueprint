@@ -5,7 +5,7 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/devops-springboot-gitlab-workflow
-    tag: 0.2.1
+    tag: 0.3.0
     pullPolicy: Always
     livenessProbePath: /app/live
     readinessProbePath: /app/ready
