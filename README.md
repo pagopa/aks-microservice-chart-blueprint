@@ -100,11 +100,23 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 | `image.repository` | Microservice image | Yes | - |
 | `image.tag` | Microservice image tag | No | `v1.0.0` |
 | `image.pullPolicy` | Microservice image pull policy | No | `Always` |
-| `image.port` | Microservice container port | yes | - |
-| `image.livenessProbePath` | Microservice liveness prove path | No | `"/api/live"` |
-| `image.readinessProbePath` | Microservice readiness prove path | No | `"/api/ready"` |
 | `namespace` | Namespace in which deploy the microservice | Yes | - |
 | `nameOverride` | Helm chart name override | No | `""` |
+| `service` | | Yes | - |
+| `service.type` | Service type | Yes | `ClusterIP` |
+| `service.port` | Service port (used into `deployment.image.port`) | Yes | `80` |
+| `livenessProbe` | | Yes | - |
+| `livenessProbe.httpGet.path` | Live (health) path used by app | Yes | `/healthz/live` |
+| `livenessProbe.httpGet.path` | live (health) port used by app | Yes | `80` |
+| `livenessProbe.initialDelaySeconds` | Number of seconds after the container has started before liveness or readiness probes are initiated. | Yes | `60` |
+| `livenessProbe.failureThreshold` | When a probe fails, Kubernetes will try failureThreshold times before giving up. Giving up in case of liveness probe means restarting the container. In case of readiness probe the Pod will be marked Unready. | Yes | `6` |
+| `livenessProbe.periodSeconds` | How often (in seconds) to perform the probe. | Yes | `10` |
+| `readinessProbe` | | Yes | - |
+| `readinessProbe.httpGet.path` | Ready (health) path used by app | Yes | `/healthz/live` |
+| `readinessProbe.httpGet.port` | Ready (health) port used by app | Yes | `80` |
+| `readinessProbe.initialDelaySeconds` | Number of seconds after the container has started before liveness or readiness probes are initiated. | Yes | `60` |
+| `readinessProbe.failureThreshold` | When a probe fails, Kubernetes will try failureThreshold times before giving up. Giving up in case of liveness probe means restarting the container. In case of readiness probe the Pod will be marked Unready. | Yes | `6` |
+| `readinessProbe.periodSeconds` | How often (in seconds) to perform the probe. | Yes | `10` |
 | `deployment` | | Yes | - |
 | `deployment.create` | Create deployment descriptor | Yes | `1` |
 | `fullnameOverride` | Helm chart fullname override | No | `""` |
@@ -125,9 +137,6 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 | `podSecurityContext.seccompProfile.type` | Pod seccomp profile | No | `RuntimeDefault` |
 | `securityContext` | Security Context | No | - |
 | `securityContext.allowPrivilegeEscalation` | Disable pod privilege escalation | No | `false` |
-| `service` | | Yes | - |
-| `service.type` | Service type | Yes | `ClusterIP` |
-| `service.port` | Service port | Yes | `80` |
 | `resources` | | No | - |
 | `resources.requests` | | No | - |
 | `resources.requests.memory` | Pod minimum memory allocation | No | `"96Mi"` |
