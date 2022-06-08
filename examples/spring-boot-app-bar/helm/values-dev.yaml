@@ -4,8 +4,8 @@ microservice-chart:
   fullnameOverride: ""
 
   image:
-    repository: ghcr.io/pagopa/devops-springboot-gitlab-workflow
-    tag: 0.4.0
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: 0.5.0
     pullPolicy: Always
 
   deployment:
@@ -19,7 +19,7 @@ microservice-chart:
   ingress:
     create: true
     host: "dev01.idpay.internal.dev.cstar.pagopa.it"
-    path: /idpay/test/(.*)
+    path: /idpay/testbar/(.*)
 
   serviceAccount:
     create: false
@@ -37,10 +37,10 @@ microservice-chart:
 
   resources:
     requests:
-      memory: "96Mi"
+      memory: "256Mi"
       cpu: "40m"
     limits:
-      memory: "128Mi"
+      memory: "256Mi"
       cpu: "150m"
 
   autoscaling:
