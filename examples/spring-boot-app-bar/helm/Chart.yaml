@@ -1,10 +1,10 @@
 apiVersion: v2
-name: test-aks-microservice-chart-blueprint
+name: devops-java-springboot-color-bar
 description: An example application with Java spring boot
 type: application
 version: 1.0.0
 appVersion: 1.0.0
 dependencies:
 - name: microservice-chart
-  version: 1.15.0
+  version: 1.16.0
   repository: file://../../../charts/microservice-chart

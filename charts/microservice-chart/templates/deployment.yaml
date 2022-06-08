@@ -91,12 +91,13 @@ spec:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
         {{- end }}
         {{- if .Values.ingress.create }}
+        ### ingress tls cert
         - name: secrets-store-inline-crt
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.ingress.host | replace "." "-" }}
+              secretProviderClass: {{ .Values.ingress.host | replace "." "-" }}-{{ include "microservice-chart.fullname" . }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

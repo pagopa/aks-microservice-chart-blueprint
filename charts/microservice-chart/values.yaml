@@ -39,7 +39,6 @@ ingress:
   forceSslRedirect: true
   rewriteTarget: /$1
 
-
 serviceAccount:
   create: false
   annotations: {}
