@@ -78,11 +78,11 @@ microservice-chart:
           metricAggregationType: Count
           targetValue: "30"
 
-  # envConfig:
-  #   USER: my-user
+  envConfig:
+    APP: foo
 
-  # envSecret:
-  #   PASS: helm-template-password
+  envSecret:
+    aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
 
   keyvault:
     name: "cstar-d-idpay-kv"
