@@ -8,22 +8,6 @@ microservice-chart:
     tag: 0.4.0
     pullPolicy: Always
 
-  livenessProbe:
-    httpGet:
-      path: /healthz/live
-      port: 8080
-    initialDelaySeconds: 60
-    failureThreshold: 6
-    periodSeconds: 10
-
-  readinessProbe:
-    httpGet:
-      path: /healthz/ready
-      port: 8080
-    initialDelaySeconds: 60
-    failureThreshold: 6
-    periodSeconds: 10
-
   deployment:
     create: true
 
@@ -33,8 +17,9 @@ microservice-chart:
     port: 8080
 
   ingress:
-    create: false
-    host: "helm-template.ingress.devopslab.pagopa.it"
+    create: true
+    host: "dev01.idpay.internal.dev.cstar.pagopa.it"
+    path: /idpay/test/(.*)
 
   serviceAccount:
     create: false

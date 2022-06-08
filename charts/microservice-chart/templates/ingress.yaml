@@ -9,6 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget }}
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
+  ingressClassName: nginx
   rules:
     - host: {{ .Values.ingress.host }}
       http:
@@ -17,7 +18,7 @@ spec:
               service:
                 name: {{ include "microservice-chart.fullname" . }}
                 port:
-                  number: {{ .Values.image.port }}
+                  number: {{ .Values.service.port }}
             path: {{ .Values.ingress.path }}
             pathType: {{ .Values.ingress.pathType }}
   tls:
