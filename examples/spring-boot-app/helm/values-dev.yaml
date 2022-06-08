@@ -33,8 +33,9 @@ microservice-chart:
     port: 8080
 
   ingress:
-    create: false
-    host: "helm-template.ingress.devopslab.pagopa.it"
+    create: true
+    host: "dev01.idpay.internal.dev.cstar.pagopa.it"
+    path: /idpay/test/(.*)
 
   serviceAccount:
     create: false
