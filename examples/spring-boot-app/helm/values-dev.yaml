@@ -8,22 +8,6 @@ microservice-chart:
     tag: 0.4.0
     pullPolicy: Always
 
-  livenessProbe:
-    httpGet:
-      path: /healthz/live
-      port: 8080
-    initialDelaySeconds: 60
-    failureThreshold: 6
-    periodSeconds: 10
-
-  readinessProbe:
-    httpGet:
-      path: /healthz/ready
-      port: 8080
-    initialDelaySeconds: 60
-    failureThreshold: 6
-    periodSeconds: 10
-
   deployment:
     create: true
 
