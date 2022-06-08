@@ -2,7 +2,22 @@ image:
   repository: dvopladneuacr.azurecr.io/templatemicroserviziok8s
   tag: "1dd0109082e799bd5ee4474de2433a91d2b95fc5"
   pullPolicy: Always
-  port: 80
+
+livenessProbe:
+  httpGet:
+    path: /healthz/live
+    port: 8080
+  initialDelaySeconds: 60
+  failureThreshold: 6
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /healthz/ready
+    port: 8080
+  initialDelaySeconds: 60
+  failureThreshold: 6
+  periodSeconds: 10
 
 namespace: "helm-template"
 nameOverride: ""
@@ -10,12 +25,11 @@ fullnameOverride: ""
 
 deployment:
   create: true
-  livenessProbePath: /live
-  readinessProbePath: /ready
 
 ingress:
   create: true
   host: "helm-template.ingress.devopslab.pagopa.it"
+  path: /idpay/test/(.*)
 
 serviceAccount:
   create: false
