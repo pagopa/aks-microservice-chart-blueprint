@@ -84,7 +84,27 @@ Change version of the dependency and run the update:
 cd helm && helm dep update .
 ```
 
-## App mandatory resources and configuration
+## Template/App mandatory resources and configuration
+
+To work as expect this template must request:
+
+App:
+
+- has liveness and readiness endpoints
+- you know which are the probes for your application, because are mandatory
+
+Azure:
+
+- TLS certificate are present into the kv (for ingress)
+- Managed POD identity are created
+
+K8s:
+
+- Reloader of other tools that allow to restar the pod in case of some of the config map or secret are changed
+
+## Final Result
+
+Here you can find a result of the template [final result](docs/FINAL_RESULT_EXAMPLE.md)
 
 ## Examples
 
