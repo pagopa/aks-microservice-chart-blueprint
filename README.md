@@ -9,8 +9,12 @@ Some of the key benefits of this chart are:
 
 - Highly secure environment thanks to Secret Store CSI Provider;
 - Ingress HTTPS connection;
-- Improved scalability and reliability thanks to Keda;
-- Automatic rollout to update pod environment thanks to Reloader;
+- Improved scalability and reliability thanks to **Keda**;
+- Simpified way to setup secrets and configMaps
+
+## Architecture
+
+To see the entire architecture please see this page [architecture](docs/ARCHITECTURE.md)
 
 ## Installation
 
@@ -46,7 +50,7 @@ version: 1.0.0
 appVersion: 1.0.0
 dependencies:
 - name: microservice-chart
-  version: 1.0.0
+  version: 1.17.0
   repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
 EOF
 ```
@@ -67,13 +71,28 @@ Override all values that you need, and form the root of your project install
 the chart:
 
 ``` sh
+helm upgrade -i -n <namespace name> -f <file with values> <name of the helm chart> <chart folder>
+
 helm upgrade -i -n mynamespace -f helm/values-dev.yaml mymicroservice helm
 ```
 
-### Example
+### Upgrading
 
-In the [`example`](example/) folder, you can find a working example. It
-is an elementary version of an Azure Function App written in NodeJS.
+Change version of the dependency and run the update:
+
+``` shell
+cd helm && helm dep update .
+```
+
+## App mandatory resources and configuration
+
+## Examples
+
+In the [`example`](example/) folder, you can find a working examples. 
+
+### Azure function App
+
+It is an elementary version of an Azure Function App written in NodeJS.
 
 It has three functions:
 
@@ -87,7 +106,20 @@ or [Docker](example/Dockerfile).
 
 You can also find a [generic pipeline](example/.devops).
 
-#### Static Application Security Testing
+### SpringBoot (Java) web app colors
+
+<https://github.com/pagopa/devops-java-springboot-color>
+
+there are two folders called:
+
+- spring-boot-app-bar
+- spring-boot-app-foo
+
+This are only a helm chart that install a simple web application written in java springboot.
+
+This can be usefull to check how works aks with two applications
+
+### Static Application Security Testing
 
 We strongly suggest performing SAST on your microservice Helm chart. You could
 look at this [GitHub Action](.github/workflows/check_helm.yml).
@@ -162,14 +194,6 @@ look at this [GitHub Action](.github/workflows/check_helm.yml).
 | `tolerations` | Pod taints toleration | No | - |
 | `affinity` | Pod labels affinity | No | - |
 
-### Upgrading
-
-Change version of the dependency and run the update:
-
-``` shell
-cd helm && helm dep update .
-```
-
 ## Advanced
 
 For more information, visit the [complete documentation](https://pagopa.atlassian.net/wiki/spaces/DEVOPS/pages/479658690/Microservice+template).
@@ -202,7 +226,3 @@ To update the page content, use `bin/publish`.
 ## Known issues and limitations
 
 - None.
-
-## ToDo
-
-- Should we remove some properties and hardcode them (like `image.pullPolicy`)?
