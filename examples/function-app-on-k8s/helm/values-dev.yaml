@@ -9,6 +9,16 @@ microservice-chart:
     pullPolicy: Always
     port: 80
 
+  livenessProbe:
+    httpGet:
+      path: /api/live
+      port: 80
+
+  readinessProbe:
+    httpGet:
+      path: /api/ready
+      port: 80
+
   deployment:
     create: true
 
@@ -31,10 +41,10 @@ microservice-chart:
   securityContext:
     allowPrivilegeEscalation: false
 
-service:
-  create: true
-  type: ClusterIP
-  port: 80
+  service:
+    create: true
+    type: ClusterIP
+    port: 80
 
   resources:
     requests:
@@ -51,6 +61,10 @@ service:
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
       - type: azure-monitor
         metadata:
           tenantId: 7788edaf-0346-4068-9d79-c868aed15b3d
