@@ -2,6 +2,12 @@ namespace: ""
 nameOverride: ""
 fullnameOverride: ""
 
+progressiveDelivery:
+  create: true
+  weighed:
+    create: false
+    weight: 0
+
 image:
   repository: ""
   tag: "v0.0.0"

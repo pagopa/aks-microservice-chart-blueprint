@@ -24,6 +24,16 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Progressive Delivery
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "microservice-chart.progressiveDeliveryFullname" -}}
+pd-{{ include "microservice-chart.fullname" . }}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "microservice-chart.chart" -}}
@@ -43,11 +53,32 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Progressive Delivery Common labels
+*/}}
+{{- define "microservice-chart.progressiveDeliveryLabels" -}}
+helm.sh/chart: {{ include "microservice-chart.chart" . }}
+{{ include "microservice-chart.progressiveDeliverySelectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "microservice-chart.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Progressive Delivery Selector labels
+*/}}
+{{- define "microservice-chart.progressiveDeliverySelectorLabels" -}}
+app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+progressiveDelivery: {{ .Values.progressiveDelivery.create }}
 {{- end }}
 
 {{/*

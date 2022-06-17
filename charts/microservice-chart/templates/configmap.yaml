@@ -9,3 +9,17 @@ metadata:
 data:
   {{- toYaml .Values.envConfig | nindent 2 }}
 {{- end }}
+
+---
+
+{{- if and .Values.envConfig .Values.progressiveDelivery.create -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "microservice-chart.progressiveDeliveryFullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.progressiveDeliveryLabels" . | nindent 4 }}
+data:
+  {{- toYaml .Values.envConfig | nindent 2 }}
+{{- end }}

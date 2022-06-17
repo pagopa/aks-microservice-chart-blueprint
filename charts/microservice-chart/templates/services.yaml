@@ -1,0 +1,40 @@
+{{- if .Values.service.create -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: app-port-{{ .Values.service.port }}-svc
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP
+  selector:
+    {{- include "microservice-chart.selectorLabels" . | nindent 4 }}
+{{- end }}
+
+---
+
+{{- if and .Values.service.create .Values.progressiveDelivery.create -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: pd-{{ include "microservice-chart.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: pd-app-port-{{ .Values.service.port }}-svc
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP
+  selector:
+    {{- include "microservice-chart.selectorLabels" . | nindent 4 }}
+{{- end }}
+
