@@ -1,0 +1,19 @@
+{{- if and .Values.service.create .Values.progressiveDelivery.create -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "microservice-chart.progressiveDeliveryFullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.progressiveDeliveryLabels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: pd-app-port-{{ .Values.service.port }}-svc
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP
+  selector:
+    {{- include "microservice-chart.progressiveDeliverySelectorLabels" . | nindent 4 }}
+{{- end }}
+

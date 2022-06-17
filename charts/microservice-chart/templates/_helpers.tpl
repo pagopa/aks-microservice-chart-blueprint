@@ -78,7 +78,7 @@ Progressive Delivery Selector labels
 {{- define "microservice-chart.progressiveDeliverySelectorLabels" -}}
 app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-progressiveDelivery: {{ .Values.progressiveDelivery.create }}
+progressiveDelivery: "{{ .Values.progressiveDelivery.create }}"
 {{- end }}
 
 {{/*

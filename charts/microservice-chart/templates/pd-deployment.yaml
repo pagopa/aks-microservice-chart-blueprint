@@ -53,14 +53,14 @@ spec:
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "microservice-chart.progressiveDeliveryFullname" $ }}
+                  name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $value }}
             {{- end }}
             {{- range $key, $val := .Values.envConfig }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "microservice-chart.progressiveDeliveryFullname" $ }}
+                  name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
             {{- end }}
         {{- if .Values.ingress.create }}

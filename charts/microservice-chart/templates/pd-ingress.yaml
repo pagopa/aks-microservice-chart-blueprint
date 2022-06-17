@@ -1,8 +1,8 @@
-{{- if .Values.ingress.create -}}
+{{- if and .Values.ingress.create .Values.progressiveDelivery.create -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "microservice-chart.fullname" . }}
+  name: {{ include "microservice-chart.progressiveDeliveryFullname" . }}
   namespace: {{ .Values.namespace }}
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -16,10 +16,10 @@ spec:
         paths:
           - backend:
               service:
-                name: {{ include "microservice-chart.fullname" . }}
+                name: pd-{{ include "microservice-chart.fullname" . }}
                 port:
                   number: {{ .Values.service.port }}
-            path: {{ .Values.ingress.path }}
+            path: /pd{{ .Values.ingress.path }}
             pathType: {{ .Values.ingress.pathType }}
   tls:
     - hosts: [{{ .Values.ingress.host }}]
