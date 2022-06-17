@@ -29,7 +29,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "microservice-chart.progressiveDeliveryFullname" -}}
+{{- define "microservice-chart.fullNameProgressiveDelivery" -}}
 pd-{{ include "microservice-chart.fullname" . }}
 {{- end }}
 
@@ -55,9 +55,9 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Progressive Delivery Common labels
 */}}
-{{- define "microservice-chart.progressiveDeliveryLabels" -}}
+{{- define "microservice-chart.labelsProgressiveDelivery" -}}
 helm.sh/chart: {{ include "microservice-chart.chart" . }}
-{{ include "microservice-chart.progressiveDeliverySelectorLabels" . }}
+{{ include "microservice-chart.selectorLabelsProgressiveDelivery" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -75,7 +75,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{/*
 Progressive Delivery Selector labels
 */}}
-{{- define "microservice-chart.progressiveDeliverySelectorLabels" -}}
+{{- define "microservice-chart.selectorLabelsProgressiveDelivery" -}}
 app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 progressiveDelivery: "{{ .Values.progressiveDelivery.create }}"

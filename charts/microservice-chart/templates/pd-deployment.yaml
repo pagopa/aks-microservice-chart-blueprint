@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "microservice-chart.progressiveDeliveryFullname" . }}
+  name: {{ include "microservice-chart.fullNameProgressiveDelivery" . }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "microservice-chart.progressiveDeliveryLabels" . | nindent 4 }}
+    {{- include "microservice-chart.labelsProgressiveDelivery" . | nindent 4 }}
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
   selector:
     matchLabels:
-      {{- include "microservice-chart.progressiveDeliverySelectorLabels" . | nindent 6 }}
+      {{- include "microservice-chart.selectorLabelsProgressiveDelivery" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -20,7 +20,7 @@ spec:
       {{- end }}
       labels:
         aadpodidbinding: "{{ .Values.namespace }}-pod-identity"
-        {{- include "microservice-chart.progressiveDeliverySelectorLabels" . | nindent 8 }}
+        {{- include "microservice-chart.selectorLabelsProgressiveDelivery" . | nindent 8 }}
     spec:
       automountServiceAccountToken: false
       serviceAccountName: {{ include "microservice-chart.serviceAccountName" . }}
