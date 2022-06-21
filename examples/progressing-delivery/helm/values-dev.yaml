@@ -5,7 +5,7 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: 0.6.0
+    tag: 0.7.1
     pullPolicy: Always
 
   livenessProbe:
@@ -81,6 +81,7 @@ microservice-chart:
 
   envConfig:
     APP: foo
+    MY_APP_COLOR: "green"
 
   envSecret:
     aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
