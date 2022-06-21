@@ -1,0 +1,11 @@
+{{- if and .Values.progressiveDelivery.deployment.envConfig -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "microservice-chart.fullnameProgressiveDelivery" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labelsProgressiveDelivery" . | nindent 4 }}
+data:
+  {{- toYaml .Values.progressiveDelivery.deployment.envConfig | nindent 2 }}
+{{- end }}

@@ -29,7 +29,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "microservice-chart.fullNameProgressiveDelivery" -}}
+{{- define "microservice-chart.fullnameProgressiveDelivery" -}}
 pd-{{ include "microservice-chart.fullname" . }}
 {{- end }}
 
@@ -78,7 +78,7 @@ Progressive Delivery Selector labels
 {{- define "microservice-chart.selectorLabelsProgressiveDelivery" -}}
 app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-progressiveDelivery: "{{ .Values.progressiveDelivery.create }}"
+progressiveDelivery: "true"
 {{- end }}
 
 {{/*

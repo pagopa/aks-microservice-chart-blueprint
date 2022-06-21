@@ -3,10 +3,23 @@ nameOverride: ""
 fullnameOverride: ""
 
 progressiveDelivery:
-  create: true
-  weighed:
-    create: false
-    weight: 0
+  ingress:
+    create: true
+    weighed:
+      weight: 0
+  service:
+    create: true
+  deployment:
+    create: true
+    image:
+      repository: ""
+      tag: "v0.0.0"
+      pullPolicy: Always
+    envConfig:
+      progressive-delivery: "ok"
+    envSecret:
+      aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
+
 
 image:
   repository: ""

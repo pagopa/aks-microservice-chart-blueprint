@@ -1,8 +1,8 @@
-{{- if and .Values.deployment.create .Values.progressiveDelivery.create -}}
+{{- if .Values.progressiveDelivery.deployment.create -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "microservice-chart.fullNameProgressiveDelivery" . }}
+  name: {{ include "microservice-chart.fullnameProgressiveDelivery" . }}
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "microservice-chart.labelsProgressiveDelivery" . | nindent 4 }}
@@ -30,8 +30,8 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.progressiveDelivery.deployment.image.repository }}:{{ .Values.progressiveDelivery.deployment.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.progressiveDelivery.deployment.image.pullPolicy }}
           ports:
             - name: app-port-{{ .Values.service.port }}
               containerPort: {{ .Values.service.port }}
@@ -42,28 +42,28 @@ spec:
 {{ toYaml .Values.readinessProbe | indent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.envSecret }}
+          {{- if .Values.progressiveDelivery.deployment.envSecret }}
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
           {{- end }}
           env:
-            {{- range $name, $value := .Values.envSecret }}
+            {{- range $name, $value := .Values.progressiveDelivery.deployment.envSecret }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $value }}
             {{- end }}
-            {{- range $key, $val := .Values.envConfig }}
+            {{- range $key, $val := .Values.progressiveDelivery.deployment.envConfig }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "microservice-chart.fullname" $ }}
+                  name: {{ include "microservice-chart.fullnameProgressiveDelivery" $ }}
                   key: {{ $key }}
             {{- end }}
-        {{- if .Values.ingress.create }}
+        {{- if .Values.progressiveDelivery.ingress.create }}
         - name: crt-mounter
           securityContext:
             allowPrivilegeEscalation: false
@@ -82,7 +82,7 @@ spec:
               readOnly: true
         {{- end }}
       volumes:
-        {{- if .Values.envSecret }}
+        {{- if .Values.progressiveDelivery.deployment.envSecret }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
@@ -90,7 +90,7 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
         {{- end }}
-        {{- if .Values.ingress.create }}
+        {{- if .Values.progressiveDelivery.ingress.create }}
         ### ingress tls cert
         - name: secrets-store-inline-crt
           csi:
