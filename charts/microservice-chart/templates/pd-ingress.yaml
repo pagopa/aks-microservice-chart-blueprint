@@ -8,6 +8,18 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: {{ .Values.ingress.forceSslRedirect | quote }}
+    {{- if .Values.progressiveDelivery.ingress.canary.type }}
+    nginx.ingress.kubernetes.io/canary: "true"
+    {{- end }}
+    {{- if eq .Values.progressiveDelivery.ingress.canary.type "weight" }}
+    nginx.ingress.kubernetes.io/canary-weight: {{ .Values.progressiveDelivery.ingress.canary.percent }}
+    {{- end }}
+    {{- if eq .Values.progressiveDelivery.ingress.canary.type "cookie" }}
+    nginx.ingress.kubernetes.io/canary-by-cookie: {{ .Values.progressiveDelivery.ingress.canary.value }}
+    {{- end }}
+    {{- if eq .Values.progressiveDelivery.ingress.canary.type "header" }}
+    nginx.ingress.kubernetes.io/canary-by-header-pattern: {{ .Values.progressiveDelivery.ingress.canary.pattern }}
+    {{- end }}
 spec:
   ingressClassName: nginx
   rules:

@@ -5,8 +5,15 @@ fullnameOverride: ""
 progressiveDelivery:
   ingress:
     create: true
-    weighed:
-      weight: 0
+    canary:
+      type: "weight"
+      percent: 10
+    # canary:
+    #   type: cookie
+    #   value: users_from_London
+    # canary:
+    #   type: header
+    #   pattern: "canary"
   service:
     create: true
   deployment:
