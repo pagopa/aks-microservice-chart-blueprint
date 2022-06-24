@@ -1,11 +1,11 @@
-{{- if and .Values.progressiveDelivery.create .Values.progressiveDelivery.deployment.envConfig -}}
+{{- if and .Values.canaryDelivery.create .Values.canaryDelivery.deployment.envConfig -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "microservice-chart.fullnameProgressiveDelivery" . }}
+  name: {{ include "microservice-chart.fullnamecanaryDelivery" . }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "microservice-chart.labelsProgressiveDelivery" . | nindent 4 }}
+    {{- include "microservice-chart.labelscanaryDelivery" . | nindent 4 }}
 data:
-  {{- toYaml .Values.progressiveDelivery.deployment.envConfig | nindent 2 }}
+  {{- toYaml .Values.canaryDelivery.deployment.envConfig | nindent 2 }}
 {{- end }}

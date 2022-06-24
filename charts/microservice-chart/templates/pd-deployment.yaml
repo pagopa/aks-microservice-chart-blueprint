@@ -1,18 +1,18 @@
-{{- if and .Values.progressiveDelivery.create  .Values.progressiveDelivery.deployment.create -}}
+{{- if and .Values.canaryDelivery.create  .Values.canaryDelivery.deployment.create -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "microservice-chart.fullnameProgressiveDelivery" . }}
+  name: {{ include "microservice-chart.fullnamecanaryDelivery" . }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "microservice-chart.labelsProgressiveDelivery" . | nindent 4 }}
+    {{- include "microservice-chart.labelscanaryDelivery" . | nindent 4 }}
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
   replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
-      {{- include "microservice-chart.selectorLabelsProgressiveDelivery" . | nindent 6 }}
+      {{- include "microservice-chart.selectorLabelscanaryDelivery" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -21,7 +21,7 @@ spec:
       {{- end }}
       labels:
         aadpodidbinding: "{{ .Values.namespace }}-pod-identity"
-        {{- include "microservice-chart.selectorLabelsProgressiveDelivery" . | nindent 8 }}
+        {{- include "microservice-chart.selectorLabelscanaryDelivery" . | nindent 8 }}
     spec:
       automountServiceAccountToken: false
       serviceAccountName: {{ include "microservice-chart.serviceAccountName" . }}
@@ -31,8 +31,8 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.progressiveDelivery.deployment.image.repository }}:{{ .Values.progressiveDelivery.deployment.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.progressiveDelivery.deployment.image.pullPolicy }}
+          image: "{{ .Values.canaryDelivery.deployment.image.repository }}:{{ .Values.canaryDelivery.deployment.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.canaryDelivery.deployment.image.pullPolicy }}
           ports:
             - name: app-port-{{ .Values.service.port }}
               containerPort: {{ .Values.service.port }}
@@ -43,28 +43,28 @@ spec:
 {{ toYaml .Values.readinessProbe | indent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.progressiveDelivery.deployment.envSecret }}
+          {{- if .Values.canaryDelivery.deployment.envSecret }}
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
           {{- end }}
           env:
-            {{- range $name, $value := .Values.progressiveDelivery.deployment.envSecret }}
+            {{- range $name, $value := .Values.canaryDelivery.deployment.envSecret }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $value }}
             {{- end }}
-            {{- range $key, $val := .Values.progressiveDelivery.deployment.envConfig }}
+            {{- range $key, $val := .Values.canaryDelivery.deployment.envConfig }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "microservice-chart.fullnameProgressiveDelivery" $ }}
+                  name: {{ include "microservice-chart.fullnamecanaryDelivery" $ }}
                   key: {{ $key }}
             {{- end }}
-        {{- if .Values.progressiveDelivery.ingress.create }}
+        {{- if .Values.canaryDelivery.ingress.create }}
         - name: crt-mounter
           securityContext:
             allowPrivilegeEscalation: false
@@ -83,7 +83,7 @@ spec:
               readOnly: true
         {{- end }}
       volumes:
-        {{- if .Values.progressiveDelivery.deployment.envSecret }}
+        {{- if .Values.canaryDelivery.deployment.envSecret }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
@@ -91,7 +91,7 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
         {{- end }}
-        {{- if .Values.progressiveDelivery.ingress.create }}
+        {{- if .Values.canaryDelivery.ingress.create }}
         ### ingress tls cert
         - name: secrets-store-inline-crt
           csi:

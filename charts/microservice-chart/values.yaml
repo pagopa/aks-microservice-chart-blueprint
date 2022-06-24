@@ -2,30 +2,30 @@ namespace: ""
 nameOverride: ""
 fullnameOverride: ""
 
-progressiveDelivery:
-  create: true
-  ingress:
-    create: true
-    # canary:
-    #   type: bluegreen
-    canary:
-      type: header
-      headerName: canary
-      headerValue: pagopa
-      weightPercent: 10
-  service:
-    create: true
-  deployment:
-    create: true
-    image:
-      repository: ghcr.io/pagopa/devops-java-springboot-color
-      tag: 0.7.1
-      pullPolicy: Always
-    envConfig:
-      MY_APP_COLOR: "blue"
-      progressive-delivery: "ok"
-    envSecret:
-      aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
+# canaryDelivery:
+#   create: false
+#   ingress:
+#     create: true
+#     # canary:
+#     #   type: bluegreen
+#     canary:
+#       type: header
+#       headerName: canary
+#       headerValue: pagopa
+#       weightPercent: 10
+#   service:
+#     create: true
+#   deployment:
+#     create: true
+#     image:
+#       repository: ghcr.io/pagopa/devops-java-springboot-color
+#       tag: 0.7.1
+#       pullPolicy: Always
+#     envConfig:
+#       MY_APP_COLOR: "blue"
+#       progressive-delivery: "ok"
+#     envSecret:
+#       aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
 
 image:
   repository: ""
