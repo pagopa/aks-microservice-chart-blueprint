@@ -1,4 +1,4 @@
-{{- if .Values.progressiveDelivery.deployment.create -}}
+{{- if and .Values.progressiveDelivery.create  .Values.progressiveDelivery.deployment.create -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

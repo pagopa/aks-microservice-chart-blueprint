@@ -1,4 +1,4 @@
-{{- if .Values.progressiveDelivery.ingress.create -}}
+{{- if and .Values.progressiveDelivery.create .Values.progressiveDelivery.ingress.create -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -8,17 +8,10 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: {{ .Values.ingress.forceSslRedirect | quote }}
-    {{- if .Values.progressiveDelivery.ingress.canary.type }}
+    {{- if and .Values.progressiveDelivery.ingress.canary (eq .Values.progressiveDelivery.ingress.canary.type "header") }}
     nginx.ingress.kubernetes.io/canary: "true"
-    {{- end }}
-    {{- if eq .Values.progressiveDelivery.ingress.canary.type "weight" }}
-    nginx.ingress.kubernetes.io/canary-weight: {{ .Values.progressiveDelivery.ingress.canary.percent|quote }}
-    {{- end }}
-    {{- if eq .Values.progressiveDelivery.ingress.canary.type "cookie" }}
-    nginx.ingress.kubernetes.io/canary-by-cookie: {{ .Values.progressiveDelivery.ingress.canary.value }}
-    {{- end }}
-    {{- if eq .Values.progressiveDelivery.ingress.canary.type "header" }}
-    nginx.ingress.kubernetes.io/canary-by-header: {{ .Values.progressiveDelivery.ingress.canary.header|quote }}
+    nginx.ingress.kubernetes.io/canary-weight: {{ .Values.progressiveDelivery.ingress.canary.weightPercent|quote }}
+    nginx.ingress.kubernetes.io/canary-by-header: {{ .Values.progressiveDelivery.ingress.canary.headerName|quote }}
     nginx.ingress.kubernetes.io/canary-by-header-value: {{ .Values.progressiveDelivery.ingress.canary.headerValue|quote }}
     {{- end }}
 spec:
@@ -29,12 +22,12 @@ spec:
         paths:
           - backend:
               service:
-                name: pd-{{ include "microservice-chart.fullname" . }}
+                name: beta-{{ include "microservice-chart.fullname" . }}
                 port:
                   number: {{ .Values.service.port }}
             pathType: {{ .Values.ingress.pathType }}
             {{- if eq .Values.progressiveDelivery.ingress.canary.type "bluegreen" }}
-            path: /pd{{ .Values.ingress.path }}
+            path: /beta{{ .Values.ingress.path }}
             {{- else }}
             path: {{ .Values.ingress.path }}
             {{- end }}

@@ -1,4 +1,4 @@
-{{- if .Values.progressiveDelivery.service.create -}}
+{{- if and .Values.progressiveDelivery.create .Values.progressiveDelivery.service.create -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,7 +9,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - name: pd-app-port-{{ .Values.service.port }}-svc
+    - name: beta-app-port-{{ .Values.service.port }}-svc
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.port }}
       protocol: TCP

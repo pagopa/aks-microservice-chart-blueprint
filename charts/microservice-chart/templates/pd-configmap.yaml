@@ -1,4 +1,4 @@
-{{- if and .Values.progressiveDelivery.deployment.envConfig -}}
+{{- if and .Values.progressiveDelivery.create .Values.progressiveDelivery.deployment.envConfig -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:

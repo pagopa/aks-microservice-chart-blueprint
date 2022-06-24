@@ -30,7 +30,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "microservice-chart.fullnameProgressiveDelivery" -}}
-pd-{{ include "microservice-chart.fullname" . }}
+beta-{{ include "microservice-chart.fullname" . }}
 {{- end }}
 
 {{/*
