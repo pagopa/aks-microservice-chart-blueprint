@@ -9,6 +9,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
+  replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
       {{- include "microservice-chart.selectorLabels" . | nindent 6 }}

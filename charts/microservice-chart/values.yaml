@@ -5,15 +5,15 @@ fullnameOverride: ""
 progressiveDelivery:
   ingress:
     create: true
+    # canary:
+    #   type: weight
+    #   percent: 1
+    # canary:
+    #   type: bluegreen
     canary:
-      type: "weight"
-      percent: 10
-    # canary:
-    #   type: cookie
-    #   value: users_from_London
-    # canary:
-    #   type: header
-    #   pattern: "canary"
+      type: header
+      header: canary
+      headerValue: pagopa
   service:
     create: true
   deployment:
@@ -51,6 +51,7 @@ readinessProbe:
 
 deployment:
   create: true
+  replicas: 5
 
 service:
   create: true

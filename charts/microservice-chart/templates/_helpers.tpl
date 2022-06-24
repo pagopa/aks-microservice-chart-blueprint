@@ -70,6 +70,7 @@ Selector labels
 {{- define "microservice-chart.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+progressiveDelivery: "false"
 {{- end }}
 
 {{/*
