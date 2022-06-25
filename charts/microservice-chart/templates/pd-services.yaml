@@ -1,0 +1,19 @@
+{{- if and .Values.canaryDelivery.create .Values.canaryDelivery.service.create -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "microservice-chart.fullnameCanaryDelivery" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labelsCanaryDelivery" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: beta-app-port-{{ .Values.service.port }}-svc
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP
+  selector:
+    {{- include "microservice-chart.selectorLabelsCanaryDelivery" . | nindent 4 }}
+{{- end }}
+

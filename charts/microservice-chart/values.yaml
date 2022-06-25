@@ -1,42 +1,153 @@
+# -- Namespace in which deploy the microservice
 namespace: ""
+
+# -- Helm chart name override
 nameOverride: ""
+
+# -- Helm chart fullname override
 fullnameOverride: ""
 
+# -- This section allow to configure canary deployment
+# @default -- -
+canaryDelivery:
+  # -- (bool) Enable Canary/BlueGreen Deployment
+  create: false
+  # -- This section allow to configure ingress inside canary deployment
+  # @default -- -
+  ingress:
+    # -- (bool) Enable Ingress for Canary/BlueGreen Deployment
+    create: true
+#     # canary:
+#     #   type: bluegreen
+    # -- Configure how ingress canary should be
+    # @default -- -
+    canary:
+      # -- The type of canary can be header|bluegreen
+      type: header
+      # -- the header name used to call the canary deployment
+      headerName: canary
+      # -- the header values used to call the canary deployment
+      headerValue: pagopa
+      # -- the weight percent used into canary deployment. Can be used toghether with header
+      weightPercent: 10
+  service:
+    # -- (bool) Enable Service for Canary/BlueGreen Deployment
+    create: true
+  deployment:
+    # -- (bool) Enable Deployment for Canary/BlueGreen Deployment
+    create: true
+    image:
+      # -- Docker reposity for the container canary
+      repository: ghcr.io/pagopa/devops-java-springboot-color
+      # -- Container TAG
+      tag: 0.7.1
+      # -- Pull policy to use
+      pullPolicy: Always
+    # -- Environment config to use for the canary container
+    envConfig: {}
+    # -- Environment secrets to use for the canary container
+    envSecret: {}
+
+# -- Configure deployment 
+# @default -- -
+deployment:
+  # -- (bool) create the deployment manifest
+  create: true
+  # -- (int) Number of replicas for this deployment
+  replicas: 1
+
+service:
+  # -- (bool) create the service manifest
+  create: true
+  # -- Which type of service to use
+  type: ClusterIP
+  # -- (int) Which port use (! this port is used even inside the deployment)
+  port: 80
+
 image:
+  # -- Docker reposity for the container
   repository: ""
+  # -- Container TAG
   tag: "v0.0.0"
+  # -- Pull policy to use
   pullPolicy: Always
 
 livenessProbe:
   httpGet:
+    # -- This is the liveness check endpoint
     path: /healthz/live
     port: 80
+  # -- (int) Initial delay before start checking
   initialDelaySeconds: 60
+  # -- (int) Numbers of failures before consider the pod fail
   failureThreshold: 6
+  # -- (int) Numbers of seconds between one failure and other
   periodSeconds: 10
 
 readinessProbe:
   httpGet:
+    # -- This is the readiness check endpoint
     path: /healthz/ready
     port: 80
+  # -- (int) Initial delay before start checking
   initialDelaySeconds: 60
+  # -- (int) Numbers of failures before consider the pod fail
   failureThreshold: 6
+  # -- (int) Numbers of seconds between one failure and other
   periodSeconds: 10
 
-deployment:
+# -- POD resources section
+# @default -- -
+resources:
+  # -- request is mandatory
+  requests:
+    memory: "96Mi"
+    cpu: "40m"
+  # -- limits is mandatory
+  limits:
+    memory: "128Mi"
+    cpu: "150m"
+
+autoscaling:
+  enable: false
+  minReplica: 1
+  maxReplica: 1
+  pollingInterval: 10 # seconds
+  cooldownPeriod: 300 # seconds
+  triggers: []
+
+# -- Environment config to use for the canary container
+envConfig: {}
+
+#
+# Secrets
+#
+# -- Environment secrets to use for the canary container
+envSecret: {}
+
+# -- Secrect provider class allow to connect to azure kv
+secretProviderClass:
+  # -- (bool) create or not the secret provider class manifest
   create: true
 
-service:
-  create: true
-  type: ClusterIP
-  port: 80
+# -- Azure KeyVault connection configuration
+keyvault:
+  # -- KV name
+  name: ""
+  # -- Tenant id (uuid)
+  tenantId: ""
 
 ingress:
+  # -- (bool) Create or not the ingress manifest
   create: false
+  # -- Hostname for the ingress like https://idpay.pagopa.it 
   host: ""
-  path: ""
+  # -- Path where the application can response like: `/app`
+  path: "/"
   pathType: ImplementationSpecific
+  # -- (bool) if force ssl redirect is enabled
   forceSslRedirect: true
+  # -- the rewrite target for ingress
   rewriteTarget: /$1
 
 serviceAccount:
@@ -53,35 +164,7 @@ podSecurityContext:
 securityContext:
   allowPrivilegeEscalation: false
 
-resources:
-  requests:
-    memory: "96Mi"
-    cpu: "40m"
-  limits:
-    memory: "128Mi"
-    cpu: "150m"
 
-autoscaling:
-  enable: false
-  minReplica: 1
-  maxReplica: 1
-  pollingInterval: 10 # seconds
-  cooldownPeriod: 300 # seconds
-  triggers: []
-
-envConfig: {}
-
-#
-# Secrets
-#
-envSecret: {}
-
-secretProviderClass:
-  create: true
-
-keyvault:
-  name: ""
-  tenantId: ""
 ###
 
 nodeSelector: {}

@@ -1,0 +1,11 @@
+{{- if and .Values.canaryDelivery.create .Values.canaryDelivery.deployment.envConfig -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "microservice-chart.fullnameCanaryDelivery" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labelsCanaryDelivery" . | nindent 4 }}
+data:
+  {{- toYaml .Values.canaryDelivery.deployment.envConfig | nindent 2 }}
+{{- end }}
