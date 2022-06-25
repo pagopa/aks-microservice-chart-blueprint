@@ -1,11 +1,11 @@
 repos:
-  # - repo: https://github.com/norwoodj/helm-docs
-  #   rev: v1.10.0
-  #   hooks:
-  #     - id: helm-docs
-  #       args:
-  #         # Make the tool search for charts only under the `example-charts` directory
-  #         - --chart-search-root=charts/microservice-chart
+  - repo: https://github.com/norwoodj/helm-docs
+    rev: v1.10.0
+    hooks:
+      - id: helm-docs
+        args:
+          # Make the tool search for charts only under the `example-charts` directory
+          - --chart-search-root=charts/microservice-chart
   - repo: https://github.com/gruntwork-io/pre-commit
     rev: v0.1.17 # Get the latest from: https://github.com/gruntwork-io/pre-commit/releases
     hooks:

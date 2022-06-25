@@ -76,6 +76,7 @@ livenessProbe:
   httpGet:
     # -- This is the liveness check endpoint
     path: /healthz/live
+    port: 80
   # -- (int) Initial delay before start checking
   initialDelaySeconds: 60
   # -- (int) Numbers of failures before consider the pod fail
@@ -87,6 +88,7 @@ readinessProbe:
   httpGet:
     # -- This is the readiness check endpoint
     path: /healthz/ready
+    port: 80
   # -- (int) Initial delay before start checking
   initialDelaySeconds: 60
   # -- (int) Numbers of failures before consider the pod fail
