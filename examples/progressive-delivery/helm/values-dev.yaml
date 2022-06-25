@@ -3,30 +3,38 @@ microservice-chart:
   nameOverride: ""
   fullnameOverride: ""
 
-canaryDelivery:
-  create: false
-  ingress:
+  canaryDelivery:
     create: true
-    # canary:
-    #   type: bluegreen
-    canary:
-      type: header
-      headerName: canary
-      headerValue: pagopa
-      weightPercent: 10
-  service:
-    create: true
+    ingress:
+      create: true
+      # canary:
+      #   type: bluegreen
+      canary:
+        type: header
+        headerName: canary
+        headerValue: pagopa
+        weightPercent: 10
+    service:
+      create: true
+    deployment:
+      create: true
+      image:
+        repository: ghcr.io/pagopa/devops-java-springboot-color
+        tag: 0.7.1
+        pullPolicy: Always
+      envConfig:
+        MY_APP_COLOR: "blue"
+        progressive-delivery: "ok"
+      envSecret:
+        aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
+
   deployment:
     create: true
-    image:
-      repository: ghcr.io/pagopa/devops-java-springboot-color
-      tag: 0.7.1
-      pullPolicy: Always
-    envConfig:
-      MY_APP_COLOR: "blue"
-      progressive-delivery: "ok"
-    envSecret:
-      aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
+
+  service:
+    create: true
+    type: ClusterIP
+    port: 8080
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
@@ -49,18 +57,10 @@ canaryDelivery:
     failureThreshold: 6
     periodSeconds: 10
 
-  deployment:
-    create: true
-
-  service:
-    create: true
-    type: ClusterIP
-    port: 8080
-
   ingress:
     create: true
     host: "dev01.idpay.internal.dev.cstar.pagopa.it"
-    path: /idpay/progressing-delivery/(.*)
+    path: /idpay/progressive-delivery/(.*)
 
   serviceAccount:
     create: false
