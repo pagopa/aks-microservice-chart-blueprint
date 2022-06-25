@@ -108,7 +108,7 @@ Here you can find a result of the template [final result](docs/FINAL_RESULT_EXAM
 
 ## Examples
 
-In the [`example`](example/) folder, you can find a working examples. 
+In the [`example`](example/) folder, you can find a working examples.
 
 ### Azure function App
 
@@ -144,7 +144,9 @@ This can be usefull to check how works aks with two applications
 We strongly suggest performing SAST on your microservice Helm chart. You could
 look at this [GitHub Action](.github/workflows/check_helm.yml).
 
-### Configuration Properties
+### Yaml chart configuration properties
+
+see [Microservice Chart configuration](charts/microservice-chart/README.md).
 
 | Parameter | Description | Mandatory | Default |
 | --- | --- | --- | --- |
