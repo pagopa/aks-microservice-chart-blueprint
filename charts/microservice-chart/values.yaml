@@ -2,10 +2,10 @@ namespace: ""
 nameOverride: ""
 fullnameOverride: ""
 
-# canaryDelivery:
-#   create: false
-#   ingress:
-#     create: true
+canaryDelivery:
+  create: false
+  ingress:
+    create: true
 #     # canary:
 #     #   type: bluegreen
 #     canary:
@@ -13,10 +13,10 @@ fullnameOverride: ""
 #       headerName: canary
 #       headerValue: pagopa
 #       weightPercent: 10
-#   service:
-#     create: true
-#   deployment:
-#     create: true
+  service:
+    create: true
+  deployment:
+    create: true
 #     image:
 #       repository: ghcr.io/pagopa/devops-java-springboot-color
 #       tag: 0.7.1
@@ -26,6 +26,15 @@ fullnameOverride: ""
 #       progressive-delivery: "ok"
 #     envSecret:
 #       aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
+
+deployment:
+  create: true
+  replicas: 1
+
+service:
+  create: true
+  type: ClusterIP
+  port: 80
 
 image:
   repository: ""
@@ -47,15 +56,6 @@ readinessProbe:
   initialDelaySeconds: 60
   failureThreshold: 6
   periodSeconds: 10
-
-deployment:
-  create: true
-  replicas: 5
-
-service:
-  create: true
-  type: ClusterIP
-  port: 80
 
 ingress:
   create: false
