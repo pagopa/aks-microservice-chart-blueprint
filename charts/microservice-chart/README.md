@@ -51,6 +51,7 @@ A Helm chart for PagoPA microservice
 | keyvault.tenantId | string | `""` | Tenant id (uuid) |
 | livenessProbe.failureThreshold | int | `6` | Numbers of failures before consider the pod fail |
 | livenessProbe.httpGet.path | string | `"/healthz/live"` | This is the liveness check endpoint |
+| livenessProbe.httpGet.port | int | `80` |  |
 | livenessProbe.initialDelaySeconds | int | `60` | Initial delay before start checking |
 | livenessProbe.periodSeconds | int | `10` | Numbers of seconds between one failure and other |
 | nameOverride | string | `""` | Helm chart name override |
@@ -60,6 +61,7 @@ A Helm chart for PagoPA microservice
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | readinessProbe.failureThreshold | int | `6` | Numbers of failures before consider the pod fail |
 | readinessProbe.httpGet.path | string | `"/healthz/ready"` | This is the readiness check endpoint |
+| readinessProbe.httpGet.port | int | `80` |  |
 | readinessProbe.initialDelaySeconds | int | `60` | Initial delay before start checking |
 | readinessProbe.periodSeconds | int | `10` | Numbers of seconds between one failure and other |
 | resources | object | - | POD resources section |
