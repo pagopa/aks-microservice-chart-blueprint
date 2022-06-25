@@ -29,7 +29,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "microservice-chart.fullnamecanaryDelivery" -}}
+{{- define "microservice-chart.fullnameCanaryDelivery" -}}
 beta-{{ include "microservice-chart.fullname" . }}
 {{- end }}
 
@@ -55,9 +55,9 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Progressive Delivery Common labels
 */}}
-{{- define "microservice-chart.labelscanaryDelivery" -}}
+{{- define "microservice-chart.labelsCanaryDelivery" -}}
 helm.sh/chart: {{ include "microservice-chart.chart" . }}
-{{ include "microservice-chart.selectorLabelscanaryDelivery" . }}
+{{ include "microservice-chart.selectorLabelsCanaryDelivery" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -76,7 +76,7 @@ canaryDelivery: "false"
 {{/*
 Progressive Delivery Selector labels
 */}}
-{{- define "microservice-chart.selectorLabelscanaryDelivery" -}}
+{{- define "microservice-chart.selectorLabelsCanaryDelivery" -}}
 app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 canaryDelivery: "true"

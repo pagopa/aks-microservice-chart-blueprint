@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "microservice-chart.fullnamecanaryDelivery" . }}
+  name: {{ include "microservice-chart.fullnameCanaryDelivery" . }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "microservice-chart.labelscanaryDelivery" . | nindent 4 }}
+    {{- include "microservice-chart.labelsCanaryDelivery" . | nindent 4 }}
 data:
   {{- toYaml .Values.canaryDelivery.deployment.envConfig | nindent 2 }}
 {{- end }}

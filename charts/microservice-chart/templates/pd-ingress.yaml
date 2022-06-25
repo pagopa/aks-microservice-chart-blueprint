@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "microservice-chart.fullnamecanaryDelivery" . }}
+  name: {{ include "microservice-chart.fullnameCanaryDelivery" . }}
   namespace: {{ .Values.namespace }}
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"

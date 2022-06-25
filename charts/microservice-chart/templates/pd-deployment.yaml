@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "microservice-chart.fullnamecanaryDelivery" . }}
+  name: {{ include "microservice-chart.fullnameCanaryDelivery" . }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "microservice-chart.labelscanaryDelivery" . | nindent 4 }}
+    {{- include "microservice-chart.labelsCanaryDelivery" . | nindent 4 }}
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
   replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
-      {{- include "microservice-chart.selectorLabelscanaryDelivery" . | nindent 6 }}
+      {{- include "microservice-chart.selectorLabelsCanaryDelivery" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -21,7 +21,7 @@ spec:
       {{- end }}
       labels:
         aadpodidbinding: "{{ .Values.namespace }}-pod-identity"
-        {{- include "microservice-chart.selectorLabelscanaryDelivery" . | nindent 8 }}
+        {{- include "microservice-chart.selectorLabelsCanaryDelivery" . | nindent 8 }}
     spec:
       automountServiceAccountToken: false
       serviceAccountName: {{ include "microservice-chart.serviceAccountName" . }}
@@ -61,7 +61,7 @@ spec:
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "microservice-chart.fullnamecanaryDelivery" $ }}
+                  name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
                   key: {{ $key }}
             {{- end }}
         {{- if .Values.canaryDelivery.ingress.create }}
