@@ -31,7 +31,7 @@ A Helm chart for PagoPA microservice
 | canaryDelivery.ingress.canary.weightPercent | int | `10` | the weight percent used into canary deployment. Can be used toghether with header |
 | canaryDelivery.ingress.create | bool | `true` | Enable Ingress for Canary/BlueGreen Deployment |
 | canaryDelivery.service.create | bool | `true` | Enable Service for Canary/BlueGreen Deployment |
-| deployment | object | "" | Configure deployment  |
+| deployment | object | - | Configure deployment  |
 | deployment.create | bool | `true` | create the deployment manifest |
 | deployment.replicas | int | `1` | Number of replicas for this deployment |
 | envConfig | object | `{}` | Environment config to use for the canary container |

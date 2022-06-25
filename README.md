@@ -16,6 +16,16 @@ Some of the key benefits of this chart are:
 
 To see the entire architecture please see this page [architecture](docs/ARCHITECTURE.md)
 
+## Pre requisites
+
+- helm & kubernetes
+
+### Static analysis
+
+Install:
+
+- <https://github.com/norwoodj/helm-docs>
+
 ## Installation
 
 This is the official and recommended method to adopt this chart.
