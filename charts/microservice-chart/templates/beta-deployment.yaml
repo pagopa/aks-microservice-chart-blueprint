@@ -43,25 +43,47 @@ spec:
 {{ toYaml .Values.readinessProbe | indent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.canaryDelivery.deployment.envSecret }}
+          {{- if .Values.envSecret }}
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
           {{- end }}
+          {{- if .Values.canaryDelivery.deployment.envSecret }}
+          volumeMounts:
+            - name: beta-secrets-store-inline
+              mountPath: "/mnt/beta-secrets-store"
+              readOnly: true
+          {{- end }}
           env:
-            {{- range $name, $value := .Values.canaryDelivery.deployment.envSecret }}
+            # secrets
+            {{- range $name, $value := .Values.envSecret }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $value }}
             {{- end }}
+            {{- range $name, $value := .Values.canaryDelivery.deployment.envSecret }}
+            - name: {{ $name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
+                  key: {{ $value }}
+            {{- end }}
+            # config map
             {{- range $key, $val := .Values.canaryDelivery.deployment.envConfig }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
                   name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- range $key, $val := .Values.envConfig }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
             {{- end }}
         {{- if .Values.canaryDelivery.ingress.create }}
@@ -84,6 +106,14 @@ spec:
         {{- end }}
       volumes:
         {{- if .Values.canaryDelivery.deployment.envSecret }}
+        - name: beta-secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
+        {{- end }}
+        {{- if .Values.envSecret }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
@@ -91,8 +121,8 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
         {{- end }}
-        {{- if .Values.canaryDelivery.ingress.create }}
         ### ingress tls cert
+        {{- if .Values.canaryDelivery.ingress.create }}
         - name: secrets-store-inline-crt
           csi:
             driver: secrets-store.csi.k8s.io
