@@ -13,7 +13,7 @@ microservice-chart:
         type: header
         headerName: canary
         headerValue: pagopa
-        weightPercent: 10
+        weightPercent: 50
     service:
       create: true
     deployment:
