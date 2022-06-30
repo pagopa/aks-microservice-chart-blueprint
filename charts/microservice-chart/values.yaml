@@ -10,12 +10,12 @@ fullnameOverride: ""
 # -- This section allow to configure canary deployment
 # @default -- -
 canaryDelivery:
-  # -- (bool) Enable Canary/BlueGreen Deployment
+  # -- (bool) Beta/Enable Canary/BlueGreen Deployment
   create: false
   # -- This section allow to configure ingress inside canary deployment
   # @default -- -
   ingress:
-    # -- (bool) Enable Ingress for Canary/BlueGreen Deployment
+    # -- (bool) Beta/Enable Ingress for Canary/BlueGreen Deployment
     create: true
 #     # canary:
 #     #   type: bluegreen
@@ -31,10 +31,12 @@ canaryDelivery:
       # -- the weight percent used into canary deployment. Can be used toghether with header
       weightPercent: 10
   service:
-    # -- (bool) Enable Service for Canary/BlueGreen Deployment
+    # -- (bool) Beta/Enable Service for Canary/BlueGreen Deployment
     create: true
+  # -- Beta/Deployment
+  # @default -- -
   deployment:
-    # -- (bool) Enable Deployment for Canary/BlueGreen Deployment
+    # -- (bool) Beta/Enable Deployment for Canary/BlueGreen Deployment
     create: true
     image:
       # -- Docker reposity for the container canary
@@ -47,6 +49,11 @@ canaryDelivery:
     envConfig: {}
     # -- Environment secrets to use for the canary container
     envSecret: {}
+  # -- Beta/SecretProviderClass
+  # @default -- -
+  secretProviderClass:
+    # -- (bool) Beta/create or not the secret provider class manifest
+    create: true
 
 # -- Configure deployment 
 # @default -- -
@@ -126,17 +133,21 @@ envConfig: {}
 envSecret: {}
 
 # -- Secrect provider class allow to connect to azure kv
+# @default -- -
 secretProviderClass:
   # -- (bool) create or not the secret provider class manifest
   create: true
 
 # -- Azure KeyVault connection configuration
+# @default -- -
 keyvault:
   # -- KV name
   name: ""
   # -- Tenant id (uuid)
   tenantId: ""
 
+# -- Ingress configuration
+# @default -- -
 ingress:
   # -- (bool) Create or not the ingress manifest
   create: false
@@ -163,7 +174,6 @@ podSecurityContext:
 
 securityContext:
   allowPrivilegeEscalation: false
-
 
 ###
 
