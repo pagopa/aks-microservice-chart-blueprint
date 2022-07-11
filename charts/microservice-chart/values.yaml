@@ -55,6 +55,10 @@ canaryDelivery:
     # -- (bool) Beta/create or not the secret provider class manifest
     create: true
 
+#
+# Deployment
+# 
+
 # -- Configure deployment 
 # @default -- -
 deployment:
@@ -63,13 +67,9 @@ deployment:
   # -- (int) Number of replicas for this deployment
   replicas: 1
 
-service:
-  # -- (bool) create the service manifest
-  create: true
-  # -- Which type of service to use
-  type: ClusterIP
-  # -- (int) Which port use (! this port is used even inside the deployment)
-  port: 80
+# -- Configure values from config maps external to chart. E.g already present into cluster, see documentation
+# @default -- {}
+envConfigMapExternals: {}
 
 image:
   # -- Docker reposity for the container
@@ -115,36 +115,30 @@ resources:
     memory: "128Mi"
     cpu: "150m"
 
-autoscaling:
-  enable: false
-  minReplica: 1
-  maxReplica: 1
-  pollingInterval: 10 # seconds
-  cooldownPeriod: 300 # seconds
-  triggers: []
-
 # -- Environment config to use for the canary container
 envConfig: {}
 
-#
-# Secrets
-#
 # -- Environment secrets to use for the canary container
 envSecret: {}
 
-# -- Secrect provider class allow to connect to azure kv
-# @default -- -
-secretProviderClass:
-  # -- (bool) create or not the secret provider class manifest
-  create: true
+podAnnotations: {}
 
-# -- Azure KeyVault connection configuration
-# @default -- -
-keyvault:
-  # -- KV name
-  name: ""
-  # -- Tenant id (uuid)
-  tenantId: ""
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+#
+# Network
+#
 
 # -- Ingress configuration
 # @default -- -
@@ -161,24 +155,44 @@ ingress:
   # -- the rewrite target for ingress
   rewriteTarget: /$1
 
+service:
+  # -- (bool) create the service manifest
+  create: true
+  # -- Which type of service to use
+  type: ClusterIP
+  # -- (int) Which port use (! this port is used even inside the deployment)
+  port: 80
+
+#
+# Autoscaling
+#
+autoscaling:
+  enable: false
+  minReplica: 1
+  maxReplica: 1
+  pollingInterval: 10 # seconds
+  cooldownPeriod: 300 # seconds
+  triggers: []
+
+#
+# Pod identity and KV connection
+#
+
+# -- Secrect provider class allow to connect to azure kv
+# @default -- -
+secretProviderClass:
+  # -- (bool) create or not the secret provider class manifest
+  create: true
+
+# -- Azure KeyVault connection configuration
+# @default -- -
+keyvault:
+  # -- KV name
+  name: ""
+  # -- Tenant id (uuid)
+  tenantId: ""
+
 serviceAccount:
   create: false
   annotations: {}
   name: ""
-
-podAnnotations: {}
-
-podSecurityContext:
-  seccompProfile:
-    type: RuntimeDefault
-
-securityContext:
-  allowPrivilegeEscalation: false
-
-###
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}

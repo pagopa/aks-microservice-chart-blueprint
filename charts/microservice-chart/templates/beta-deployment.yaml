@@ -56,7 +56,7 @@ spec:
               readOnly: true
           {{- end }}
           env:
-            # secrets
+            # secrets from deployment
             {{- range $name, $value := .Values.envSecret }}
             - name: {{ $name }}
               valueFrom:
@@ -64,6 +64,7 @@ spec:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $value }}
             {{- end }}
+            # secrets from canary
             {{- range $name, $value := .Values.canaryDelivery.deployment.envSecret }}
             - name: {{ $name }}
               valueFrom:
@@ -71,7 +72,15 @@ spec:
                   name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
                   key: {{ $value }}
             {{- end }}
-            # config map
+            # config map values from main deployment
+            {{- range $key, $val := .Values.envConfig }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            # config map values from canary
             {{- range $key, $val := .Values.canaryDelivery.deployment.envConfig }}
             - name: {{ $key }}
               valueFrom:
@@ -79,12 +88,15 @@ spec:
                   name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
                   key: {{ $key }}
             {{- end }}
-            {{- range $key, $val := .Values.envConfig }}
-            - name: {{ $key }}
+            #external configmap values
+            {{- range $key, $valMap := .Values.envConfigMapExternals }}
+            {{- range $internKey, $internVal := $valMap }}
+            - name: {{ $internKey }}
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "microservice-chart.fullname" $ }}
-                  key: {{ $key }}
+                  name: {{ $key }}
+                  key: {{ $internVal }}
+            {{- end }}
             {{- end }}
         {{- if .Values.canaryDelivery.ingress.create }}
         - name: crt-mounter

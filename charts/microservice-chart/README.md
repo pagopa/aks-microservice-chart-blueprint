@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 1.18.0](https://img.shields.io/badge/Version-1.18.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 1.19.0](https://img.shields.io/badge/Version-1.19.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -38,6 +38,7 @@ A Helm chart for PagoPA microservice
 | deployment.create | bool | `true` | create the deployment manifest |
 | deployment.replicas | int | `1` | Number of replicas for this deployment |
 | envConfig | object | `{}` | Environment config to use for the canary container |
+| envConfigMapExternals | object | {} | Configure values from config maps external to chart. E.g already present into cluster, see documentation |
 | envSecret | object | `{}` | Environment secrets to use for the canary container |
 | fullnameOverride | string | `""` | Helm chart fullname override |
 | image.pullPolicy | string | `"Always"` | Pull policy to use |

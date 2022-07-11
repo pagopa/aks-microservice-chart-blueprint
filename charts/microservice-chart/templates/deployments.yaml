@@ -50,6 +50,7 @@ spec:
               readOnly: true
           {{- end }}
           env:
+            #secrets
             {{- range $name, $value := .Values.envSecret }}
             - name: {{ $name }}
               valueFrom:
@@ -57,12 +58,23 @@ spec:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $value }}
             {{- end }}
+            #configmap
             {{- range $key, $val := .Values.envConfig }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
+            {{- end }}
+            #external configmap values
+            {{- range $key, $valMap := .Values.envConfigMapExternals }}
+            {{- range $internKey, $internVal := $valMap }}
+            - name: {{ $internKey }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $key }}
+                  key: {{ $internVal }}
+            {{- end }}
             {{- end }}
         {{- if .Values.ingress.create }}
         - name: crt-mounter
