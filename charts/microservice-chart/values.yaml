@@ -80,9 +80,12 @@ image:
   pullPolicy: Always
 
 livenessProbe:
+  # -- httpGet will be put as is into deployment yaml
+  # @default -- -
   httpGet:
-    # -- This is the liveness check endpoint
+    # -- Live (health) path used by app
     path: /healthz/live
+    # -- Live (health) port used by app
     port: 80
   # -- (int) Initial delay before start checking
   initialDelaySeconds: 60
@@ -92,9 +95,12 @@ livenessProbe:
   periodSeconds: 10
 
 readinessProbe:
+  # -- httpGet will be put as is into deployment yaml
+  # @default -- -
   httpGet:
-    # -- This is the readiness check endpoint
+    # -- Ready (health) path used by app
     path: /healthz/ready
+    # -- Ready (health) port used by app
     port: 80
   # -- (int) Initial delay before start checking
   initialDelaySeconds: 60
@@ -130,10 +136,13 @@ podSecurityContext:
 securityContext:
   allowPrivilegeEscalation: false
 
+# -- K8s node selectors
 nodeSelector: {}
 
+# -- Pod taints toleration
 tolerations: []
 
+# -- Pod labels affinity
 affinity: {}
 
 #
@@ -166,12 +175,20 @@ service:
 #
 # Autoscaling
 #
+# -- Autoscaling using KEDA
+# @default -- -
 autoscaling:
+  # -- Enable Autoscaling
   enable: false
+  # -- Autoscaling minimum replicas
   minReplica: 1
+  # -- Autoscaling maximum replicas
   maxReplica: 1
+  # -- Autoscaling event polling intervall
   pollingInterval: 10 # seconds
+  # -- Autoscaling cooldown period
   cooldownPeriod: 300 # seconds
+  # -- Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/)
   triggers: []
 
 #
