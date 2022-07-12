@@ -31,6 +31,12 @@ microservice-chart:
   deployment:
     create: true
 
+  envConfigMapExternals:
+    progressive-delivery-mock-one:
+      PLAYER_INITIAL_LIVES_ENV: player_initial_lives
+      UI_PROPERTIES_FILE_NAME_ENV: ui_properties_file_name
+
+
   service:
     create: true
     type: ClusterIP

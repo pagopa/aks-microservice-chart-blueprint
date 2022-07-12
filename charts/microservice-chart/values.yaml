@@ -55,6 +55,10 @@ canaryDelivery:
     # -- (bool) Beta/create or not the secret provider class manifest
     create: true
 
+#
+# Deployment
+# 
+
 # -- Configure deployment 
 # @default -- -
 deployment:
@@ -63,13 +67,9 @@ deployment:
   # -- (int) Number of replicas for this deployment
   replicas: 1
 
-service:
-  # -- (bool) create the service manifest
-  create: true
-  # -- Which type of service to use
-  type: ClusterIP
-  # -- (int) Which port use (! this port is used even inside the deployment)
-  port: 80
+# -- Configure values from config maps external to chart. E.g already present into cluster, see documentation
+# @default -- {}
+envConfigMapExternals: {}
 
 image:
   # -- Docker reposity for the container
@@ -80,9 +80,12 @@ image:
   pullPolicy: Always
 
 livenessProbe:
+  # -- httpGet will be put as is into deployment yaml
+  # @default -- -
   httpGet:
-    # -- This is the liveness check endpoint
+    # -- Live (health) path used by app
     path: /healthz/live
+    # -- Live (health) port used by app
     port: 80
   # -- (int) Initial delay before start checking
   initialDelaySeconds: 60
@@ -92,9 +95,12 @@ livenessProbe:
   periodSeconds: 10
 
 readinessProbe:
+  # -- httpGet will be put as is into deployment yaml
+  # @default -- -
   httpGet:
-    # -- This is the readiness check endpoint
+    # -- Ready (health) path used by app
     path: /healthz/ready
+    # -- Ready (health) port used by app
     port: 80
   # -- (int) Initial delay before start checking
   initialDelaySeconds: 60
@@ -115,36 +121,33 @@ resources:
     memory: "128Mi"
     cpu: "150m"
 
-autoscaling:
-  enable: false
-  minReplica: 1
-  maxReplica: 1
-  pollingInterval: 10 # seconds
-  cooldownPeriod: 300 # seconds
-  triggers: []
-
 # -- Environment config to use for the canary container
 envConfig: {}
 
-#
-# Secrets
-#
 # -- Environment secrets to use for the canary container
 envSecret: {}
 
-# -- Secrect provider class allow to connect to azure kv
-# @default -- -
-secretProviderClass:
-  # -- (bool) create or not the secret provider class manifest
-  create: true
+podAnnotations: {}
 
-# -- Azure KeyVault connection configuration
-# @default -- -
-keyvault:
-  # -- KV name
-  name: ""
-  # -- Tenant id (uuid)
-  tenantId: ""
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+
+# -- K8s node selectors
+nodeSelector: {}
+
+# -- Pod taints toleration
+tolerations: []
+
+# -- Pod labels affinity
+affinity: {}
+
+#
+# Network
+#
 
 # -- Ingress configuration
 # @default -- -
@@ -161,24 +164,52 @@ ingress:
   # -- the rewrite target for ingress
   rewriteTarget: /$1
 
+service:
+  # -- (bool) create the service manifest
+  create: true
+  # -- Which type of service to use
+  type: ClusterIP
+  # -- (int) Which port use (! this port is used even inside the deployment)
+  port: 80
+
+#
+# Autoscaling
+#
+# -- Autoscaling using KEDA
+# @default -- -
+autoscaling:
+  # -- Enable Autoscaling
+  enable: false
+  # -- Autoscaling minimum replicas
+  minReplica: 1
+  # -- Autoscaling maximum replicas
+  maxReplica: 1
+  # -- Autoscaling event polling intervall
+  pollingInterval: 10 # seconds
+  # -- Autoscaling cooldown period
+  cooldownPeriod: 300 # seconds
+  # -- Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/)
+  triggers: []
+
+#
+# Pod identity and KV connection
+#
+
+# -- Secrect provider class allow to connect to azure kv
+# @default -- -
+secretProviderClass:
+  # -- (bool) create or not the secret provider class manifest
+  create: true
+
+# -- Azure KeyVault connection configuration
+# @default -- -
+keyvault:
+  # -- KV name
+  name: ""
+  # -- Tenant id (uuid)
+  tenantId: ""
+
 serviceAccount:
   create: false
   annotations: {}
   name: ""
-
-podAnnotations: {}
-
-podSecurityContext:
-  seccompProfile:
-    type: RuntimeDefault
-
-securityContext:
-  allowPrivilegeEscalation: false
-
-###
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
