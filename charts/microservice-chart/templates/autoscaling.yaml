@@ -13,8 +13,6 @@ metadata:
   name: {{ include "microservice-chart.fullname" . }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 3 }}
-  annotations: 
-    date: "+%H:%M:%S %d/%m/%y"
 spec:
   scaleTargetRef:
     name: {{ include "microservice-chart.fullname" . }}
