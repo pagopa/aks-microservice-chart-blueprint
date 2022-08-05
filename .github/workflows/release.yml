@@ -42,6 +42,7 @@ jobs:
 
       - name: Release
         uses: cycjimmy/semantic-release-action@v2
+        id: semantic
         with:
           dry_run: true
           semantic_version: 18.0.0
@@ -50,6 +51,13 @@ jobs:
             @semantic-release/git@10.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Do something when a new release published
+        run: |
+          echo ${{ steps.semantic.outputs.new_release_version }}
+          echo ${{ steps.semantic.outputs.new_release_major_version }}
+          echo ${{ steps.semantic.outputs.new_release_minor_version }}
+          echo ${{ steps.semantic.outputs.new_release_patch_version }}
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.0
