@@ -56,12 +56,7 @@ jobs:
       - name: Do something when a new release published
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
-          echo ${{ steps.semantic.outputs.new_release_version }}
-          echo ${{ steps.semantic.outputs.new_release_major_version }}
-          echo ${{ steps.semantic.outputs.new_release_minor_version }}
-          echo ${{ steps.semantic.outputs.new_release_patch_version }}
           yq -i ".version = \"${{ steps.semantic.outputs.new_release_version }}\"" "charts/microservice-chart/Chart.yaml"
-          cat "charts/microservice-chart/Chart.yaml"
           git add "charts/microservice-chart/Chart.yaml"
           git commit -m "Bumb microservice chart version ${{ steps.semantic.outputs.new_release_version }}"
           git push -u origin main
