@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - master
     paths-ignore:
       - 'CODEOWNERS'
       - '**.md'
@@ -41,7 +40,7 @@ jobs:
           chmod 700 get_helm.sh
           ./get_helm.sh
 
-      - name: Release
+      - name: Semantic release
         uses: cycjimmy/semantic-release-action@v2
         id: semantic
         with:
@@ -53,7 +52,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Do something when a new release published
+      - name: Bump new version
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
           yq -i ".version = \"${{ steps.semantic.outputs.new_release_version }}\"" "charts/microservice-chart/Chart.yaml"
