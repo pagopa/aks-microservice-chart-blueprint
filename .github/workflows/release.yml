@@ -59,8 +59,8 @@ jobs:
           echo ${{ steps.semantic.outputs.new_release_major_version }}
           echo ${{ steps.semantic.outputs.new_release_minor_version }}
           echo ${{ steps.semantic.outputs.new_release_patch_version }}
-          yq -i ".version = \"${{ steps.semantic.outputs.new_release_version }}\"" ".chart/microservice-chart/Chart.yaml"
-          cat .chart/microservice-chart/Chart.yaml
+          yq -i ".version = \"${{ steps.semantic.outputs.new_release_version }}\"" ".charts/microservice-chart/Chart.yaml"
+          cat .charts/microservice-chart/Chart.yaml
 
       # - name: Run chart-releaser
       #   uses: helm/chart-releaser-action@v1.4.0
