@@ -24,22 +24,21 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+      # issue: https://github.com/helm/chart-releaser-action/issues/113
+      - name: Force tags download
+        run: |
+          git pull --tags   
 
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: setup_helm
+      - name: Setup Helm
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
           chmod 700 get_helm.sh
-          ./get_helm.sh
-
-      # issue: https://github.com/helm/chart-releaser-action/issues/113
-      - name: force_tags_download
-        run: |
-          git pull --tags         
+          ./get_helm.sh      
       
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.0
