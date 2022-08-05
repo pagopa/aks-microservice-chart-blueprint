@@ -67,7 +67,7 @@ jobs:
           git commit -m "Bumb microservice chart version ${{ steps.semantic.outputs.new_release_version }}"
           git push -u origin main
 
-      # - name: Run chart-releaser
-      #   uses: helm/chart-releaser-action@v1.4.0
-      #   env:
-      #     CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.4.0
+        env:
+          CR_TOKEN: "${{ secrets.RELEASE_TOKEN }}"
