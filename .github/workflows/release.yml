@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - master
     paths-ignore:
       - 'CODEOWNERS'
       - '**.md'
@@ -22,26 +21,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          persist-credentials: false
           fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      # issue: https://github.com/helm/chart-releaser-action/issues/113
+      - name: Force tags download
+        run: |
+          git pull --tags   
 
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: setup_helm
+      - name: Semantic release
+        uses: cycjimmy/semantic-release-action@v2
+        id: semantic
+        with:
+          dry_run: true
+          semantic_version: 18.0.0
+          extra_plugins: |
+            @semantic-release/release-notes-generator@10.0.3
+            @semantic-release/git@10.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump new version
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: |
+          yq -i ".version = \"${{ steps.semantic.outputs.new_release_version }}\"" "charts/microservice-chart/Chart.yaml"
+          git add "charts/microservice-chart/Chart.yaml"
+          git commit -m "Bumb microservice chart version ${{ steps.semantic.outputs.new_release_version }}"
+          git push -u origin main
+
+      - name: Setup Helm
+        if: steps.semantic.outputs.new_release_published == 'true'
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
           chmod 700 get_helm.sh
           ./get_helm.sh
 
-      # issue: https://github.com/helm/chart-releaser-action/issues/113
-      - name: force_tags_download
-        run: |
-          git pull --tags         
-      
       - name: Run chart-releaser
+        if: steps.semantic.outputs.new_release_published == 'true'
         uses: helm/chart-releaser-action@v1.4.0
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_TOKEN: "${{ secrets.RELEASE_TOKEN }}"
