@@ -15,6 +15,7 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 3 }}
   annotations: 
     timestamp/now: "+%H:%M:%S %d/%m/%y"
+    "helm.sh/hook": post-install,post-upgrade
 spec:
   scaleTargetRef:
     name: {{ include "microservice-chart.fullname" . }}
