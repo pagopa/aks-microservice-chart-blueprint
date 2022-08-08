@@ -1,7 +1,7 @@
 # K8s Microservice Template &middot; [![GitHub Release](https://img.shields.io/github/v/release/pagopa/aks-microservice-chart-blueprint?style=flat)](https://github.com/pagopa/aks-microservice-chart-blueprint/releases) [![GitHub Issues](https://img.shields.io/github/issues/pagopa/aks-microservice-chart-blueprint?style=flat)](https://github.com/pagopa/aks-microservice-chart-blueprint/issues) [![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
 
 The `aks-microservice-chart-blueprint` chart is the best way to release your
-microservice into pagoPA K8s environment. It contains all the required
+microservice into PagoPA K8s environment. It contains all the required
 components to get started, and it has several architectural aspects already
 configured.
 
@@ -35,22 +35,22 @@ This is the official and recommended method to adopt this chart.
 Create a `helm` folder inside your microservice project in which install the
 Helm chart:
 
-``` shell
+```shell
 mkdir helm && cd helm
 ```
 
 Add Helm repo:
 
-``` shell
+```shell
 helm repo add pagopa-microservice https://pagopa.github.io/aks-microservice-chart-blueprint
 ```
 
 > If you had already added this repo earlier, run `helm repo update` to retrieve
-  the latest versions of the packages.
+> the latest versions of the packages.
 
 Add a very basic configuration in `Chart.yaml`:
 
-``` shell
+```shell
 cat <<EOF > Chart.yaml
 apiVersion: v2
 name: my-microservice
@@ -67,20 +67,20 @@ EOF
 
 Install the dependency:
 
-``` shell
+```shell
 helm dep build
 ```
 
 Create a `values-<env>.yaml` for each environment:
 
-``` shell
+```shell
 touch values-dev.yaml values-uat.yaml values-prod.yaml
 ```
 
 Override all values that you need, and form the root of your project install
 the chart:
 
-``` sh
+```sh
 helm upgrade -i -n <namespace name> -f <file with values> <name of the helm chart> <chart folder>
 
 helm upgrade -i -n mynamespace -f helm/values-dev.yaml mymicroservice helm
@@ -90,7 +90,7 @@ helm upgrade -i -n mynamespace -f helm/values-dev.yaml mymicroservice helm
 
 Change version of the dependency and run the update:
 
-``` shell
+```shell
 cd helm && helm dep update .
 ```
 
@@ -165,18 +165,17 @@ Is possibile to load inside the deployment the values of an external config map,
 To do so, you can use this example snippet code:
 
 ```yaml
-  envConfigMapExternals:
-    progressive-delivery-mock-one:
-      PLAYER_INITIAL_LIVES_ENV: player_initial_lives
-      UI_PROPERTIES_FILE_NAME_ENV: ui_properties_file_name
+envConfigMapExternals:
+  progressive-delivery-mock-one:
+    PLAYER_INITIAL_LIVES_ENV: player_initial_lives
+    UI_PROPERTIES_FILE_NAME_ENV: ui_properties_file_name
 ```
 
 ```yaml
-  envConfigMapExternals:
-    <config map name>:
-      <ENV variable name>: <key name inside the config map>
+envConfigMapExternals:
+  <config map name>:
+    <ENV variable name>: <key name inside the config map>
 ```
-
 
 ## Advanced
 
@@ -186,7 +185,7 @@ For more information, visit the [complete documentation](https://pagopa.atlassia
 
 Clone the repository and run the setup script:
 
-``` shell
+```shell
 git clone git@github.com:pagopa/aks-microservice-chart-blueprint.git
 cd aks-microservice-chart-blueprint.git
 sh /bin/setup

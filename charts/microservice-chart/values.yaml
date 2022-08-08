@@ -17,8 +17,8 @@ canaryDelivery:
   ingress:
     # -- (bool) Beta/Enable Ingress for Canary/BlueGreen Deployment
     create: true
-#     # canary:
-#     #   type: bluegreen
+    #     # canary:
+    #     #   type: bluegreen
     # -- Configure how ingress canary should be
     # @default -- -
     canary:
@@ -57,9 +57,9 @@ canaryDelivery:
 
 #
 # Deployment
-# 
+#
 
-# -- Configure deployment 
+# -- Configure deployment
 # @default -- -
 deployment:
   # -- (bool) create the deployment manifest
@@ -154,7 +154,7 @@ affinity: {}
 ingress:
   # -- (bool) Create or not the ingress manifest
   create: false
-  # -- Hostname for the ingress like https://idpay.pagopa.it 
+  # -- Hostname for the ingress like https://idpay.pagopa.it
   host: ""
   # -- Path where the application can response like: `/app`
   path: "/"
