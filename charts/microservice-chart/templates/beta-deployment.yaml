@@ -102,15 +102,12 @@ spec:
         - name: crt-mounter
           securityContext:
             allowPrivilegeEscalation: false
-          image: alpine:latest
+          image: alpine:3.16.1@sha256:9b2a28eb47540823042a2ba401386845089bb7b62a9637d55816132c4c3c36eb
           command: ['tail', '-f', '/dev/null']
           resources:
-            requests:
+            limits:
               memory: 16Mi
               cpu: 50m
-            limits:
-              memory: 32Mi
-              cpu: 100m
           volumeMounts:
             - name: secrets-store-inline-crt
               mountPath: "/mnt/secrets-store-crt"
