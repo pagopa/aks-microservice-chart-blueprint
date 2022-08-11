@@ -79,6 +79,9 @@ image:
   # -- Pull policy to use
   pullPolicy: Always
 
+# -- Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind
+sidecars: []
+
 livenessProbe:
   # -- httpGet will be put as is into deployment yaml
   # @default -- -
