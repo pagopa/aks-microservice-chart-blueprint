@@ -91,6 +91,9 @@ spec:
               mountPath: "/mnt/secrets-store-crt"
               readOnly: true
         {{- end }}
+        {{- with .Values.sidecars }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       volumes:
         {{- if .Values.envSecret }}
         - name: secrets-store-inline

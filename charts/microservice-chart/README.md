@@ -75,6 +75,7 @@ A Helm chart for PagoPA microservice
 | resources.limits | object | `{"cpu":"150m","memory":"128Mi"}` | limits is mandatory |
 | resources.requests | object | `{"cpu":"40m","memory":"96Mi"}` | request is mandatory |
 | secretProviderClass | object | - | Secrect provider class allow to connect to azure kv |
+| sidecars | object | `[]` | Each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind |
 | secretProviderClass.create | bool | `true` | create or not the secret provider class manifest |
 | securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | service.create | bool | `true` | create the service manifest |
