@@ -1,0 +1,22 @@
+{{- if .Values.persistence -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.storage }}
+{{- if .Values.persistence.storageClassName }}
+  {{- if (eq "-" .Values.persistence.storageClassName) }}
+  storageClassName: ""
+    {{- else }}
+  storageClassName: "{{ .Values.persistence.storageClassName }}"
+  {{- end }}
+{{- end }}
+{{- end }}
