@@ -1,0 +1,37 @@
+{{- if .Values.persistence -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}
+spec:
+  capacity:
+    storage: {{ .Values.persistence.storage }}
+  accessModes:
+    - {{ .Values.persistence.accessModes }}
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: azurefile-csi
+  csi:
+    driver: file.csi.azure.com
+    {{- if .Values.persistence.readOnly }}
+    readOnly: {{ .Values.persistence.readOnly }}
+    {{- else }}
+    readOnly: true
+    {{- end}}
+    volumeHandle: {{ .Values.persistence.volumeHandle }}  # make sure this volumeid is unique in the cluster
+    {{- if .Values.persistence.volumeAttributes }}
+    volumeAttributes:
+      {{- if .Values.persistence.volumeAttributes.resourceGroup }}
+      resourceGroup: {{ .Values.persistence.volumeAttributes.resourceGroup }}  # optional, only set this when storage account is not in the same resource group as agent node
+      {{- end }}
+      {{- if .Values.persistence.volumeAttributes.shareName }}
+      shareName: {{ .Values.persistence.shareName }}
+      {{- end }}
+    {{- end }}
+    nodeStageSecretRef:
+      name: azure-secret
+      namespace: default
+  {{- if .Values.persistence.mountOptions }}
+  mountOptions:
+    {{- toYaml .Values.persistence.mountOptions | nindent 2 }}
+  {{- end }}
+{{- end }}

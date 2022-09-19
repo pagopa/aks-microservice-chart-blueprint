@@ -1,4 +1,4 @@
-{{- if .Values.persistence -}}
+{{- if .Values.persistence.claim -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -8,18 +8,18 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
 spec:
   accessModes:
-    - {{ .Values.persistence.accessModes }}
+    - {{ .Values.persistence.claim.accessModes }}
   resources:
     requests:
-      storage: {{ .Values.persistence.storage }}
-{{- if .Values.persistence.storageClassName }}
-  {{- if (eq "-" .Values.persistence.storageClassName) }}
+      storage: {{ .Values.persistence.claim.storage }}
+{{- if .Values.persistence.claim.storageClassName }}
+  {{- if (eq "-" .Values.persistence.claim.storageClassName) }}
   storageClassName: ""
     {{- else }}
-  storageClassName: "{{ .Values.persistence.storageClassName }}"
+  storageClassName: {{ .Values.persistence.claim.storageClassName }}
   {{- end }}
 {{- end }}
-{{- if .Values.persistence.volumeName }}
-  volumeName: "{{ .Values.persistence.volumeName }}"
+{{- if .Values.persistence.claim.volumeName }}
+  volumeName: {{ .Values.persistence.claim.volumeName }}
 {{- end }}
 {{- end }}
