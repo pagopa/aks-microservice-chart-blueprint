@@ -45,10 +45,10 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if or .Values.volumeMounts .Values.envSecret}}
           volumeMounts:
-            {{- range $volumeMount := .Values.volumeMounts }}
-            - name: {{ $volumeMount.name }}
-              mountPath: {{ $volumeMount.mountPath | quote }}
-              readOnly: {{ $volumeMount.readOnly }}
+            {{- range $volume := .Values.volumes }}
+            - name: {{ $volume.name }}
+              mountPath: {{ $volume.mountPath | quote }}
+              readOnly: {{ $volume.readOnly }}
             {{- end}}
             {{- if .Values.envSecret }}
             - name: secrets-store-inline
@@ -102,11 +102,11 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       volumes:
-        {{- if .Values.volumes }}
-        - name: {{ .Values.volumes.name }}
+        {{- range $volume := .Values.volumes }}
+        - name: {{ $volume.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.volumes.persistentVolumeClaim }}
-        {{- end}}
+            claimName: {{ $volume.persistentVolumeClaim }}
+        {{- end }}
         {{- if .Values.envSecret }}
         - name: secrets-store-inline
           csi:

@@ -12,9 +12,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.claim.storage }}
-{{- if .Values.persistence.storageClassName }}
   storageClassName: {{ default "" .Values.persistence.storageClassName }}
-{{- end }}
 {{- if .Values.persistence.claim.volumeName }}
   volumeName: {{ .Values.persistence.claim.volumeName }}
 {{- end }}

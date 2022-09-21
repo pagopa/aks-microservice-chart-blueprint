@@ -8,7 +8,7 @@ spec:
     storage: {{ .Values.persistence.storage }}
   accessModes:
     - {{ .Values.persistence.accessModes }}
-  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: {{ default "Retain" .Values.persistence.persistentVolumeReclaimPolicy }}
   storageClassName: {{ default "default" .Values.persistence.storageClassName }}
   csi:
     driver: file.csi.azure.com
@@ -16,12 +16,8 @@ spec:
     volumeHandle: {{ .Values.persistence.volumeHandle }}  # make sure this volumeid is unique in the cluster
     {{- if .Values.persistence.volumeAttributes }}
     volumeAttributes:
-      {{- if .Values.persistence.volumeAttributes.resourceGroup }}
-      resourceGroup: {{ .Values.persistence.volumeAttributes.resourceGroup }}  # optional, only set this when storage account is not in the same resource group as agent node
-      {{- end }}
-      {{- if .Values.persistence.volumeAttributes.shareName }}
-      shareName: {{ .Values.persistence.volumeAttributes.shareName }} # Azure file share name
-      {{- end }}
+      resourceGroup: {{ .Values.persistence.volumeAttributes.resourceGroup }}  # mandatory: storage account resource group because it is different by cluster resource group
+      shareName: {{ default "" .Values.persistence.volumeAttributes.shareName }} # optional: name of azure file share. If empty, driver will generate an Azure file share name
     {{- end }}
     nodeStageSecretRef:
       name: {{ include "microservice-chart.fullname" . }}
