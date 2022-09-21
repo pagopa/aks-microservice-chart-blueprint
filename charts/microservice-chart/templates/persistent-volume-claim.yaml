@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "microservice-chart.fullname" . }}
+  name: {{ .Values.persistence.claim.name }}
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
@@ -12,12 +12,8 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.claim.storage }}
-{{- if .Values.persistence.claim.storageClassName }}
-  {{- if (eq "-" .Values.persistence.claim.storageClassName) }}
-  storageClassName: ""
-    {{- else }}
-  storageClassName: {{ .Values.persistence.claim.storageClassName }}
-  {{- end }}
+{{- if .Values.persistence.storageClassName }}
+  storageClassName: {{ default "" .Values.persistence.storageClassName }}
 {{- end }}
 {{- if .Values.persistence.claim.volumeName }}
   volumeName: {{ .Values.persistence.claim.volumeName }}

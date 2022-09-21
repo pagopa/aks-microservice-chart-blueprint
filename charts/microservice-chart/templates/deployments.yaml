@@ -43,12 +43,19 @@ spec:
 {{ toYaml .Values.readinessProbe | indent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.envSecret }}
+          {{- if or .Values.volumeMounts .Values.envSecret}}
           volumeMounts:
+            {{- range $volumeMount := .Values.volumeMounts }}
+            - name: {{ $volumeMount.name }}
+              mountPath: {{ $volumeMount.mountPath | quote }}
+              readOnly: {{ $volumeMount.readOnly }}
+            {{- end}}
+            {{- if .Values.envSecret }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
-          {{- end }}
+            {{- end }}
+          {{- end}}
           env:
             #secrets
             {{- range $name, $value := .Values.envSecret }}
@@ -95,6 +102,11 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       volumes:
+        {{- if .Values.volumes }}
+        - name: {{ .Values.volumes.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.volumes.persistentVolumeClaim }}
+        {{- end}}
         {{- if .Values.envSecret }}
         - name: secrets-store-inline
           csi:
