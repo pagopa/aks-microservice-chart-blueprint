@@ -1,19 +1,22 @@
-{{- if .Values.persistence.claim -}}
+{{- range $volume := .Values.persistence }}
+{{- if $volume.claim.create -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.persistence.claim.name }}
-  namespace: {{ .Values.namespace }}
+  name: {{ $volume.claim.name }}
+  namespace: {{ $.Values.namespace }}
   labels:
-    {{- include "microservice-chart.labels" . | nindent 4 }}
+    {{- include "microservice-chart.labels" $ | nindent 4 }}
 spec:
   accessModes:
-    - {{ .Values.persistence.claim.accessModes }}
+    - {{ $volume.accessModes }}
   resources:
     requests:
-      storage: {{ .Values.persistence.claim.storage }}
-  storageClassName: {{ default "" .Values.persistence.storageClassName }}
-{{- if .Values.persistence.claim.volumeName }}
-  volumeName: {{ .Values.persistence.claim.volumeName }}
+      storage: {{ $volume.storage }}
+  storageClassName: {{ default "default" $volume.storageClassName }}
+{{- if $volume.volumeHandle }}
+  volumeName: {{ $volume.name }}
+---
+{{- end }}
 {{- end }}
 {{- end }}

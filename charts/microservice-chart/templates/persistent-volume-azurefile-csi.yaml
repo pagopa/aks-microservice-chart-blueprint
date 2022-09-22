@@ -1,0 +1,34 @@
+{{- range $volume := .Values.persistence }}
+{{- if $volume.create -}}
+{{- if eq $volume.storageClassName "azurefile-csi" -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ $volume.name }}
+spec:
+  capacity:
+    storage: {{ $volume.storage }}
+  accessModes:
+    - {{ $volume.accessModes }}
+  persistentVolumeReclaimPolicy: {{ default "Retain" $volume.persistentVolumeReclaimPolicy }}
+  storageClassName: {{ default "azurefile-csi" $volume.storageClassName }}
+  csi:
+    driver: file.csi.azure.com
+    readOnly: {{ default true $volume.readOnly }}
+    volumeHandle: {{ $volume.volumeHandle }}  # make sure this volumeid is unique in the cluster
+    {{- if $volume.volumeAttributes }}
+    volumeAttributes:
+      resourceGroup: {{ $volume.volumeAttributes.resourceGroup }}  # mandatory: storage account resource group because it is different by cluster resource group
+      shareName: {{ default "" $volume.volumeAttributes.shareName }} # optional: name of azure file share. If empty, driver will generate an Azure file share name
+    {{- end }}
+    nodeStageSecretRef:
+      name: {{ include "microservice-chart.fullname" $ }}
+      namespace: {{ $.Values.namespace }}
+  {{- if $volume.mountOptions }}
+  mountOptions:
+    {{- toYaml $volume.mountOptions | nindent 2 }}
+  {{- end }}
+---
+{{- end }}
+{{- end }}
+{{- end }}
