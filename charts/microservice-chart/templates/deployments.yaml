@@ -43,7 +43,7 @@ spec:
 {{ toYaml .Values.readinessProbe | indent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.volumeMounts .Values.envSecret}}
+          {{- if or .Values.volumes .Values.envSecret}}
           volumeMounts:
             {{- range $volume := .Values.volumes }}
             - name: {{ $volume.name }}
