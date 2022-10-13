@@ -168,6 +168,9 @@ ingress:
   rewriteTarget: /$1
   # -- the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body
   proxyBodySize: 1m
+  # -- custom annotations for ingress
+  annotations: {}
+
 
 service:
   # -- (bool) create the service manifest
