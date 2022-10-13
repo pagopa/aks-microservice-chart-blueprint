@@ -8,11 +8,15 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: {{ .Values.ingress.forceSslRedirect | quote }}
+    nginx.ingress.kubernetes.io/proxy-body-size: {{ .Values.ingress.proxyBodySize }}
+    {{- with .Values.ingress.annotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
     {{- if and .Values.canaryDelivery.ingress.canary (eq .Values.canaryDelivery.ingress.canary.type "header") }}
     nginx.ingress.kubernetes.io/canary: "true"
-    nginx.ingress.kubernetes.io/canary-weight: {{ .Values.canaryDelivery.ingress.canary.weightPercent|quote }}
-    nginx.ingress.kubernetes.io/canary-by-header: {{ .Values.canaryDelivery.ingress.canary.headerName|quote }}
-    nginx.ingress.kubernetes.io/canary-by-header-value: {{ .Values.canaryDelivery.ingress.canary.headerValue|quote }}
+    nginx.ingress.kubernetes.io/canary-weight: {{ .Values.canaryDelivery.ingress.canary.weightPercent |quote }}
+    nginx.ingress.kubernetes.io/canary-by-header: {{ .Values.canaryDelivery.ingress.canary.headerName |quote }}
+    nginx.ingress.kubernetes.io/canary-by-header-value: {{ .Values.canaryDelivery.ingress.canary.headerValue |quote }}
     {{- end }}
 spec:
   ingressClassName: nginx
