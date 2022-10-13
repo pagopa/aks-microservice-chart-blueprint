@@ -7,13 +7,13 @@ microservice-chart:
     create: true
     ingress:
       create: true
-      # canary:
-      #   type: bluegreen
       canary:
-        type: header
-        headerName: canary
-        headerValue: pagopa
-        weightPercent: 50
+        type: bluegreen
+      # canary:
+      #   type: header
+      #   headerName: canary
+      #   headerValue: pagopa
+      #   weightPercent: 50
     service:
       create: true
     deployment:
@@ -74,7 +74,7 @@ microservice-chart:
   ingress:
     create: true
     host: "dev01.rtd.internal.dev.cstar.pagopa.it"
-    path: /idpay/progressive-delivery/(.*)
+    path: /rtd/progressive-delivery/(.*)
 
   serviceAccount:
     create: false
