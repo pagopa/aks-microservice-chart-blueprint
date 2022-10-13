@@ -75,6 +75,10 @@ microservice-chart:
     create: true
     host: "dev01.rtd.internal.dev.cstar.pagopa.it"
     path: /rtd/progressive-delivery/(.*)
+    # proxyBodySize: 2m
+    annotations: {
+      nginx.ingress.kubernetes.io/satisfy: "any"
+    }
 
   serviceAccount:
     create: false
