@@ -34,9 +34,11 @@ spec:
           image: "{{ .Values.canaryDelivery.deployment.image.repository }}:{{ .Values.canaryDelivery.deployment.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.canaryDelivery.deployment.image.pullPolicy }}
           ports:
-            - name: app-port-{{ .Values.service.port }}
-              containerPort: {{ .Values.service.port }}
+          {{- range .Values.service.ports }}
+            - name: app-port-{{ . }}
+              containerPort: {{ . }}
               protocol: TCP
+          {{- end }}
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }}
           readinessProbe:

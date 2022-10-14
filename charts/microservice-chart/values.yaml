@@ -159,6 +159,8 @@ ingress:
   create: false
   # -- Hostname for the ingress like https://idpay.pagopa.it
   host: ""
+  # -- (int) service port to reach
+  servicePort: ""
   # -- Path where the application can response like: `/app`
   path: "/"
   pathType: ImplementationSpecific
@@ -168,7 +170,7 @@ ingress:
   rewriteTarget: /$1
   # -- the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body
   proxyBodySize: 1m
-  # -- custom annotations for ingress
+  # -- (map) custom annotations for ingress
   annotations: {}
 
 
@@ -177,8 +179,8 @@ service:
   create: true
   # -- Which type of service to use
   type: ClusterIP
-  # -- (int) Which port use (! this port is used even inside the deployment)
-  port: 80
+  # -- (list) Which ports use (! this port is used even inside the deployment)
+  ports: []
 
 #
 # Autoscaling

@@ -22,7 +22,7 @@ spec:
               service:
                 name: {{ include "microservice-chart.fullname" . }}
                 port:
-                  number: {{ .Values.service.port }}
+                  number: {{ .Values.ingress.servicePort }}
             path: {{ .Values.ingress.path }}
             pathType: {{ .Values.ingress.pathType }}
   tls:

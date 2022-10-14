@@ -28,7 +28,7 @@ spec:
               service:
                 name: beta-{{ include "microservice-chart.fullname" . }}
                 port:
-                  number: {{ .Values.service.port }}
+                  number: {{ .Values.ingress.servicePort }}
             pathType: {{ .Values.ingress.pathType }}
             {{- if eq .Values.canaryDelivery.ingress.canary.type "bluegreen" }}
             path: /beta{{ .Values.ingress.path }}

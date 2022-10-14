@@ -9,10 +9,12 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - name: app-port-{{ .Values.service.port }}-svc
-      port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
+    {{- range .Values.service.ports }}
+    - name: app-port-{{ . }}-svc
+      port: {{ . }}
+      targetPort: {{ . }}
       protocol: TCP
+    {{- end }}
   selector:
     {{- include "microservice-chart.selectorLabels" . | nindent 4 }}
 {{- end }}
