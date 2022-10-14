@@ -16,6 +16,10 @@ Some of the key benefits of this chart are:
 
 To see the entire architecture please see this page [architecture](docs/ARCHITECTURE.md)
 
+## Changelog
+
+see [CHANGELOG](CHANGELOG) to see the new features and the breking changes
+
 ## Pre requisites
 
 - helm & kubernetes
@@ -120,6 +124,10 @@ Here you can find a result of the template [final result](docs/FINAL_RESULT_EXAM
 
 In the [`example`](example/) folder, you can find a working examples.
 
+### Progessive-delivery
+
+Use spring-boot-app-color to test canary deployment
+
 ### Azure function App
 
 It is an elementary version of an Azure Function App written in NodeJS.
@@ -209,3 +217,30 @@ To update the page content, use `bin/publish`.
 ## Known issues and limitations
 
 - None.
+
+## Breaking changes
+
+### v2.0.0
+
+*service*:
+
+Now use a list of ports and not more a single value
+
+```yaml
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+    - 8080
+    - 4000
+```
+
+*ingress*: now you need to specify the service port
+
+```yaml
+  ingress:
+    create: true
+    host: "dev01.rtd.internal.dev.cstar.pagopa.it"
+    path: /rtd/progressive-delivery/(.*)
+    servicePort: 8080
+```
