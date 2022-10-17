@@ -18,6 +18,7 @@ microservice-chart:
       create: true
     deployment:
       create: true
+      # forceRedeploy: true
       image:
         repository: ghcr.io/pagopa/devops-java-springboot-color
         tag: 0.7.1
@@ -28,19 +29,10 @@ microservice-chart:
       envSecret:
         aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
 
-  deployment:
-    create: true
-
   envConfigMapExternals:
     progressive-delivery-mock-one:
       PLAYER_INITIAL_LIVES_ENV: player_initial_lives
       UI_PROPERTIES_FILE_NAME_ENV: ui_properties_file_name
-
-
-  service:
-    create: true
-    type: ClusterIP
-    port: 8080
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
@@ -65,16 +57,20 @@ microservice-chart:
 
   deployment:
     create: true
+    # forceRedeploy: true
 
   service:
     create: true
     type: ClusterIP
-    port: 8080
+    ports:
+    - 8080
+    - 4000
 
   ingress:
     create: true
     host: "dev01.rtd.internal.dev.cstar.pagopa.it"
     path: /rtd/progressive-delivery/(.*)
+    servicePort: 8080
     # proxyBodySize: 2m
     annotations: {
       nginx.ingress.kubernetes.io/satisfy: "any"
