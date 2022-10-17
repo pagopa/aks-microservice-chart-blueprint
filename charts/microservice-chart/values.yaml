@@ -49,6 +49,8 @@ canaryDelivery:
     envConfig: {}
     # -- Environment secrets to use for the canary container
     envSecret: {}
+    # -- (bool) Force redeploy canary container
+    forceRedeploy: false
   # -- Beta/SecretProviderClass
   # @default -- -
   secretProviderClass:
@@ -66,6 +68,9 @@ deployment:
   create: true
   # -- (int) Number of replicas for this deployment
   replicas: 1
+  # -- (bool) Force redeploy container
+  forceRedeploy: false
+
 
 # -- Configure values from config maps external to chart. E.g already present into cluster, see documentation
 # @default -- {}
@@ -159,6 +164,8 @@ ingress:
   create: false
   # -- Hostname for the ingress like https://idpay.pagopa.it
   host: ""
+  # -- (int) service port to reach
+  servicePort: ""
   # -- Path where the application can response like: `/app`
   path: "/"
   pathType: ImplementationSpecific
@@ -166,14 +173,19 @@ ingress:
   forceSslRedirect: true
   # -- the rewrite target for ingress
   rewriteTarget: /$1
+  # -- the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body
+  proxyBodySize: 1m
+  # -- (map) custom annotations for ingress
+  annotations: {}
+
 
 service:
   # -- (bool) create the service manifest
   create: true
   # -- Which type of service to use
   type: ClusterIP
-  # -- (int) Which port use (! this port is used even inside the deployment)
-  port: 80
+  # -- (list) Which ports use (! this port is used even inside the deployment)
+  ports: []
 
 #
 # Autoscaling

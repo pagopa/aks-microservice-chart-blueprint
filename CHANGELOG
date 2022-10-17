@@ -1,0 +1,15 @@
+# CHANGELOG
+
+## v2.0.0 (Breking change)
+
+fix:
+
+- deployment
+  - removed crt mounter to avoid to have a replication of containers
+  - flag to allow force deployment: usefull for deployment with same image but different content (e.g. latest)
+- ingress:
+  - added field `proxyBodySize` to allow to set `nginx.ingress.kubernetes.io/proxy-body-size` annotation
+  - added field `annotations` to allow to put extra annotations not present into the ingress and canary ingress
+  - (breaking) now you need to use the field `ingress.servicePort` to define the port destination for ingress
+- service:
+  - (breaking) now service is a list of service ports

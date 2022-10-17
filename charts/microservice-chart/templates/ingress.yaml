@@ -6,8 +6,12 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: {{ .Values.ingress.forceSslRedirect | quote }}
+    nginx.ingress.kubernetes.io/proxy-body-size: {{ .Values.ingress.proxyBodySize }}
+    nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget }}
+    {{- with .Values.ingress.annotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
 spec:
   ingressClassName: nginx
   rules:
@@ -18,7 +22,7 @@ spec:
               service:
                 name: {{ include "microservice-chart.fullname" . }}
                 port:
-                  number: {{ .Values.service.port }}
+                  number: {{ .Values.ingress.servicePort }}
             path: {{ .Values.ingress.path }}
             pathType: {{ .Values.ingress.pathType }}
   tls:
