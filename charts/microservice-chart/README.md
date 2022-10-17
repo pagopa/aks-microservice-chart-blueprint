@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 1.20.3](https://img.shields.io/badge/Version-1.20.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 2.0.0](https://img.shields.io/badge/Version-2.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -22,6 +22,7 @@ A Helm chart for PagoPA microservice
 | canaryDelivery.deployment.create | bool | `true` | Beta/Enable Deployment for Canary/BlueGreen Deployment |
 | canaryDelivery.deployment.envConfig | object | `{}` | Environment config to use for the canary container |
 | canaryDelivery.deployment.envSecret | object | `{}` | Environment secrets to use for the canary container |
+| canaryDelivery.deployment.forceRedeploy | bool | `false` | Force redeploy canary container |
 | canaryDelivery.deployment.image.pullPolicy | string | `"Always"` | Pull policy to use |
 | canaryDelivery.deployment.image.repository | string | `"ghcr.io/pagopa/devops-java-springboot-color"` | Docker reposity for the container canary |
 | canaryDelivery.deployment.image.tag | string | `"0.7.1"` | Container TAG |
@@ -37,6 +38,7 @@ A Helm chart for PagoPA microservice
 | canaryDelivery.service.create | bool | `true` | Beta/Enable Service for Canary/BlueGreen Deployment |
 | deployment | object | - | Configure deployment |
 | deployment.create | bool | `true` | create the deployment manifest |
+| deployment.forceRedeploy | bool | `false` | Force redeploy container |
 | deployment.replicas | int | `1` | Number of replicas for this deployment |
 | envConfig | object | `{}` | Environment config to use for the canary container |
 | envConfigMapExternals | object | {} | Configure values from config maps external to chart. E.g already present into cluster, see documentation |
@@ -46,11 +48,14 @@ A Helm chart for PagoPA microservice
 | image.repository | string | `""` | Docker reposity for the container |
 | image.tag | string | `"v0.0.0"` | Container TAG |
 | ingress | object | - | Ingress configuration |
+| ingress.annotations | map | `{}` | custom annotations for ingress |
 | ingress.create | bool | `false` | Create or not the ingress manifest |
 | ingress.forceSslRedirect | bool | `true` | if force ssl redirect is enabled |
 | ingress.host | string | `""` | Hostname for the ingress like https://idpay.pagopa.it |
 | ingress.path | string | `"/"` | Path where the application can response like: `/app` |
+| ingress.proxyBodySize | string | `"1m"` | the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body |
 | ingress.rewriteTarget | string | `"/$1"` | the rewrite target for ingress |
+| ingress.servicePort | int | `""` | service port to reach |
 | keyvault | object | - | Azure KeyVault connection configuration |
 | keyvault.name | string | `""` | KV name |
 | keyvault.tenantId | string | `""` | Tenant id (uuid) |
@@ -75,15 +80,15 @@ A Helm chart for PagoPA microservice
 | resources.limits | object | `{"cpu":"150m","memory":"128Mi"}` | limits is mandatory |
 | resources.requests | object | `{"cpu":"40m","memory":"96Mi"}` | request is mandatory |
 | secretProviderClass | object | - | Secrect provider class allow to connect to azure kv |
-| sidecars | object | `[]` | Each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind |
 | secretProviderClass.create | bool | `true` | create or not the secret provider class manifest |
 | securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | service.create | bool | `true` | create the service manifest |
-| service.port | int | `80` | Which port use (! this port is used even inside the deployment) |
+| service.ports | list | `[]` | Which ports use (! this port is used even inside the deployment) |
 | service.type | string | `"ClusterIP"` | Which type of service to use |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `false` |  |
 | serviceAccount.name | string | `""` |  |
+| sidecars | list | `[]` | Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind |
 | tolerations | list | `[]` | Pod taints toleration |
 
 ----------------------------------------------

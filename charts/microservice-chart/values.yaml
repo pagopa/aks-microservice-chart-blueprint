@@ -49,6 +49,8 @@ canaryDelivery:
     envConfig: {}
     # -- Environment secrets to use for the canary container
     envSecret: {}
+    # -- (bool) Force redeploy canary container
+    forceRedeploy: false
   # -- Beta/SecretProviderClass
   # @default -- -
   secretProviderClass:
@@ -66,6 +68,9 @@ deployment:
   create: true
   # -- (int) Number of replicas for this deployment
   replicas: 1
+  # -- (bool) Force redeploy container
+  forceRedeploy: false
+
 
 # -- Configure values from config maps external to chart. E.g already present into cluster, see documentation
 # @default -- {}
