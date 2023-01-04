@@ -48,11 +48,21 @@ spec:
 {{ toYaml .Values.readinessProbe | indent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.envSecret }}
+          {{- if or .Values.envSecret .Values.fileConfig }}
           volumeMounts:
+            {{- if .Values.envSecret }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
+            {{- end }}
+            {{- if .Values.fileConfig }}
+            {{- range $key, $val := .Values.fileConfig }}
+            - name: file-config
+              mountPath: "/mnt/file-config/{{ $key }}"
+              subPath: {{ $key }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
           {{- end }}
           env:
             #secrets
@@ -70,6 +80,13 @@ spec:
                 configMapKeyRef:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
+            {{- end }}
+            #field ref
+            {{- range $key, $val := .Values.envFieldRef }}
+            - name: {{ $key }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: {{ $val }}
             {{- end }}
             #external configmap values
             {{- range $key, $valMap := .Values.envConfigMapExternals }}
@@ -92,6 +109,17 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
+        {{- end }}
+        {{- if .Values.fileConfig }}
+        - name: file-config
+          configMap:
+            name: {{ include "microservice-chart.fullname" $ }}
+            defaultMode: 420
+            items:
+          {{- range $key, $val := .Values.fileConfig }}
+              - key: {{ $key }}
+                path: {{ $key }}
+          {{- end }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

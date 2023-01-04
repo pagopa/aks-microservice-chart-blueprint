@@ -220,6 +220,42 @@ To update the page content, use `bin/publish`.
 
 ## Breaking changes
 
+### v2.1.0
+
+*envFieldRef*:
+
+Now map environment from a Pod Information
+
+```yaml
+  envFieldRef:
+    NAMESPACE: "metadata.namespace"
+    SERVICE_HTTP_HOST: "status.podIP"
+```
+
+*fileConfig*:
+
+Now load file inside configMap and mount in a pod to `/mnt/file-config/..` (Es. `/mnt/file-config/logback.xml`)
+```yaml
+  fileConfig:
+    logback.xml: |-
+      <?xml version="1.0" encoding="UTF-8"?>
+      <configuration scan="true" scanPeriod="30 seconds">
+
+          <property name="CONSOLE_PATTERN" value="%d %-5level [sid:%X{sessionId}] [can:%X{idCanale}] [sta:%X{idStazione}] [%logger] - %msg [%X{akkaSource}]%n"/>
+
+          <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+              <encoder>
+                  <pattern>${CONSOLE_PATTERN}</pattern>
+                  <charset>utf8</charset>
+              </encoder>
+          </appender>
+
+          <root level="INFO">
+              <appender-ref ref="CONSOLE_APPENDER_ASYNC" />
+          </root>
+      </configuration>
+```
+
 ### v2.0.0
 
 *service*:

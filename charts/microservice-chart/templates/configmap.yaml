@@ -1,4 +1,4 @@
-{{- if .Values.envConfig -}}
+{{- if or .Values.envConfig .Values.fileConfig -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,6 +8,7 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
 data:
   {{- toYaml .Values.envConfig | nindent 2 }}
+  {{- toYaml .Values.fileConfig | nindent 2 }}
 {{- end }}
 
 ---
