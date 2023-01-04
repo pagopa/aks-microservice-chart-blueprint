@@ -1,0 +1,17 @@
+{{- if .Values.fileConfig -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}-file-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+data:
+  {{- range .Values.fileConfig }}
+    {{- range $path, $bytes := .Files.Glob (printf .)}}
+    {{- $name := base $path }}
+      {{- printf "%s" $name}}{{ print ": "}}{{ $.Files.Get $path }}
+    {{- end }}
+  {{- end }}
+{{- end }}

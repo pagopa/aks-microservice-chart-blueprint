@@ -93,6 +93,20 @@ spec:
                   name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
                   key: {{ $key }}
             {{- end }}
+            #field ref from deployment
+            {{- range $key, $val := .Values.envFieldRef }}
+            - name: {{ $key }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: {{ $val }}
+            {{- end }}
+            #field ref from canary
+            {{- range $key, $val := .Values.canaryDelivery.deployment.envFieldRef }}
+            - name: {{ $key }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: {{ $val }}
+            {{- end }}
             #external configmap values
             {{- range $key, $valMap := .Values.envConfigMapExternals }}
             {{- range $internKey, $internVal := $valMap }}

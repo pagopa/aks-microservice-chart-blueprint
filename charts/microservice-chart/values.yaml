@@ -49,6 +49,8 @@ canaryDelivery:
     envConfig: {}
     # -- Environment secrets to use for the canary container
     envSecret: {}
+    # -- Environment config from k8s metadata for the canary container
+    envFieldRef: { }
     # -- (bool) Force redeploy canary container
     forceRedeploy: false
   # -- Beta/SecretProviderClass
@@ -134,6 +136,12 @@ envConfig: {}
 
 # -- Environment secrets to use for the canary container
 envSecret: {}
+
+# -- Environment config from k8s metadata
+envFieldRef: {}
+
+# -- File config pattern to mount
+fileConfig: {}
 
 podAnnotations: {}
 
