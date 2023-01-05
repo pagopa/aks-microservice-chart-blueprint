@@ -50,6 +50,8 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if or .Values.envSecret .Values.fileConfig }}
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
             {{- if .Values.envSecret }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
@@ -102,6 +104,8 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       volumes:
+        - name: tmp
+          emptyDir: {}
         {{- if .Values.envSecret }}
         - name: secrets-store-inline
           csi:

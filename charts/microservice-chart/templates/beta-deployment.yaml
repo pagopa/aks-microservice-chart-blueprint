@@ -66,6 +66,8 @@ spec:
           {{- end }}
           {{- if or .Values.canaryDelivery.deployment.envSecret .Values.canaryDelivery.deployment.fileConfig }}
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
             {{- if .Values.canaryDelivery.deployment.envSecret }}
             - name: beta-secrets-store-inline
               mountPath: "/mnt/beta-secrets-store"
@@ -138,6 +140,8 @@ spec:
             {{- end }}
             {{- end }}
       volumes:
+        - name: tmp
+          emptyDir: {}
         {{- if .Values.canaryDelivery.deployment.envSecret }}
         - name: beta-secrets-store-inline
           csi:
