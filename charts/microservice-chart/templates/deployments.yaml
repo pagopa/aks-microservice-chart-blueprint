@@ -48,7 +48,7 @@ spec:
 {{ toYaml .Values.readinessProbe | indent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.envSecret .Values.fileConfig }}
+          {{- if or .Values.envSecret .Values.fileConfig .Values.fileShare.create }}
           volumeMounts:
             - name: tmp
               mountPath: /tmp
@@ -63,6 +63,12 @@ spec:
               mountPath: "/mnt/file-config/{{ $key }}"
               subPath: {{ $key }}
               readOnly: true
+            {{- end }}
+            {{- end }}
+            {{- if .Values.fileShare.create }}
+            {{- range $k, $v := .Values.fileShare.folders }}
+            - name: file-azure-{{ $v.name }}
+              mountPath: "/mnt/file-azure/{{ $v.name }}"
             {{- end }}
             {{- end }}
           {{- end }}
@@ -106,6 +112,18 @@ spec:
       volumes:
         - name: tmp
           emptyDir: {}
+        {{- if .Values.fileShare.create }}
+        {{- range $k, $v := .Values.fileShare.folders }}
+        - name: file-azure-{{ $v.name }}
+          csi:
+            driver: file.csi.azure.com
+            readOnly: {{ $v.readOnly }}
+            volumeAttributes:
+              secretName: {{ include "microservice-chart.fullname" $ }}
+              shareName: {{ $v.name }}
+              mountOptions: {{ $v.mountOptions }}
+        {{- end }}
+        {{- end }}
         {{- if .Values.envSecret }}
         - name: secrets-store-inline
           csi:

@@ -188,6 +188,13 @@ ingress:
   # -- (map) custom annotations for ingress
   annotations: {}
 
+fileShare:
+  # -- (bool) create the service manifest
+  create: false
+  # -- (list) Which fileshare use (! this name is used even inside the deployment)
+  folders: []
+
+
 
 service:
   # -- (bool) create the service manifest

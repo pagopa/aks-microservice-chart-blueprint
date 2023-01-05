@@ -222,6 +222,23 @@ To update the page content, use `bin/publish`.
 
 ### v2.1.0
 
+*fileShare*:
+
+Now use azure storage file and mount in a pod to `/mnt/file-azure/{{ name }}/..` (Es. `/mnt/file-azure/certificates/java-cacerts`)
+(Attention key vault must contains two keys, `azurestorageaccountname` and `azurestorageaccountkey`. See https://learn.microsoft.com/en-us/azure/aks/azure-files-volume and storage file share named as fileShare.folders.name)
+```yaml
+  fileShare:
+    create: true
+    folders:
+      - name: certificates
+        readOnly: false
+        mountOptions: "dir_mode=0777,file_mode=0777,cache=strict,actimeo=30"
+      - name: firmatore
+        readOnly: false
+        mountOptions: "dir_mode=0777,file_mode=0777,cache=strict,actimeo=30"
+```
+
+
 *envFieldRef*:
 
 Now map environment from a Pod Information
