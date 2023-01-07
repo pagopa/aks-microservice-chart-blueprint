@@ -272,6 +272,10 @@ Now load file inside configMap and mount in a pod to `/mnt/file-config/..` (Es. 
           </root>
       </configuration>
 ```
+Or use commenad helm for load file while use a subchart
+```
+--set-file 'microservice-chart.fileConfig.logback\.xml'=helm/config/dev/logback.xml
+```
 
 ### v2.0.0
 
