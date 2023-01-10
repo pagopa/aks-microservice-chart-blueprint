@@ -143,6 +143,8 @@ spec:
                 path: {{ $key }}
           {{- end }}
         {{- end }}
+      restartPolicy: {{ .Values.restartPolicy }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -155,4 +157,8 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 {{- end }}
