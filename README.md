@@ -220,6 +220,63 @@ To update the page content, use `bin/publish`.
 
 ## Breaking changes
 
+### v2.1.0
+
+*fileShare*:
+
+Now use azure storage file and mount in a pod to `/mnt/file-azure/{{ name }}/..` (Es. `/mnt/file-azure/certificates/java-cacerts`)
+(Attention key vault must contains two keys, `azurestorageaccountname` and `azurestorageaccountkey`. See https://learn.microsoft.com/en-us/azure/aks/azure-files-volume and storage file share named as fileShare.folders.name)
+```yaml
+  fileShare:
+    create: true
+    folders:
+      - name: certificates
+        readOnly: false
+        mountOptions: "dir_mode=0777,file_mode=0777,cache=strict,actimeo=30"
+      - name: firmatore
+        readOnly: false
+        mountOptions: "dir_mode=0777,file_mode=0777,cache=strict,actimeo=30"
+```
+
+
+*envFieldRef*:
+
+Now map environment from a Pod Information
+
+```yaml
+  envFieldRef:
+    NAMESPACE: "metadata.namespace"
+    SERVICE_HTTP_HOST: "status.podIP"
+```
+
+*fileConfig*:
+
+Now load file inside configMap and mount in a pod to `/mnt/file-config/..` (Es. `/mnt/file-config/logback.xml`)
+```yaml
+  fileConfig:
+    logback.xml: |-
+      <?xml version="1.0" encoding="UTF-8"?>
+      <configuration scan="true" scanPeriod="30 seconds">
+
+          <property name="CONSOLE_PATTERN" value="%d %-5level [sid:%X{sessionId}] [can:%X{idCanale}] [sta:%X{idStazione}] [%logger] - %msg [%X{akkaSource}]%n"/>
+
+          <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+              <encoder>
+                  <pattern>${CONSOLE_PATTERN}</pattern>
+                  <charset>utf8</charset>
+              </encoder>
+          </appender>
+
+          <root level="INFO">
+              <appender-ref ref="CONSOLE_APPENDER_ASYNC" />
+          </root>
+      </configuration>
+```
+Or use commenad helm for load file while use a subchart
+```
+--set-file 'microservice-chart.fileConfig.logback\.xml'=helm/config/dev/logback.xml
+```
+
 ### v2.0.0
 
 *service*:

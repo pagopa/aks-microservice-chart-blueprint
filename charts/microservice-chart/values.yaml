@@ -30,6 +30,11 @@ canaryDelivery:
       headerValue: pagopa
       # -- the weight percent used into canary deployment. Can be used toghether with header
       weightPercent: 10
+  fileShare:
+    # -- (bool) create the service manifest for Canary/BlueGreen Deployment
+    create: false
+    # -- (list) Which fileshare use (! this name is used even inside the deployment) for Canary/BlueGreen Deployment
+    folders: [ ]
   service:
     # -- (bool) Beta/Enable Service for Canary/BlueGreen Deployment
     create: true
@@ -49,6 +54,10 @@ canaryDelivery:
     envConfig: {}
     # -- Environment secrets to use for the canary container
     envSecret: {}
+    # -- Environment config from k8s metadata for the canary container
+    envFieldRef: {}
+    # -- File config pattern to mount for the canary container
+    fileConfig: {}
     # -- (bool) Force redeploy canary container
     forceRedeploy: false
   # -- Beta/SecretProviderClass
@@ -135,6 +144,12 @@ envConfig: {}
 # -- Environment secrets to use for the canary container
 envSecret: {}
 
+# -- Environment config from k8s metadata
+envFieldRef: {}
+
+# -- File config pattern to mount
+fileConfig: {}
+
 podAnnotations: {}
 
 podSecurityContext:
@@ -177,6 +192,13 @@ ingress:
   proxyBodySize: 1m
   # -- (map) custom annotations for ingress
   annotations: {}
+
+fileShare:
+  # -- (bool) create the service manifest
+  create: false
+  # -- (list) Which fileshare use (! this name is used even inside the deployment)
+  folders: []
+
 
 
 service:

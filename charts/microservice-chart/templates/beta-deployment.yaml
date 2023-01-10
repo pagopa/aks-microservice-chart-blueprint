@@ -48,17 +48,65 @@ spec:
 {{ toYaml .Values.readinessProbe | indent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.envSecret }}
+          {{- if or .Values.envSecret .Values.fileConfig .Values.fileShare.create }}
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            {{- if .Values.envSecret }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
+            {{- end }}
+            {{- if .Values.fileConfig }}
+            {{- range $key, $val := .Values.fileConfig }}
+            - name: file-config
+              mountPath: "/mnt/file-config/{{ $key }}"
+              subPath: {{ $key }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
+            {{- if .Values.fileShare.create }}
+            {{- range $k, $v := .Values.fileShare.folders }}
+            - name: file-azure-{{ $v.name }}
+              csi:
+                driver: file.csi.azure.com
+                readOnly: {{ $v.readOnly }}
+                volumeAttributes:
+                  secretName: {{ include "microservice-chart.fullname" $ }}
+                  shareName: {{ $v.name }}
+                  mountOptions: {{ $v.mountOptions }}
+            {{- end }}
+            {{- end }}
           {{- end }}
-          {{- if .Values.canaryDelivery.deployment.envSecret }}
+          {{- if or .Values.canaryDelivery.deployment.envSecret .Values.canaryDelivery.deployment.fileConfig .Values.canaryDelivery.deployment.fileShare.create }}
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            {{- if .Values.canaryDelivery.deployment.envSecret }}
             - name: beta-secrets-store-inline
               mountPath: "/mnt/beta-secrets-store"
               readOnly: true
+            {{- end }}
+            {{- if .Values.canaryDelivery.deployment.fileConfig }}
+            {{- range $key, $val := .Values.fileConfig }}
+            - name: beta-file-config
+              mountPath: "/mnt/beta-file-config/{{ $key }}"
+              subPath: {{ $key }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
+            {{- if .Values.canaryDelivery.deployment.fileShare.create }}
+            {{- range $k, $v := .Values.canaryDelivery.deployment.fileShare.folders }}
+            - name: file-azure-{{ $v.name }}
+              csi:
+                driver: file.csi.azure.com
+                readOnly: {{ $v.readOnly }}
+                volumeAttributes:
+                  secretName: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
+                  shareName: {{ $v.name }}
+                  mountOptions: {{ $v.mountOptions }}
+            {{- end }}
+            {{- end }}
           {{- end }}
           env:
             # secrets from deployment
@@ -93,6 +141,20 @@ spec:
                   name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
                   key: {{ $key }}
             {{- end }}
+            #field ref from deployment
+            {{- range $key, $val := .Values.envFieldRef }}
+            - name: {{ $key }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: {{ $val }}
+            {{- end }}
+            #field ref from canary
+            {{- range $key, $val := .Values.canaryDelivery.deployment.envFieldRef }}
+            - name: {{ $key }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: {{ $val }}
+            {{- end }}
             #external configmap values
             {{- range $key, $valMap := .Values.envConfigMapExternals }}
             {{- range $internKey, $internVal := $valMap }}
@@ -104,6 +166,8 @@ spec:
             {{- end }}
             {{- end }}
       volumes:
+        - name: tmp
+          emptyDir: {}
         {{- if .Values.canaryDelivery.deployment.envSecret }}
         - name: beta-secrets-store-inline
           csi:
@@ -119,6 +183,28 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
+        {{- end }}
+        {{- if .Values.fileConfig }}
+        - name: file-config
+          configMap:
+            name: {{ include "microservice-chart.fullname" $ }}
+            defaultMode: 420
+            items:
+          {{- range $key, $val := .Values.fileConfig }}
+              - key: {{ $key }}
+                path: {{ $key }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.canaryDelivery.deployment.fileConfig }}
+        - name: beta-file-config
+          configMap:
+            name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
+            defaultMode: 420
+            items:
+          {{- range $key, $val := .Values.canaryDelivery.deployment.fileConfig }}
+              - key: {{ $key }}
+                path: {{ $key }}
+          {{- end }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

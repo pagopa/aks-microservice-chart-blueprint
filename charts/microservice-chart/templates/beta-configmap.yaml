@@ -1,4 +1,4 @@
-{{- if and .Values.canaryDelivery.create .Values.canaryDelivery.deployment.envConfig -}}
+{{- if or (and .Values.canaryDelivery.create .Values.canaryDelivery.deployment.envConfig) (and .Values.canaryDelivery.create .Values.canaryDelivery.deployment.fileConfig) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,4 +8,5 @@ metadata:
     {{- include "microservice-chart.labelsCanaryDelivery" . | nindent 4 }}
 data:
   {{- toYaml .Values.canaryDelivery.deployment.envConfig | nindent 2 }}
+  {{- toYaml .Values.canaryDelivery.deployment.fileConfig | nindent 2 }}
 {{- end }}
