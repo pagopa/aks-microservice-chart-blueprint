@@ -220,6 +220,26 @@ To update the page content, use `bin/publish`.
 
 ## Breaking changes
 
+### v2.2.0
+
+*serviceMonitor*:
+
+Now create service monitor for send metrics to prometheus
+```yaml
+  serviceMonitor:
+    create: true
+    endpoints:
+      - interval: 10s #micrometer
+        targetPort: 9092
+        path: /
+      - interval: 10s #cinnamon
+        targetPort: 9091
+        path: /metrics
+```
+
+
+## Breaking changes
+
 ### v2.1.0
 
 *fileShare*:

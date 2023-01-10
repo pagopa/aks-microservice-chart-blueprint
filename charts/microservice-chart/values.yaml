@@ -65,6 +65,10 @@ canaryDelivery:
   secretProviderClass:
     # -- (bool) Beta/create or not the secret provider class manifest
     create: true
+  serviceMonitor:
+    # -- (bool) Create or not the service monitor
+    create: false
+    endpoints: [ ]
 
 #
 # Deployment
@@ -168,6 +172,14 @@ tolerations: []
 # -- Pod labels affinity
 affinity: {}
 
+restartPolicy: "Always"
+terminationGracePeriodSeconds: 30
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 25%
+    maxSurge: 25%
+
 #
 # Network
 #
@@ -250,3 +262,8 @@ serviceAccount:
   create: false
   annotations: {}
   name: ""
+
+serviceMonitor:
+  # -- (bool) Create or not the service monitor
+  create: false
+  endpoints: []

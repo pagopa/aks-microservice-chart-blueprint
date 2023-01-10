@@ -1,0 +1,22 @@
+{{- if .Values.serviceMonitor.create -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    release: prometheus
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "microservice-chart.selectorLabels" . | nindent 6 }}
+  endpoints:
+    {{- range  $k, $v := .Values.serviceMonitor.endpoints }}
+    - interval: {{ $v.interval }}
+      targetPort: {{ $v.targetPort }}
+      path: {{ $v.path }}
+    {{- end }}
+{{- end }}
+
+---
