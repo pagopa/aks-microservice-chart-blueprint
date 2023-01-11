@@ -220,6 +220,21 @@ To update the page content, use `bin/publish`.
 
 ## Breaking changes
 
+### v2.3.0
+
+*fileConfigExternals*:
+
+Now create file from external config map
+```yaml
+  fileConfigExternals:
+    create: true
+    configMaps:
+      - name: nodo-cacerts
+        key: cacerts
+```
+
+## Breaking changes
+
 ### v2.2.0
 
 *serviceMonitor*:
