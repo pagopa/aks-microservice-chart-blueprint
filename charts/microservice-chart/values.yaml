@@ -58,6 +58,9 @@ canaryDelivery:
     envFieldRef: {}
     # -- File config pattern to mount for the canary container
     fileConfig: {}
+    fileConfigExternals:
+      create: false
+      configMaps: [ ]
     # -- (bool) Force redeploy canary container
     forceRedeploy: false
   # -- Beta/SecretProviderClass
@@ -153,6 +156,10 @@ envFieldRef: {}
 
 # -- File config pattern to mount
 fileConfig: {}
+
+fileConfigExternals:
+  create: false
+  configMaps: []
 
 podAnnotations: {}
 
