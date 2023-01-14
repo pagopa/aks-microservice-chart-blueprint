@@ -225,6 +225,7 @@ To update the page content, use `bin/publish`.
 *fileConfigExternals*:
 
 Now create file from external config map
+
 ```yaml
   fileConfigExternals:
     create: true
@@ -233,13 +234,12 @@ Now create file from external config map
         key: cacerts
 ```
 
-## Breaking changes
-
 ### v2.2.0
 
 *serviceMonitor*:
 
 Now create service monitor for send metrics to prometheus
+
 ```yaml
   serviceMonitor:
     create: true
@@ -252,15 +252,13 @@ Now create service monitor for send metrics to prometheus
         path: /metrics
 ```
 
-
-## Breaking changes
-
 ### v2.1.0
 
 *fileShare*:
 
 Now use azure storage file and mount in a pod to `/mnt/file-azure/{{ name }}/..` (Es. `/mnt/file-azure/certificates/java-cacerts`)
-(Attention key vault must contains two keys, `azurestorageaccountname` and `azurestorageaccountkey`. See https://learn.microsoft.com/en-us/azure/aks/azure-files-volume and storage file share named as fileShare.folders.name)
+(Attention key vault must contains two keys, `azurestorageaccountname` and `azurestorageaccountkey`. See <https://learn.microsoft.com/en-us/azure/aks/azure-files-volume> and storage file share named as fileShare.folders.name)
+
 ```yaml
   fileShare:
     create: true
@@ -272,7 +270,6 @@ Now use azure storage file and mount in a pod to `/mnt/file-azure/{{ name }}/..`
         readOnly: false
         mountOptions: "dir_mode=0777,file_mode=0777,cache=strict,actimeo=30"
 ```
-
 
 *envFieldRef*:
 
@@ -287,6 +284,7 @@ Now map environment from a Pod Information
 *fileConfig*:
 
 Now load file inside configMap and mount in a pod to `/mnt/file-config/..` (Es. `/mnt/file-config/logback.xml`)
+
 ```yaml
   fileConfig:
     logback.xml: |-
@@ -307,8 +305,10 @@ Now load file inside configMap and mount in a pod to `/mnt/file-config/..` (Es. 
           </root>
       </configuration>
 ```
+
 Or use commenad helm for load file while use a subchart
-```
+
+```sh
 --set-file 'microservice-chart.fileConfig.logback\.xml'=helm/config/dev/logback.xml
 ```
 
