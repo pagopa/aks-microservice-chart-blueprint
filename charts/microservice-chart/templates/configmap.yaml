@@ -7,8 +7,12 @@ metadata:
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
 data:
+  {{- if .Values.envConfig -}}
   {{- toYaml .Values.envConfig | nindent 2 }}
+  {{- end }}
+  {{- if .Values.fileConfig -}}
   {{- toYaml .Values.fileConfig | nindent 2 }}
+  {{- end }}
 {{- end }}
 
 ---
