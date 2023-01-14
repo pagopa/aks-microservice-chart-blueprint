@@ -30,11 +30,6 @@ canaryDelivery:
       headerValue: pagopa
       # -- the weight percent used into canary deployment. Can be used toghether with header
       weightPercent: 10
-  fileShare:
-    # -- (bool) create the service manifest for Canary/BlueGreen Deployment
-    create: false
-    # -- (list) Which fileshare use (! this name is used even inside the deployment) for Canary/BlueGreen Deployment
-    folders: [ ]
   service:
     # -- (bool) Beta/Enable Service for Canary/BlueGreen Deployment
     create: true
@@ -50,6 +45,11 @@ canaryDelivery:
       tag: 0.7.1
       # -- Pull policy to use
       pullPolicy: Always
+    fileShare:
+      # -- (bool) create the service manifest for Canary/BlueGreen Deployment
+      create: false
+      # -- (list) Which fileshare use (! this name is used even inside the deployment) for Canary/BlueGreen Deployment
+      folders: [ ]
     # -- Environment config to use for the canary container
     envConfig: {}
     # -- Environment secrets to use for the canary container
