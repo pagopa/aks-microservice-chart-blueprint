@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 2.0.0](https://img.shields.io/badge/Version-2.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 2.3.0](https://img.shields.io/badge/Version-2.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -21,7 +21,11 @@ A Helm chart for PagoPA microservice
 | canaryDelivery.deployment | object | - | Beta/Deployment |
 | canaryDelivery.deployment.create | bool | `true` | Beta/Enable Deployment for Canary/BlueGreen Deployment |
 | canaryDelivery.deployment.envConfig | object | `{}` | Environment config to use for the canary container |
+| canaryDelivery.deployment.envFieldRef | object | `{}` | Environment config from k8s metadata for the canary container |
 | canaryDelivery.deployment.envSecret | object | `{}` | Environment secrets to use for the canary container |
+| canaryDelivery.deployment.fileConfig | object | `{}` | File config pattern to mount for the canary container |
+| canaryDelivery.deployment.fileShare.create | bool | `false` | create the service manifest for Canary/BlueGreen Deployment |
+| canaryDelivery.deployment.fileShare.folders | list | `[]` | Which fileshare use (! this name is used even inside the deployment) for Canary/BlueGreen Deployment |
 | canaryDelivery.deployment.forceRedeploy | bool | `false` | Force redeploy canary container |
 | canaryDelivery.deployment.image.pullPolicy | string | `"Always"` | Pull policy to use |
 | canaryDelivery.deployment.image.repository | string | `"ghcr.io/pagopa/devops-java-springboot-color"` | Docker reposity for the container canary |
@@ -36,13 +40,20 @@ A Helm chart for PagoPA microservice
 | canaryDelivery.secretProviderClass | object | - | Beta/SecretProviderClass |
 | canaryDelivery.secretProviderClass.create | bool | `true` | Beta/create or not the secret provider class manifest |
 | canaryDelivery.service.create | bool | `true` | Beta/Enable Service for Canary/BlueGreen Deployment |
+| canaryDelivery.serviceMonitor.create | bool | `false` | Create or not the service monitor |
 | deployment | object | - | Configure deployment |
 | deployment.create | bool | `true` | create the deployment manifest |
 | deployment.forceRedeploy | bool | `false` | Force redeploy container |
 | deployment.replicas | int | `1` | Number of replicas for this deployment |
 | envConfig | object | `{}` | Environment config to use for the canary container |
 | envConfigMapExternals | object | {} | Configure values from config maps external to chart. E.g already present into cluster, see documentation |
+| envFieldRef | object | `{}` | Environment config from k8s metadata |
 | envSecret | object | `{}` | Environment secrets to use for the canary container |
+| fileConfig | object | `{}` | File config pattern to mount |
+| fileConfigExternals.configMaps | list | `[]` |  |
+| fileConfigExternals.create | bool | `false` |  |
+| fileShare.create | bool | `false` | create the service manifest |
+| fileShare.folders | list | `[]` | Which fileshare use (! this name is used even inside the deployment) |
 | fullnameOverride | string | `""` | Helm chart fullname override |
 | image.pullPolicy | string | `"Always"` | Pull policy to use |
 | image.repository | string | `""` | Docker reposity for the container |
@@ -79,6 +90,7 @@ A Helm chart for PagoPA microservice
 | resources | object | - | POD resources section |
 | resources.limits | object | `{"cpu":"150m","memory":"128Mi"}` | limits is mandatory |
 | resources.requests | object | `{"cpu":"40m","memory":"96Mi"}` | request is mandatory |
+| restartPolicy | string | `"Always"` |  |
 | secretProviderClass | object | - | Secrect provider class allow to connect to azure kv |
 | secretProviderClass.create | bool | `true` | create or not the secret provider class manifest |
 | securityContext.allowPrivilegeEscalation | bool | `false` |  |
@@ -88,7 +100,13 @@ A Helm chart for PagoPA microservice
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `false` |  |
 | serviceAccount.name | string | `""` |  |
+| serviceMonitor.create | bool | `false` | Create or not the service monitor |
+| serviceMonitor.endpoints | list | `[]` |  |
 | sidecars | list | `[]` | Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind |
+| strategy.rollingUpdate.maxSurge | string | `"25%"` |  |
+| strategy.rollingUpdate.maxUnavailable | string | `"25%"` |  |
+| strategy.type | string | `"RollingUpdate"` |  |
+| terminationGracePeriodSeconds | int | `30` |  |
 | tolerations | list | `[]` | Pod taints toleration |
 
 ----------------------------------------------
