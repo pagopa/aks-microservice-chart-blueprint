@@ -47,7 +47,7 @@ Common labels
 helm.sh/chart: {{ include "microservice-chart.chart" . }}
 {{ include "microservice-chart.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/version: {{ default .Chart.AppVersion .Values.image.tag | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
@@ -59,7 +59,7 @@ Progressive Delivery Common labels
 helm.sh/chart: {{ include "microservice-chart.chart" . }}
 {{ include "microservice-chart.selectorLabelsCanaryDelivery" . }}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/version: {{ default .Chart.AppVersion .Values.image.tag | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
