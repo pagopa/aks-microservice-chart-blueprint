@@ -220,6 +220,18 @@ To update the page content, use `bin/publish`.
 
 ## Breaking changes
 
+### v2.4.0
+
+*livenessProbeEnabled*:
+*livenessProbeEnabled*:
+
+Now create file from external config map
+
+```yaml
+  livenessProbeEnabled: true|false
+  readinessProbeEnabled: true|false
+```
+
 ### v2.3.0
 
 *fileConfigExternals*:

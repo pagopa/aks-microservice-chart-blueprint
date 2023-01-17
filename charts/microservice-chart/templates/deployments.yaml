@@ -42,10 +42,14 @@ spec:
               containerPort: {{ . }}
               protocol: TCP
           {{- end }}
+          {{- if .Values.livenessProbeEnabled }}
           livenessProbe:
-{{ toYaml .Values.livenessProbe | indent 12 }}
+            {{ toYaml .Values.livenessProbe | indent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbeEnabled }}
           readinessProbe:
-{{ toYaml .Values.readinessProbe | indent 12 }}
+            {{ toYaml .Values.readinessProbe | indent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if or .Values.envSecret .Values.fileConfig .Values.fileShare.create .Values.fileConfigExternals.create }}

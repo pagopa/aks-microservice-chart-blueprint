@@ -103,6 +103,7 @@ image:
 # -- Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind
 sidecars: []
 
+livenessProbeEnabled: true
 livenessProbe:
   # -- httpGet will be put as is into deployment yaml
   # @default -- -
@@ -118,6 +119,7 @@ livenessProbe:
   # -- (int) Numbers of seconds between one failure and other
   periodSeconds: 10
 
+readinessProbeEnabled: true
 readinessProbe:
   # -- httpGet will be put as is into deployment yaml
   # @default -- -
