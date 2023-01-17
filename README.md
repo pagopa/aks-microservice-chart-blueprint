@@ -228,8 +228,8 @@ To update the page content, use `bin/publish`.
 Now create file from external config map
 
 ```yaml
-  livenessProbeEnabled: true|false
-  readinessProbeEnabled: true|false
+  livenessProbeEnabled: <true|false>
+  readinessProbeEnabled: <true|false>
 ```
 
 ### v2.3.0
