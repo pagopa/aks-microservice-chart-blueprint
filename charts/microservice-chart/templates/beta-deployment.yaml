@@ -43,9 +43,29 @@ spec:
               protocol: TCP
           {{- end }}
           livenessProbe:
-{{ toYaml .Values.livenessProbe | indent 12 }}
+            {{- if eq .Values.livenessProbe.handlerType "tcpSocket" }}
+            tcpSocket:
+              port: {{ .Values.livenessProbe.tcpSocket.port }}
+            {{- else }}
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }}
+            {{- end}}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           readinessProbe:
-{{ toYaml .Values.readinessProbe | indent 12 }}
+            {{- if eq .Values.readinessProbe.handlerType "tcpSocket" }}
+            tcpSocket:
+              port: {{ .Values.readinessProbe.tcpSocket.port }}
+            {{- else }}
+            httpGet:
+              path: {{ .Values.readinessProbe.httpGet.path }}
+              port: {{ .Values.readinessProbe.httpGet.port }}
+            {{- end}}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if or .Values.envSecret .Values.fileConfig .Values.fileShare.create .Values.fileConfigExternals.create }}
