@@ -220,6 +220,19 @@ To update the page content, use `bin/publish`.
 
 ## Breaking changes
 
+### v2.4.0
+
+*livenessProbe*
+*readinessProbe*
+Now chose if enable tcpSocket ot httpGet 
+
+```yaml
+  livenessProbe:
+    handlerType: httpGet <httpGet|tcpSocket>
+  readinessProbe:
+    handlerType: httpGet <httpGet|tcpSocket>
+```
+
 ### v2.3.0
 
 *fileConfigExternals*:
