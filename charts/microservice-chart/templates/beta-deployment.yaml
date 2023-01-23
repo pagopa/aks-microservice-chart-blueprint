@@ -72,7 +72,7 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
-            {{- if .Values.envSecret }}
+            {{- if or .Values.envSecret .Values.fileShare.create }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
@@ -110,7 +110,7 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
-            {{- if .Values.canaryDelivery.deployment.envSecret }}
+            {{- if or .Values.canaryDelivery.deployment.envSecret .Values.canaryDelivery.deployment.fileShare.create }}
             - name: beta-secrets-store-inline
               mountPath: "/mnt/beta-secrets-store"
               readOnly: true
@@ -228,7 +228,7 @@ spec:
               mountOptions: {{ $v.mountOptions }}
         {{- end }}
         {{- end }}
-        {{- if .Values.canaryDelivery.deployment.envSecret }}
+        {{- if or .Values.canaryDelivery.deployment.envSecret .Values.canaryDelivery.deployment.fileShare.create }}
         - name: beta-secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
@@ -236,7 +236,7 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
         {{- end }}
-        {{- if .Values.envSecret }}
+        {{- if or .Values.envSecret .Values.fileShare.create }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
