@@ -68,11 +68,10 @@ spec:
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.envSecret .Values.fileConfig .Values.fileShare.create .Values.fileConfigExternals.create }}
           volumeMounts:
             - name: tmp
               mountPath: /tmp
-            {{- if .Values.envSecret }}
+            {{- if or .Values.envSecret .Values.fileShare.create }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
@@ -99,7 +98,6 @@ spec:
               mountPath: "/mnt/file-azure/{{ $v.name }}"
             {{- end }}
             {{- end }}
-          {{- end }}
           env:
             #secrets
             {{- range $name, $value := .Values.envSecret }}
@@ -152,7 +150,7 @@ spec:
               mountOptions: {{ $v.mountOptions }}
         {{- end }}
         {{- end }}
-        {{- if .Values.envSecret }}
+        {{- if or .Values.envSecret .Values.fileShare.create }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
