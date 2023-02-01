@@ -68,7 +68,6 @@ spec:
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.envSecret .Values.fileConfig .Values.fileShare.create .Values.fileConfigExternals.create }}
           volumeMounts:
             - name: tmp
               mountPath: /tmp
@@ -77,10 +76,23 @@ spec:
               mountPath: "/mnt/secrets-store"
               readOnly: true
             {{- end }}
+            {{- if or .Values.canaryDelivery.deployment.envSecret .Values.canaryDelivery.deployment.fileShare.create }}
+            - name: beta-secrets-store-inline
+              mountPath: "/mnt/beta-secrets-store"
+              readOnly: true
+            {{- end }}
             {{- if .Values.fileConfig }}
             {{- range $key, $val := .Values.fileConfig }}
             - name: file-config
               mountPath: "/mnt/file-config/{{ $key }}"
+              subPath: {{ $key }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
+            {{- if .Values.canaryDelivery.deployment.fileConfig }}
+            {{- range $key, $val := .Values.canaryDelivery.deployment.fileConfig }}
+            - name: beta-file-config
+              mountPath: "/mnt/beta-file-config/{{ $key }}"
               subPath: {{ $key }}
               readOnly: true
             {{- end }}
@@ -93,36 +105,6 @@ spec:
               readOnly: true
             {{- end }}
             {{- end }}
-            {{- if .Values.fileShare.create }}
-            {{- range $k, $v := .Values.fileShare.folders }}
-            - name: file-azure-{{ $v.name }}
-              csi:
-                driver: file.csi.azure.com
-                readOnly: {{ $v.readOnly }}
-                volumeAttributes:
-                  secretName: {{ include "microservice-chart.fullname" $ }}
-                  shareName: {{ $v.name }}
-                  mountOptions: {{ $v.mountOptions }}
-            {{- end }}
-            {{- end }}
-          {{- end }}
-          {{- if or .Values.canaryDelivery.deployment.envSecret .Values.canaryDelivery.deployment.fileConfig .Values.canaryDelivery.deployment.fileShare.create .Values.canaryDelivery.deployment.fileConfigExternals.create }}
-          volumeMounts:
-            - name: tmp
-              mountPath: /tmp
-            {{- if or .Values.canaryDelivery.deployment.envSecret .Values.canaryDelivery.deployment.fileShare.create }}
-            - name: beta-secrets-store-inline
-              mountPath: "/mnt/beta-secrets-store"
-              readOnly: true
-            {{- end }}
-            {{- if .Values.canaryDelivery.deployment.fileConfig }}
-            {{- range $key, $val := .Values.fileConfig }}
-            - name: beta-file-config
-              mountPath: "/mnt/beta-file-config/{{ $key }}"
-              subPath: {{ $key }}
-              readOnly: true
-            {{- end }}
-            {{- end }}
             {{- if .Values.canaryDelivery.deployment.fileConfigExternals.create }}
             {{- range $k, $v := .Values.canaryDelivery.deployment.fileConfigExternals.configMaps }}
             - name: beta-file-config-external-{{ $v.name }}
@@ -131,19 +113,18 @@ spec:
               readOnly: true
             {{- end }}
             {{- end }}
+            {{- if .Values.fileShare.create }}
+            {{- range $k, $v := .Values.fileShare.folders }}
+            - name: file-azure-{{ $v.name }}
+              mountPath: "/mnt/file-azure/{{ $v.name }}"
+            {{- end }}
+            {{- end }}
             {{- if .Values.canaryDelivery.deployment.fileShare.create }}
             {{- range $k, $v := .Values.canaryDelivery.deployment.fileShare.folders }}
-            - name: beta-file-azure-{{ $v.name }}
-              csi:
-                driver: file.csi.azure.com
-                readOnly: {{ $v.readOnly }}
-                volumeAttributes:
-                  secretName: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
-                  shareName: {{ $v.name }}
-                  mountOptions: {{ $v.mountOptions }}
+            - name: file-azure-{{ $v.name }}
+              mountPath: "/mnt/beta-file-azure/{{ $v.name }}"
             {{- end }}
             {{- end }}
-          {{- end }}
           env:
             # secrets from deployment
             {{- range $name, $value := .Values.envSecret }}
@@ -201,6 +182,15 @@ spec:
                   key: {{ $internVal }}
             {{- end }}
             {{- end }}
+            {{- range $key, $valMap := .Values.canaryDelivery.deployment.envConfigMapExternals }}
+            {{- range $internKey, $internVal := $valMap }}
+            - name: {{ $internKey }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $key }}
+                  key: {{ $internVal }}
+            {{- end }}
+            {{- end }}
       volumes:
         - name: tmp
           emptyDir: {}
@@ -228,14 +218,6 @@ spec:
               mountOptions: {{ $v.mountOptions }}
         {{- end }}
         {{- end }}
-        {{- if or .Values.canaryDelivery.deployment.envSecret .Values.canaryDelivery.deployment.fileShare.create }}
-        - name: beta-secrets-store-inline
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
-        {{- end }}
         {{- if or .Values.envSecret .Values.fileShare.create }}
         - name: secrets-store-inline
           csi:
@@ -243,6 +225,14 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
+        {{- end }}
+        {{- if or .Values.canaryDelivery.deployment.envSecret .Values.canaryDelivery.deployment.fileShare.create }}
+        - name: beta-secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
         {{- end }}
         {{- if .Values.fileConfig }}
         - name: file-config
