@@ -16,7 +16,7 @@ metadata:
   labels:
     {{- include "microservice-chart.labels" . | nindent 3 }}
   annotations:
-    helm.sh/hook: post-install,post-upgrade # fix updates on ScaledObject resource
+    helm.sh/hook: post-install ,post-upgrade # fix updates on ScaledObject resource
 spec:
   scaleTargetRef:
     name: {{ include "microservice-chart.fullname" . }}
@@ -27,9 +27,24 @@ spec:
   triggers:
     {{- range .Values.autoscaling.triggers }}
     - type: {{ .type }}
+      {{- if .metricType }}
+      metricType: {{ .metricType }}
+      {{- end }}
       authenticationRef:
         name: {{ include "microservice-chart.fullname" $ }}
       metadata:
         {{- .metadata | toYaml | nindent 8 }}
     {{- end }}
+  {{- if .Values.autoscaling.advanced }}
+  advanced:
+    {{- if .Values.autoscaling.advanced.restoreToOriginalReplicaCount }}
+    restoreToOriginalReplicaCount: {{ .Values.autoscaling.advanced.restoreToOriginalReplicaCount }}
+    {{- end }}
+    {{- if .Values.autoscaling.advanced.horizontalPodAutoscalerConfig }}
+    horizontalPodAutoscalerConfig:
+      #name: keda-hpa-{{ include "microservice-chart.fullname" $ }}
+      behavior:
+        {{- .Values.autoscaling.advanced.horizontalPodAutoscalerConfig.behavior | toYaml | nindent 8 }}
+    {{- end }}
+  {{- end }}
 {{- end }}
