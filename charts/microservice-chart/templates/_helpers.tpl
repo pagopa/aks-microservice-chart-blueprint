@@ -37,7 +37,7 @@ beta-{{ include "microservice-chart.fullname" . }}
 Create chart name and version as used by the chart label.
 */}}
 {{- define "microservice-chart.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Chart.Name (.Values.image.tag | default .Chart.Version) | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -46,11 +46,19 @@ Common labels
 {{- define "microservice-chart.labels" -}}
 helm.sh/chart: {{ include "microservice-chart.chart" . }}
 {{ include "microservice-chart.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+{{- include "microservice-chart.extraLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
+
+{{/*
+Extra labels
+*/}}
+{{- define "microservice-chart.extraLabels" -}}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ (.Values.image.tag | default .Chart.AppVersion) | quote }}
+{{- end }}
+{{- end }}
+
 
 {{/*
 Progressive Delivery Common labels
@@ -58,11 +66,19 @@ Progressive Delivery Common labels
 {{- define "microservice-chart.labelsCanaryDelivery" -}}
 helm.sh/chart: {{ include "microservice-chart.chart" . }}
 {{ include "microservice-chart.selectorLabelsCanaryDelivery" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+{{- include "microservice-chart.extraLabelsCanaryDelivery" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
+
+{{/*
+Extra labels
+*/}}
+{{- define "microservice-chart.extraLabelsCanaryDelivery" -}}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ (.Values.image.tag | default .Chart.AppVersion) | quote }}
+{{- end }}
+{{- end }}
+
 
 {{/*
 Selector labels
