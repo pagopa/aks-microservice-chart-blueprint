@@ -1,4 +1,4 @@
-{{- if .Values.deployment.create -}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,7 +9,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
-  replicas: {{ .Values.deployment.replicas }}
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       {{- include "microservice-chart.selectorLabels" . | nindent 6 }}
@@ -20,7 +20,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- if .Values.deployment.forceRedeploy }}
+        {{- if .Values.forceRedeploy }}
         redeploy: {{ now | unixEpoch | quote }}
         {{- end }}
         aadpodidbinding: "{{ .Values.namespace }}-pod-identity"
@@ -70,45 +70,49 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
-            {{- if or .Values.envSecret .Values.fileShare.create }}
+            {{- if .Values.tmpVolumeMount.create }}
+            - name: {{ .Values.tmpVolumeMount.name }}
+              mountPath: {{ .Values.tmpVolumeMount.mountPath }}
+            {{- end }}
+            {{- if or .Values.azureSecretProvider.create .Values.azureVolumeMount.create }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
             {{- end }}
-            {{- if .Values.fileConfig }}
-            {{- range $key, $val := .Values.fileConfig }}
+            {{- if .Values.configMapFromFile }}
+            {{- range $key, $val := .Values.configMapFromFile }}
             - name: file-config
               mountPath: "/mnt/file-config/{{ $key }}"
               subPath: {{ $key }}
               readOnly: true
             {{- end }}
             {{- end }}
-            {{- if .Values.fileConfigExternals.create }}
-            {{- range $k, $v := .Values.fileConfigExternals.configMaps }}
+            {{- if .Values.externalConfigMap.create }}
+            {{- range $k, $v := .Values.externalConfigMap.configMaps }}
             - name: file-config-external-{{ $v.name }}
               mountPath: "/mnt/file-config-external/{{ $v.name }}/{{ $v.key }}"
               subPath: {{ $v.key }}
               readOnly: true
             {{- end }}
             {{- end }}
-            {{- if .Values.fileShare.create }}
-            {{- range $k, $v := .Values.fileShare.folders }}
+            {{- if .Values.azureVolumeMount.create }}
+            {{- range $k, $v := .Values.azureVolumeMount.folders }}
             - name: file-azure-{{ $v.name }}
               mountPath: "/mnt/file-azure/{{ $v.name }}"
             {{- end }}
             {{- end }}
           env:
-            #secrets
-            {{- range $name, $value := .Values.envSecret }}
+            #azureSecretProvider.envSecrets
+            {{- if or .Values.azureSecretProvider.create }}
+            {{- range $name, $value := .Values.azureSecretProvider.envSecrets }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $value }}
             {{- end }}
-            #configmap
+            {{- end }}
+            #envConfig
             {{- range $key, $val := .Values.envConfig }}
             - name: {{ $key }}
               valueFrom:
@@ -116,7 +120,7 @@ spec:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
             {{- end }}
-            #field ref
+            #envFieldRef
             {{- range $key, $val := .Values.envFieldRef }}
             - name: {{ $key }}
               valueFrom:
@@ -124,23 +128,25 @@ spec:
                   fieldPath: {{ $val }}
             {{- end }}
             #external configmap values
-            {{- range $key, $valMap := .Values.envConfigMapExternals }}
-            {{- range $internKey, $internVal := $valMap }}
-            - name: {{ $internKey }}
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $key }}
-                  key: {{ $internVal }}
-            {{- end }}
-            {{- end }}
+#            {{- if .Values.externalConfigMap.create }}
+#            {{- range $internKey, $internVal := .Values.externalConfigMap.configMaps }}
+#            - name: {{ $internVal.key }}
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: {{ $internVal.name }}
+#                  key: {{ $internVal.key }}
+#            {{- end }}
+#            {{- end }}
         {{- with .Values.sidecars }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       volumes:
-        - name: tmp
-          emptyDir: {}
-        {{- if .Values.fileShare.create }}
-        {{- range $k, $v := .Values.fileShare.folders }}
+        {{- if .Values.tmpVolumeMount.create }}
+        - name: {{ .Values.tmpVolumeMount.name }}
+          emptyDir: { }
+        {{- end }}
+        {{- if .Values.azureVolumeMount.create }}
+        {{- range $k, $v := .Values.azureVolumeMount.folders }}
         - name: file-azure-{{ $v.name }}
           csi:
             driver: file.csi.azure.com
@@ -151,7 +157,7 @@ spec:
               mountOptions: {{ $v.mountOptions }}
         {{- end }}
         {{- end }}
-        {{- if or .Values.envSecret .Values.fileShare.create }}
+        {{- if or .Values.azureSecretProvider.create .Values.azureVolumeMount.create }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
@@ -159,19 +165,19 @@ spec:
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" $ }}
         {{- end }}
-        {{- if .Values.fileConfig }}
+        {{- if .Values.configMapFromFile }}
         - name: file-config
           configMap:
             name: {{ include "microservice-chart.fullname" $ }}
             defaultMode: 420
             items:
-          {{- range $key, $val := .Values.fileConfig }}
+          {{- range $key, $val := .Values.configMapFromFile }}
               - key: {{ $key }}
                 path: {{ $key }}
           {{- end }}
         {{- end }}
-        {{- if .Values.fileConfigExternals.create }}
-        {{- range $k, $v := .Values.fileConfigExternals.configMaps }}
+        {{- if .Values.externalConfigMap.create }}
+        {{- range $k, $v := .Values.externalConfigMap.configMaps }}
         - name: file-config-external-{{ $v.name }}
           configMap:
             name: {{ $v.name }}
@@ -199,4 +205,3 @@ spec:
   strategy:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-{{- end }}

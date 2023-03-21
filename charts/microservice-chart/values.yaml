@@ -1,97 +1,15 @@
 # -- Namespace in which deploy the microservice
 namespace: ""
-
 # -- Helm chart name override
 nameOverride: ""
-
 # -- Helm chart fullname override
 fullnameOverride: ""
-
-# -- This section allow to configure canary deployment
-# @default -- -
-canaryDelivery:
-  # -- (bool) Beta/Enable Canary/BlueGreen Deployment
-  create: false
-  # -- This section allow to configure ingress inside canary deployment
-  # @default -- -
-  ingress:
-    # -- (bool) Beta/Enable Ingress for Canary/BlueGreen Deployment
-    create: true
-    #     # canary:
-    #     #   type: bluegreen
-    # -- Configure how ingress canary should be
-    # @default -- -
-    canary:
-      # -- The type of canary can be header|bluegreen
-      type: header
-      # -- the header name used to call the canary deployment
-      headerName: canary
-      # -- the header values used to call the canary deployment
-      headerValue: pagopa
-      # -- the weight percent used into canary deployment. Can be used toghether with header
-      weightPercent: 10
-  service:
-    # -- (bool) Beta/Enable Service for Canary/BlueGreen Deployment
-    create: true
-  # -- Beta/Deployment
-  # @default -- -
-  deployment:
-    # -- (bool) Beta/Enable Deployment for Canary/BlueGreen Deployment
-    create: true
-    image:
-      # -- Docker reposity for the container canary
-      repository: ghcr.io/pagopa/devops-java-springboot-color
-      # -- Container TAG
-      tag: 0.7.1
-      # -- Pull policy to use
-      pullPolicy: Always
-    fileShare:
-      # -- (bool) create the service manifest for Canary/BlueGreen Deployment
-      create: false
-      # -- (list) Which fileshare use (! this name is used even inside the deployment) for Canary/BlueGreen Deployment
-      folders: [ ]
-    # -- Environment config to use for the canary container
-    envConfig: {}
-    # -- Environment secrets to use for the canary container
-    envSecret: {}
-    # -- Environment config from k8s metadata for the canary container
-    envFieldRef: {}
-    # -- File config pattern to mount for the canary container
-    fileConfig: {}
-    fileConfigExternals:
-      create: false
-      configMaps: [ ]
-    # -- (bool) Force redeploy canary container
-    forceRedeploy: false
-  # -- Beta/SecretProviderClass
-  # @default -- -
-  secretProviderClass:
-    # -- (bool) Beta/create or not the secret provider class manifest
-    create: true
-  serviceMonitor:
-    # -- (bool) Create or not the service monitor
-    create: false
-    endpoints: [ ]
-
-#
-# Deployment
-#
-
-# -- Configure deployment
-# @default -- -
-deployment:
-  # -- (bool) create the deployment manifest
-  create: true
-  # -- (int) Number of replicas for this deployment
-  replicas: 1
-  # -- (bool) Force redeploy container
-  forceRedeploy: false
-
-
-# -- Configure values from config maps external to chart. E.g already present into cluster, see documentation
-# @default -- {}
-envConfigMapExternals: {}
-
+terminationGracePeriodSeconds: 30
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
 image:
   # -- Docker reposity for the container
   repository: ""
@@ -103,45 +21,39 @@ image:
 # -- Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind
 sidecars: []
 
-livenessProbe:
-  # -- httpGet will be put as is into deployment yaml
-  # @default -- -
-  handlerType: httpGet #httpGet|tcpSocket
-
-  tcpSocket:
-    port: 80
-
-  httpGet:
-    # -- Live (health) path used by app
-    path: /healthz/live
-    # -- Live (health) port used by app
-    port: 80
-  # -- (int) Initial delay before start checking
-  initialDelaySeconds: 60
-  # -- (int) Numbers of failures before consider the pod fail
-  failureThreshold: 6
-  # -- (int) Numbers of seconds between one failure and other
-  periodSeconds: 10
-
 readinessProbe:
-  # -- httpGet will be put as is into deployment yaml
-  # @default -- -
-  handlerType: httpGet #httpGet|tcpSocket
-
-  tcpSocket:
-    port: 80
-
   httpGet:
-    # -- Ready (health) path used by app
-    path: /healthz/ready
-    # -- Ready (health) port used by app
-    port: 80
-  # -- (int) Initial delay before start checking
-  initialDelaySeconds: 60
-  # -- (int) Numbers of failures before consider the pod fail
-  failureThreshold: 6
-  # -- (int) Numbers of seconds between one failure and other
-  periodSeconds: 10
+    path: /ready
+    port: 8558
+  initialDelaySeconds: 10
+  failureThreshold: 10
+  periodSeconds: 5
+livenessProbe:
+  httpGet:
+    path: /alive
+    port: 8558
+  initialDelaySeconds: 15
+  failureThreshold: 10
+  periodSeconds: 5
+
+
+# -- Configure values from config maps external to chart. E.g already present into cluster, see documentation
+# @default -- {}
+externalConfigMap:
+  create: false
+  configMaps: []
+
+# -- Configure mounted volumes with secrets needed to mount them
+# @default -- {}
+azureVolumeMount:
+  create: false
+  envSecrets: {}
+  folders: []
+# -- Configure optional tmp volume to mount
+tmpVolumeMount:
+  create: false
+  name: tmp
+  mountPath: /tmp
 
 # -- POD resources section
 # @default -- -
@@ -158,18 +70,19 @@ resources:
 # -- Environment config to use for the canary container
 envConfig: {}
 
-# -- Environment secrets to use for the canary container
-envSecret: {}
+# -- Configure secret provider with secrets to mount as environment variables
+azureSecretProvider:
+  create: false
+  envSecrets: {}
+  keyvault:
+    name: ""
+    tenantId: ""
 
 # -- Environment config from k8s metadata
 envFieldRef: {}
 
-# -- File config pattern to mount
-fileConfig: {}
-
-fileConfigExternals:
-  create: false
-  configMaps: []
+# -- Configure files to mount as config maps
+configMapFromFile: {}
 
 podAnnotations: {}
 
@@ -178,7 +91,11 @@ podSecurityContext:
     type: RuntimeDefault
 
 securityContext:
+  readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - all
 
 # -- K8s node selectors
 nodeSelector: {}
@@ -190,53 +107,6 @@ tolerations: []
 affinity: {}
 
 restartPolicy: "Always"
-terminationGracePeriodSeconds: 30
-strategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 25%
-    maxSurge: 25%
-
-#
-# Network
-#
-
-# -- Ingress configuration
-# @default -- -
-ingress:
-  # -- (bool) Create or not the ingress manifest
-  create: false
-  # -- Hostname for the ingress like https://idpay.pagopa.it
-  host: ""
-  # -- (int) service port to reach
-  servicePort: ""
-  # -- Path where the application can response like: `/app`
-  path: "/"
-  pathType: ImplementationSpecific
-  # -- (bool) if force ssl redirect is enabled
-  forceSslRedirect: true
-  # -- the rewrite target for ingress
-  rewriteTarget: /$1
-  # -- the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body
-  proxyBodySize: 1m
-  # -- (map) custom annotations for ingress
-  annotations: {}
-
-fileShare:
-  # -- (bool) create the service manifest
-  create: false
-  # -- (list) Which fileshare use (! this name is used even inside the deployment)
-  folders: []
-
-
-
-service:
-  # -- (bool) create the service manifest
-  create: true
-  # -- Which type of service to use
-  type: ClusterIP
-  # -- (list) Which ports use (! this port is used even inside the deployment)
-  ports: []
 
 #
 # Autoscaling
@@ -273,20 +143,6 @@ autoscaling:
 # Pod identity and KV connection
 #
 
-# -- Secrect provider class allow to connect to azure kv
-# @default -- -
-secretProviderClass:
-  # -- (bool) create or not the secret provider class manifest
-  create: true
-
-# -- Azure KeyVault connection configuration
-# @default -- -
-keyvault:
-  # -- KV name
-  name: ""
-  # -- Tenant id (uuid)
-  tenantId: ""
-
 serviceAccount:
   create: false
   annotations: {}
@@ -296,3 +152,54 @@ serviceMonitor:
   # -- (bool) Create or not the service monitor
   create: false
   endpoints: []
+
+# -- Configure deployment
+# @default -- -
+replicas: 1
+# -- (bool) Force redeploy container
+forceRedeploy: false
+ports:
+  - 8080
+
+service:
+  # -- (bool) create the service manifest
+  create: true
+  # -- Which type of service to use
+  type: ClusterIP
+  # -- (list) Which ports use (! this port is used even inside the deployment)
+  ports:
+    - 8080
+
+# -- Ingress configuration
+# @default -- -
+ingress:
+  # -- (bool) Create or not the ingress manifest
+  create: false
+  # -- Hostname for the ingress like https://idpay.pagopa.it
+  host: ""
+  # -- (int) service port to reach
+  servicePort: 8080
+  # -- Path where the application can response like: `/app`
+  path: "/app(/|$)(.*)"
+  pathType: Prefix
+  # -- (bool) if force ssl redirect is enabled
+  forceSslRedirect: true
+  # -- the rewrite target for ingress
+  rewriteTarget: /$2
+  # -- the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body
+  proxyBodySize: 1m
+  # -- (map) custom annotations for ingress
+  annotations: {}
+
+
+# -- This section allow to configure canary deployment
+# @default -- -
+canaryDelivery:
+  # -- (bool) Beta/Enable Canary/BlueGreen Deployment
+  create: false
+  # -- This section allow to configure ingress inside canary deployment
+  # @default -- -
+  ingress:
+    headerName: canary
+    headerValue: pagopa
+    weightPercent: 10

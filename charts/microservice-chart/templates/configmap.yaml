@@ -1,4 +1,4 @@
-{{- if or .Values.envConfig .Values.fileConfig -}}
+{{- if or .Values.envConfig .Values.configMapFromFile -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,8 +10,8 @@ data:
   {{- if .Values.envConfig -}}
   {{- toYaml .Values.envConfig | nindent 2 }}
   {{- end }}
-  {{- if .Values.fileConfig -}}
-  {{- toYaml .Values.fileConfig | nindent 2 }}
+  {{- if .Values.configMapFromFile -}}
+  {{- toYaml .Values.configMapFromFile | nindent 2 }}
   {{- end }}
 {{- end }}
 
