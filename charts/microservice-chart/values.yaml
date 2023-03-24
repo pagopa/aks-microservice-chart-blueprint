@@ -194,7 +194,7 @@ ingress:
 
 # -- This section allow to configure canary deployment
 # @default -- -
-canaryDelivery: &canaryDelivery
+canaryDelivery:
   # -- (bool) Beta/Enable Canary/BlueGreen Deployment
   create: false
   # -- This section allow to configure ingress inside canary deployment
