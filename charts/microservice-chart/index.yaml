@@ -11,4 +11,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/pagopa/aks-microservice-chart-blueprint/draft_3.0.0/charts/microservice-chart/microservice-chart-3.0.0.tgz
     version: 3.0.0
-generated: "2023-03-24T11:55:35.5407431+01:00"
+generated: "2023-03-24T12:06:36.3730348+01:00"
