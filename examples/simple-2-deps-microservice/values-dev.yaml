@@ -1,0 +1,84 @@
+basecache: &basecache
+  namespace: "apiconfig"
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.1.2"
+  livenessProbe:
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+  readinessProbe:
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+  ingress: &ingress
+    create: true
+    host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
+    path: /api-config-cache(/|$)(.*)
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "0.25"
+    limits:
+      memory: "2G"
+      cpu: "1"
+  envConfig: &envConfig
+    AZURE_INSIGHTS_ENABLED: "true"
+    REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
+    REDIS_PORT: "6380"
+  secretProvider: &azureSecretProvider
+    create: true
+    envSecrets: &envSecret
+      APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
+      REDIS_PWD: "redis-password"
+    keyvault:
+      name: "pagopa-d-apiconfig-kv"
+      tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  tmpVolumeMount:
+    create: true
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
+# Configuration used to update image tag
+microservice-chart:
+  !!merge <<: *basecache
+pagopamicroservice1:
+  !!merge <<: *basecache
+  ingress:
+    !!merge <<: *ingress
+    path: /api-config-cache/p(/|$)(.*)
+  envConfig:
+    !!merge <<: *envConfig
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql"
+    DB_CONFIG_URL: "jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_USER: "cfg"
+    DB_CONFIG_DRIVER: "org.postgresql.Driver"
+    DATABASE_ID: "p"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+pagopamicroservice2:
+  !!merge <<: *basecache
+  ingress:
+    !!merge <<: *ingress
+    path: /api-config-cache/o(/|$)(.*)
+  envConfig:
+    !!merge <<: *envConfig
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"
+    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCS_PP_NODO4_CFG"
+    DB_CONFIG_USER: "NODO4_CFG"
+    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
+    DATABASE_ID: "o"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
