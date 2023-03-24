@@ -1,10 +1,10 @@
-<mxfile host="app.diagrams.net" modified="2023-03-24T10:24:57.467Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="V1dPgwAR_WddOPkLYdBN" version="21.1.0" type="device">
+<mxfile host="app.diagrams.net" modified="2023-03-24T10:28:06.443Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="bTD0HSeykPD11lq2cSbh" version="21.1.0" type="device">
   <diagram id="ZGYd3SjESlaEDazQRH5I" name="Page-1">
     <mxGraphModel dx="3058" dy="1099" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="QMjt1a6sk4tn8XUCPtue-55" value="&lt;h1&gt;Canary by header&lt;/h1&gt;" style="text;html=1;fillColor=#FFFF66;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;verticalAlign=bottom;strokeColor=#36393d;gradientDirection=north;opacity=40;" vertex="1" parent="1">
+        <mxCell id="QMjt1a6sk4tn8XUCPtue-55" value="&lt;h1&gt;Canary bluegreen&lt;/h1&gt;" style="text;html=1;fillColor=#FFFF66;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;verticalAlign=bottom;strokeColor=#36393d;gradientDirection=north;opacity=40;" vertex="1" parent="1">
           <mxGeometry x="-817" y="620" width="807" height="540" as="geometry" />
         </mxCell>
         <mxCell id="Xl_ESGtx4ULiLm2v7BwW-18" value="&lt;h1&gt;Stable&lt;/h1&gt;" style="text;html=1;strokeColor=#36393d;fillColor=#cdeb8b;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;opacity=70;" parent="1" vertex="1">
