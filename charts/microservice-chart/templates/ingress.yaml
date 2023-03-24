@@ -12,7 +12,7 @@ metadata:
     {{- with .Values.ingress.annotations }}
 {{ toYaml . | indent 4 }}
     {{- end }}
-    {{- if and .Values.canaryDelivery.create  }}
+    {{- if and .Values.canaryDelivery.create (eq .Values.canaryDelivery.ingress.type "header" ) }}
     nginx.ingress.kubernetes.io/canary: "true"
     nginx.ingress.kubernetes.io/canary-weight: {{ .Values.canaryDelivery.ingress.weightPercent |quote }}
     nginx.ingress.kubernetes.io/canary-by-header: {{ .Values.canaryDelivery.ingress.headerName |quote }}
@@ -29,7 +29,11 @@ spec:
                 name: {{ include "microservice-chart.fullname" . }}
                 port:
                   number: {{ .Values.ingress.servicePort }}
+            {{- if and .Values.canaryDelivery.create (eq .Values.canaryDelivery.ingress.type "bluegreen" ) }}
+            path: /beta{{ .Values.ingress.path }}
+            {{- else }}
             path: {{ .Values.ingress.path }}
+            {{- end }}
             pathType: {{ .Values.ingress.pathType }}
   tls:
     - hosts: [{{ .Values.ingress.host }}]
