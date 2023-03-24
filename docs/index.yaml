@@ -3,12 +3,12 @@ entries:
   microservice-chart:
   - apiVersion: v2
     appVersion: 0.0.0
-    created: "2023-03-24T12:17:52.1460747+01:00"
+    created: "2023-03-24T12:25:52.9927732+01:00"
     description: A Helm chart for PagoPA microservice
     digest: 7b9d2b955cfd078a0bc943dda7a0d9969d515a01fb224ba8a3b71881e46d7e75
     name: microservice-chart
     type: application
     urls:
-    - https://raw.githubusercontent.com/pagopa/aks-microservice-chart-blueprint/draft_3.0.0/charts/microservice-chart/microservice-chart-3.0.0.tgz
+    - https://cesarecaccuri.github.io/aks-microservice-chart-blueprint/microservice-chart-3.0.0.tgz
     version: 3.0.0
-generated: "2023-03-24T12:17:52.133907+01:00"
+generated: "2023-03-24T12:25:52.9911256+01:00"
