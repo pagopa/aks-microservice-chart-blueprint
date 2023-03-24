@@ -1,4 +1,4 @@
-{{- if or .Values.envConfig .Values.configMapFromFile -}}
+{{- if or .Values.envConfig .Values.configMapFromFile .Values.canaryDelivery.create -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
