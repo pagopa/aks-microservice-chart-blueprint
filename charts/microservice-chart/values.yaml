@@ -45,7 +45,7 @@ externalConfigMap:
 
 # -- Configure mounted volumes with secrets needed to mount them
 # @default -- {}
-azureVolumeMount:
+providedVolumeMount:
   create: false
   envSecrets: {}
   folders: []
@@ -71,7 +71,7 @@ resources:
 envConfig: {}
 
 # -- Configure secret provider with secrets to mount as environment variables
-azureSecretProvider:
+secretProvider:
   create: false
   envSecrets: {}
   keyvault:

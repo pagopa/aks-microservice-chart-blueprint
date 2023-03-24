@@ -74,7 +74,7 @@ spec:
             - name: {{ .Values.tmpVolumeMount.name }}
               mountPath: {{ .Values.tmpVolumeMount.mountPath }}
             {{- end }}
-            {{- if or .Values.azureSecretProvider.create .Values.azureVolumeMount.create }}
+            {{- if or .Values.secretProvider.create .Values.providedVolumeMount.create }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
@@ -95,16 +95,16 @@ spec:
               readOnly: true
             {{- end }}
             {{- end }}
-            {{- if .Values.azureVolumeMount.create }}
-            {{- range $k, $v := .Values.azureVolumeMount.folders }}
+            {{- if .Values.providedVolumeMount.create }}
+            {{- range $k, $v := .Values.providedVolumeMount.folders }}
             - name: file-azure-{{ $v.name }}
               mountPath: "/mnt/file-azure/{{ $v.name }}"
             {{- end }}
             {{- end }}
           env:
-            #azureSecretProvider.envSecrets
-            {{- if or .Values.azureSecretProvider.create }}
-            {{- range $name, $value := .Values.azureSecretProvider.envSecrets }}
+            #secretProvider.envSecrets
+            {{- if or .Values.secretProvider.create }}
+            {{- range $name, $value := .Values.secretProvider.envSecrets }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
@@ -145,8 +145,8 @@ spec:
         - name: {{ .Values.tmpVolumeMount.name }}
           emptyDir: { }
         {{- end }}
-        {{- if .Values.azureVolumeMount.create }}
-        {{- range $k, $v := .Values.azureVolumeMount.folders }}
+        {{- if .Values.providedVolumeMount.create }}
+        {{- range $k, $v := .Values.providedVolumeMount.folders }}
         - name: file-azure-{{ $v.name }}
           csi:
             driver: file.csi.azure.com
@@ -157,7 +157,7 @@ spec:
               mountOptions: {{ $v.mountOptions }}
         {{- end }}
         {{- end }}
-        {{- if or .Values.azureSecretProvider.create .Values.azureVolumeMount.create }}
+        {{- if or .Values.secretProvider.create .Values.providedVolumeMount.create }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
