@@ -12,11 +12,15 @@ metadata:
     {{- with .Values.ingress.annotations }}
 {{ toYaml . | indent 4 }}
     {{- end }}
-    {{- if and .Values.canaryDelivery.create (eq .Values.canaryDelivery.ingress.type "header" ) }}
+    {{- if .Values.canaryDelivery.create }}
     nginx.ingress.kubernetes.io/canary: "true"
+    {{- end }}
+    {{- if .Values.canaryDelivery.ingress.header }}
+    nginx.ingress.kubernetes.io/canary-by-header: { { .Values.canaryDelivery.ingress.headerName |quote } }
+    nginx.ingress.kubernetes.io/canary-by-header-value: { { .Values.canaryDelivery.ingress.headerValue |quote } }
+    {{- end }}
+    {{- if .Values.canaryDelivery.ingress.weightPercent }}
     nginx.ingress.kubernetes.io/canary-weight: {{ .Values.canaryDelivery.ingress.weightPercent |quote }}
-    nginx.ingress.kubernetes.io/canary-by-header: {{ .Values.canaryDelivery.ingress.headerName |quote }}
-    nginx.ingress.kubernetes.io/canary-by-header-value: {{ .Values.canaryDelivery.ingress.headerValue |quote }}
     {{- end }}
 spec:
   ingressClassName: nginx

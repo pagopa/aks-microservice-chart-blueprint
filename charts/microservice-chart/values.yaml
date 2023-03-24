@@ -200,7 +200,7 @@ canaryDelivery:
   # -- This section allow to configure ingress inside canary deployment
   # @default -- -
   ingress:
-    type: header
+    header: true
+    bluegreen: false
     headerName: canary
     headerValue: pagopa
-    weightPercent: 10
