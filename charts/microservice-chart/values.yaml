@@ -202,5 +202,5 @@ canaryDelivery: &canaryDelivery
   ingress:
     header: true
     bluegreen: false
-    headerName: canary
+    headerName: X-Canary
     headerValue: pagopa
