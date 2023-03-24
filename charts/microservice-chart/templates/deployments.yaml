@@ -113,6 +113,13 @@ spec:
             {{- end }}
             {{- end }}
             #envConfig
+            {{- if .Values.canaryDelivery.create }}
+            - name: CANARY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: CANARY
+            {{- end }}
             {{- range $key, $val := .Values.envConfig }}
             - name: {{ $key }}
               valueFrom:
