@@ -15,12 +15,12 @@ metadata:
     {{- if .Values.canaryDelivery.create }}
     nginx.ingress.kubernetes.io/canary: "true"
     {{- end }}
-    {{- if .Values.canaryDelivery.ingress.header }}
-    nginx.ingress.kubernetes.io/canary-by-header: { { .Values.canaryDelivery.ingress.headerName |quote } }
-    nginx.ingress.kubernetes.io/canary-by-header-value: { { .Values.canaryDelivery.ingress.headerValue |quote } }
+    {{- if and .Values.canaryDelivery.create .Values.canaryDelivery.ingress.header }}
+    nginx.ingress.kubernetes.io/canary-by-header: {{ .Values.canaryDelivery.ingress.headerName | quote }}
+    nginx.ingress.kubernetes.io/canary-by-header-value: {{ .Values.canaryDelivery.ingress.headerValue | quote }}
     {{- end }}
-    {{- if .Values.canaryDelivery.ingress.weightPercent }}
-    nginx.ingress.kubernetes.io/canary-weight: {{ .Values.canaryDelivery.ingress.weightPercent |quote }}
+    {{- if and .Values.canaryDelivery.create .Values.canaryDelivery.ingress.weightPercent }}
+    nginx.ingress.kubernetes.io/canary-weight: {{ .Values.canaryDelivery.ingress.weightPercent | quote }}
     {{- end }}
 spec:
   ingressClassName: nginx
@@ -33,7 +33,7 @@ spec:
                 name: {{ include "microservice-chart.fullname" . }}
                 port:
                   number: {{ .Values.ingress.servicePort }}
-            {{- if and .Values.canaryDelivery.create (eq .Values.canaryDelivery.ingress.type "bluegreen" ) }}
+            {{- if and .Values.canaryDelivery.create .Values.canaryDelivery.ingress.bluegreen }}
             path: /beta{{ .Values.ingress.path }}
             {{- else }}
             path: {{ .Values.ingress.path }}
