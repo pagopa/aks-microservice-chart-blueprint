@@ -1,5 +1,34 @@
 # CHANGELOG
 
+## v3.0.0 (Breking change)
+- deployment
+  - moved items at root level
+  - removed create flag
+  - added default port 8080
+- service
+  - added default port 8080
+- ingress
+  - defaults to servicePort 8080 and path "/app(/|$)(.*)"
+- secretProviderClass
+  - renamed to secretProvider
+  - has now envSecrets and keyvault child values
+- fileConfig
+  - renamed to configMapFromFile
+- fileShare
+  - renamed to providedVolumeMount
+  - has now envSecrets child value containing secrets needed for volume mount
+- envConfigMapExternals
+  - renamed to externalConfigMap
+- readinessProbe/livenessProbe default to http
+- securityContext
+  - defaults to readOnlyRootFilesystem: true
+- canaryDelivery
+  - containts only ingress data
+  - defaults to header X-Canary:pagopa only
+  - header,bluegreen and weightPercent can be set separately
+
+added tmpVolumeMount
+
 ## v2.0.0 (Breking change)
 
 fix:

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: pagopa-api-cache-chart
+description: Microservice that handles calculation for pagoPA Advanced Fees Management
+type: application
+version: 0.0.1
+dependencies:
+  - name: microservice-chart
+    version: 3.0.0
+    repository: "file://../../../charts/microservice-chart"
+    alias: pagopamicroservice1
+    condition: pagopamicroservice1.enabled
+  - name: microservice-chart
+    version: 3.0.0
+    repository: "file://../../../charts/microservice-chart"
+    alias: pagopamicroservice2
+    condition: pagopamicroservice2.enabled

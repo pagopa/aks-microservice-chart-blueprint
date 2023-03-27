@@ -1,4 +1,4 @@
-{{- if or .Values.envConfig .Values.fileConfig -}}
+{{- if or .Values.envConfig .Values.configMapFromFile .Values.canaryDelivery.create -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,11 +7,14 @@ metadata:
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
 data:
+  {{- if .Values.canaryDelivery.create }}
+  CANARY: "true"
+  {{- end }}
   {{- if .Values.envConfig -}}
   {{- toYaml .Values.envConfig | nindent 2 }}
   {{- end }}
-  {{- if .Values.fileConfig -}}
-  {{- toYaml .Values.fileConfig | nindent 2 }}
+  {{- if .Values.configMapFromFile -}}
+  {{- toYaml .Values.configMapFromFile | nindent 2 }}
   {{- end }}
 {{- end }}
 
