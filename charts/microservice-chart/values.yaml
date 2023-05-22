@@ -4,12 +4,17 @@ namespace: ""
 nameOverride: ""
 # -- Helm chart fullname override
 fullnameOverride: ""
+# -- Termination grace period in seconds
 terminationGracePeriodSeconds: 30
+# -- strategy type for deployment: Recreate or RollingUpdate
+# @default -- {}
 strategy:
   type: RollingUpdate
   rollingUpdate:
     maxUnavailable: 0
     maxSurge: 1
+# -- image: configuration for the container
+# @default -- {}
 image:
   # -- Docker reposity for the container
   repository: ""
@@ -21,6 +26,8 @@ image:
 # -- Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind
 sidecars: []
 
+# -- ReadinessProbe
+# @default -- {}
 readinessProbe:
   httpGet:
     path: /ready
@@ -28,6 +35,8 @@ readinessProbe:
   initialDelaySeconds: 10
   failureThreshold: 10
   periodSeconds: 5
+# -- LivenessProbe
+# @default -- {}
 livenessProbe:
   httpGet:
     path: /alive
