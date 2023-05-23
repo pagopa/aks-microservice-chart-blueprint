@@ -61,7 +61,7 @@ A Helm chart for PagoPA microservice
 | resources.limits | object | `{"cpu":"150m","memory":"128Mi"}` | limits is mandatory |
 | resources.requests | object | `{"cpu":"40m","memory":"96Mi"}` | request is mandatory |
 | restartPolicy | string | `"Always"` | Restart policy |
-| secretProvider | object | `{"create":true}` | Configure secret provider with secrets to mount as environment variables |
+| secretProviderClass | object | `{"create":true}` | Configure secret provider with secrets to mount as environment variables |
 | securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | securityContext.capabilities.drop[0] | string | `"all"` |  |
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |

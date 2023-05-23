@@ -111,7 +111,7 @@ resources:
     cpu: "150m"
 
 # -- Configure secret provider with secrets to mount as environment variables
-secretProvider:
+secretProviderClass:
   create: true
 
 # -- Configure keyvault to use inside secret prover to load secret directly

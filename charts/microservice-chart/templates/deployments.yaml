@@ -77,7 +77,7 @@ spec:
               mountPath: {{ $val.mountPath }}
             {{- end }}
             {{- end }}
-            {{- if or .Values.secretProvider.create .Values.providedVolumeMount.create }}
+            {{- if or .Values.secretProviderClass.create .Values.providedVolumeMount.create }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
@@ -105,7 +105,7 @@ spec:
             {{- end }}
             {{- end }}
           env:
-            #secretProvider.envSecret
+            #secretProviderClass.envSecret
             {{- range $key, $val := .Values.envConfig }}
             - name: {{ $key }}
               valueFrom:
@@ -113,7 +113,7 @@ spec:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
             {{- end }}
-            {{- if or .Values.secretProvider.create }}
+            {{- if or .Values.secretProviderClass.create }}
             {{- range $name, $value := .Values.envSecret }}
             - name: {{ $name }}
               valueFrom:
@@ -169,7 +169,7 @@ spec:
               mountOptions: {{ $v.mountOptions }}
         {{- end }}
         {{- end }}
-        {{- if or .Values.secretProvider.create .Values.providedVolumeMount.create }}
+        {{- if or .Values.secretProviderClass.create .Values.providedVolumeMount.create }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
