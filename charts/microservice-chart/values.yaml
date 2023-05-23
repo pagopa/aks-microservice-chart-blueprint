@@ -31,7 +31,7 @@ sidecars: []
 readinessProbe:
   httpGet:
     path: /ready
-    port: 8558
+    port: 9999
   initialDelaySeconds: 10
   failureThreshold: 10
   periodSeconds: 5
@@ -40,29 +40,47 @@ readinessProbe:
 livenessProbe:
   httpGet:
     path: /alive
-    port: 8558
+    port: 9999
   initialDelaySeconds: 15
   failureThreshold: 10
   periodSeconds: 5
 
+# -- Environment config to use for the canary container
+envConfig: {}
+
+# -- Load secrets as environment variables from kv
+envSecret: {}
+
+# -- Configure files to mount as config maps
+configMapFromFile: {}
+
+# -- Environment config from k8s metadata
+envFieldRef: {}
 
 # -- Configure values from config maps external to chart. E.g already present into cluster, see documentation
 # @default -- {}
-externalConfigMap:
+externalConfigMapFiles:
   create: false
+  # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "user.xml"}]
+  configMaps: []
+
+externalConfigMapValues:
+  create: false
+  # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}]
   configMaps: []
 
 # -- Configure mounted volumes with secrets needed to mount them
 # @default -- {}
 providedVolumeMount:
   create: false
-  envSecrets: {}
+  envSecret: {}
   folders: []
+
 # -- Configure optional tmp volume to mount
 tmpVolumeMount:
   create: false
-  name: tmp
-  mountPath: /tmp
+  # -- (list) Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp"}]])
+  mounts: []
 
 # -- POD resources section
 # @default -- -
@@ -76,22 +94,16 @@ resources:
     memory: "128Mi"
     cpu: "150m"
 
-# -- Environment config to use for the canary container
-envConfig: {}
-
 # -- Configure secret provider with secrets to mount as environment variables
 secretProvider:
-  create: false
-  envSecrets: {}
-  keyvault:
-    name: ""
-    tenantId: ""
+  create: true
 
-# -- Environment config from k8s metadata
-envFieldRef: {}
-
-# -- Configure files to mount as config maps
-configMapFromFile: {}
+# -- Configure keyvault to use inside secret prover to load secret directly
+keyvault:
+  # -- Key vault name
+  name: ""
+  # -- Tenant ID
+  tenantId: ""
 
 podAnnotations: {}
 
