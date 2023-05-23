@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: external-configmap-files-complete
+data:
+  # property-like keys; each key maps to a simple value
+  player_initial_lives: "3"
+  ui_properties_file_name: "user-interface.properties"
+
+  # file-like keys
+  game.properties: |
+    enemy.types=aliens,monsters
+    player.maximum-lives=5
+  user-interface.xml: |
+    <color>
+      <name value="red"/>
+      <type value="primary"/>
+    </color>
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: external-configmap-values-complete
+data:
+  # Configuration values can be set as key-value properties
+  database: mongodb
+  database_uri: mongodb://localhost:27017

@@ -1,15 +1,35 @@
 # -- Namespace in which deploy the microservice
 namespace: ""
+
 # -- Helm chart name override
 nameOverride: ""
+
 # -- Helm chart fullname override
 fullnameOverride: ""
+
+# -- Termination grace period in seconds
 terminationGracePeriodSeconds: 30
+
+# -- Configure deployment
+# @default -- -
+deployment:
+  # -- (bool) Create or not the deployment manifest
+  create: true
+  # -- (int) Number of replicas (will be replaced by autoscaling if enabled)
+  replicas: 1
+  # -- (bool) Force redeploy container
+  forceRedeploy: false
+
+# -- strategy type for deployment: Recreate or RollingUpdate
+# @default -- {}
 strategy:
   type: RollingUpdate
   rollingUpdate:
     maxUnavailable: 0
     maxSurge: 1
+
+# -- image: configuration for the container
+# @default -- {}
 image:
   # -- Docker reposity for the container
   repository: ""
@@ -21,39 +41,62 @@ image:
 # -- Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind
 sidecars: []
 
+# -- ReadinessProbe
+# @default -- {}
 readinessProbe:
   httpGet:
     path: /ready
-    port: 8558
+    port: 9999
   initialDelaySeconds: 10
   failureThreshold: 10
   periodSeconds: 5
+
+# -- LivenessProbe
+# @default -- {}
 livenessProbe:
   httpGet:
     path: /alive
-    port: 8558
+    port: 9999
   initialDelaySeconds: 15
   failureThreshold: 10
   periodSeconds: 5
 
+# -- Environment config to use for the canary container
+envConfig: {}
+
+# -- Load secrets as environment variables from kv
+envSecret: {}
+
+# -- Configure files to mount as config maps
+configMapFromFile: {}
+
+# -- Environment config from k8s metadata
+envFieldRef: {}
 
 # -- Configure values from config maps external to chart. E.g already present into cluster, see documentation
 # @default -- {}
-externalConfigMap:
+externalConfigMapFiles:
   create: false
+  # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "user.xml"}]
+  configMaps: []
+
+externalConfigMapValues:
+  create: false
+  # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}]
   configMaps: []
 
 # -- Configure mounted volumes with secrets needed to mount them
 # @default -- {}
 providedVolumeMount:
   create: false
-  envSecrets: {}
+  envSecret: {}
   folders: []
+
 # -- Configure optional tmp volume to mount
 tmpVolumeMount:
   create: false
-  name: tmp
-  mountPath: /tmp
+  # -- (list) Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp"}]])
+  mounts: []
 
 # -- POD resources section
 # @default -- -
@@ -67,22 +110,16 @@ resources:
     memory: "128Mi"
     cpu: "150m"
 
-# -- Environment config to use for the canary container
-envConfig: {}
-
 # -- Configure secret provider with secrets to mount as environment variables
-secretProvider:
-  create: false
-  envSecrets: {}
-  keyvault:
-    name: ""
-    tenantId: ""
+secretProviderClass:
+  create: true
 
-# -- Environment config from k8s metadata
-envFieldRef: {}
-
-# -- Configure files to mount as config maps
-configMapFromFile: {}
+# -- Configure keyvault to use inside secret prover to load secret directly
+keyvault:
+  # -- Key vault name
+  name: ""
+  # -- Tenant ID
+  tenantId: ""
 
 podAnnotations: {}
 
@@ -106,6 +143,7 @@ tolerations: []
 # -- Pod labels affinity
 affinity: {}
 
+# -- Restart policy
 restartPolicy: "Always"
 
 #
@@ -143,23 +181,17 @@ autoscaling:
 # Pod identity and KV connection
 #
 
+# -- Service account configuration
+# @default -- -
 serviceAccount:
   create: false
-  annotations: {}
   name: ""
+  annotations: {}
 
 serviceMonitor:
   # -- (bool) Create or not the service monitor
   create: false
   endpoints: []
-
-# -- Configure deployment
-# @default -- -
-replicas: 1
-# -- (bool) Force redeploy container
-forceRedeploy: false
-ports:
-  - 8080
 
 service:
   # -- (bool) create the service manifest
@@ -179,8 +211,8 @@ ingress:
   host: ""
   # -- (int) service port to reach
   servicePort: 8080
-  # -- Path where the application can response like: `/app`
-  path: "/app(/|$)(.*)"
+  # -- Path where the application can response like: `/app(/|$)(.*)`
+  path: "/please-put-a-path"
   pathType: Prefix
   # -- (bool) if force ssl redirect is enabled
   forceSslRedirect: true

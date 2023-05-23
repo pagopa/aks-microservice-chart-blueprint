@@ -28,7 +28,7 @@ basecache: &basecache
     REDIS_PORT: "6380"
   secretProvider: &azureSecretProvider
     create: true
-    envSecrets: &envSecret
+    envSecret: &envSecret
       APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
       REDIS_PWD: "redis-password"
     keyvault:
@@ -62,7 +62,7 @@ pagopamicroservice1:
     DATABASE_ID: "p"
   secretProvider:
     !!merge <<: *azureSecretProvider
-    envSecrets:
+    envSecret:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 pagopamicroservice2:
@@ -79,6 +79,6 @@ pagopamicroservice2:
     DATABASE_ID: "o"
   secretProvider:
     !!merge <<: *azureSecretProvider
-    envSecrets:
+    envSecret:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"

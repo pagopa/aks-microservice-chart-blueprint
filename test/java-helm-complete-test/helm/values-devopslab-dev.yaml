@@ -1,0 +1,115 @@
+microservice-chart:
+  namespace: "diego"
+
+  deployment:
+    create: true
+    replicas: 1
+
+  envConfig:
+    APP: foo
+    MY_APP_COLOR: "green"
+
+  envSecret:
+    MY_KV_SECRET: dvopla-d-neu-dev01-aks-apiserver-url
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: external-configmap-files-complete
+        key: game.properties
+      - name: external-configmap-files-complete
+        key: user-interface.xml
+
+  externalConfigMapValues:
+    create: true
+    configMaps:
+      - name: external-configmap-values-complete
+        key: database
+      - name: external-configmap-values-complete
+        key: database_uri
+
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: beta-fix-logs-folders
+    pullPolicy: Always
+
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: logs
+        mountPath: /app/logs
+
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+
+  ingress:
+    create: true
+    host: dev01.diego.internal.devopslab.pagopa.it
+    path: /diego/java-helm-complete-test(/|$)(.*)
+    rewriteTarget: /$2
+    servicePort: 8080
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "40m"
+    limits:
+      memory: "256Mi"
+      cpu: "150m"
+
+  autoscaling:
+    enable: true
+    minReplica: 1
+    maxReplica: 3
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 300 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
+
+  keyvault:
+    name: "dvopla-d-diego-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  # nodeSelector: {}
+
+  # tolerations: []
+
+  # affinity: {}

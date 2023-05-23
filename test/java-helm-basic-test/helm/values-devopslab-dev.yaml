@@ -1,0 +1,67 @@
+microservice-chart:
+  namespace: "diego"
+
+  deployment:
+    create: true
+    replicas: 1
+
+  envConfig:
+    APP: foo
+    MY_APP_COLOR: "green"
+
+  envSecret:
+    MY_KV_SECRET: dvopla-d-neu-dev01-aks-apiserver-url
+
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: beta-fix-logs-folders
+    pullPolicy: Always
+
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: logs
+        mountPath: /app/logs
+
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+
+  ingress:
+    create: true
+    host: dev01.diego.internal.devopslab.pagopa.it
+    path: /diego/java-helm-basic-test(/|$)(.*)
+    rewriteTarget: /$2
+    servicePort: 8080
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "40m"
+    limits:
+      memory: "256Mi"
+      cpu: "150m"
+
+  keyvault:
+    name: "dvopla-d-diego-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
