@@ -12,22 +12,6 @@ microservice-chart:
   envSecret:
     MY_KV_SECRET: dvopla-d-neu-dev01-aks-apiserver-url
 
-  externalConfigMapFiles:
-    create: true
-    configMaps:
-      - name: external-configmap-files-complete
-        key: game.properties
-      - name: external-configmap-files-complete
-        key: user-interface.xml
-
-  externalConfigMapValues:
-    create: true
-    configMaps:
-      - name: external-configmap-values-complete
-        key: database
-      - name: external-configmap-values-complete
-        key: database_uri
-
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
     tag: beta-fix-logs-folders
@@ -66,23 +50,9 @@ microservice-chart:
   ingress:
     create: true
     host: dev01.diego.internal.devopslab.pagopa.it
-    path: /diego/java-helm-complete-test(/|$)(.*)
+    path: /diego/java-helm-basic-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
-
-  serviceAccount:
-    create: false
-    annotations: {}
-    name: ""
-
-  podAnnotations: {}
-
-  podSecurityContext:
-    seccompProfile:
-      type: RuntimeDefault
-
-  securityContext:
-    allowPrivilegeEscalation: false
 
   resources:
     requests:
@@ -92,24 +62,6 @@ microservice-chart:
       memory: "256Mi"
       cpu: "150m"
 
-  autoscaling:
-    enable: true
-    minReplica: 1
-    maxReplica: 3
-    pollingInterval: 30 # seconds
-    cooldownPeriod: 300 # seconds
-    triggers:
-      - type: cpu
-        metadata:
-          type: Utilization
-          value: "60"
-
   keyvault:
     name: "dvopla-d-diego-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-
-  # nodeSelector: {}
-
-  # tolerations: []
-
-  # affinity: {}
