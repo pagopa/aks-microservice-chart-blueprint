@@ -2,12 +2,14 @@
 
 ## v4.0.0 (Breking change)
 
-- (breaking) created variables externalConfigMapFiles and externalConfigMapValues to load values from external config maps
-  - formelly called envConfigMapExternals, externalConfigMap
-- (breaking) providedVolumeMount (formelly fileShare)
+- (breaking) created variables `externalConfigMapFiles` and `externalConfigMapValues` to load values from external config maps
+  - (⚠️ formelly called envConfigMapExternals, externalConfigMap)
+- (breaking) providedVolumeMount (⚠️ formelly fileShare)
   - has now envSecrets child value containing secrets needed for volume mount
-- (breaking) configMapFromFile (formelly fileConfig)
+- (breaking) configMapFromFile (⚠️ formelly fileConfig)
 - (breaking) tmpVolumeMount, now is a list of paths
+- deployment: re-insert value to allow previous version to work
+- secretProviderClass: rollback changed to allow previous version to work
 
 ## v3.0.0 (Breking change)
 
