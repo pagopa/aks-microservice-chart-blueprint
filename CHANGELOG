@@ -1,6 +1,16 @@
 # CHANGELOG
 
+## v4.0.0 (Breking change)
+
+- (breaking) created variables externalConfigMapFiles and externalConfigMapValues to load values from external config maps
+  - formelly called envConfigMapExternals, externalConfigMap
+- (breaking) providedVolumeMount (formelly fileShare)
+  - has now envSecrets child value containing secrets needed for volume mount
+- (breaking) configMapFromFile (formelly fileConfig)
+- (breaking) tmpVolumeMount, now is a list of paths
+
 ## v3.0.0 (Breking change)
+
 - deployment
   - moved items at root level
   - removed create flag
