@@ -1,11 +1,25 @@
 # -- Namespace in which deploy the microservice
 namespace: ""
+
 # -- Helm chart name override
 nameOverride: ""
+
 # -- Helm chart fullname override
 fullnameOverride: ""
+
 # -- Termination grace period in seconds
 terminationGracePeriodSeconds: 30
+
+# -- Configure deployment
+# @default -- -
+deployment:
+  # -- (bool) Create or not the deployment manifest
+  create: true
+  # -- (int) Number of replicas (will be replaced by autoscaling if enabled)
+  replicas: 1
+  # -- (bool) Force redeploy container
+  forceRedeploy: false
+
 # -- strategy type for deployment: Recreate or RollingUpdate
 # @default -- {}
 strategy:
@@ -13,6 +27,7 @@ strategy:
   rollingUpdate:
     maxUnavailable: 0
     maxSurge: 1
+
 # -- image: configuration for the container
 # @default -- {}
 image:
@@ -35,6 +50,7 @@ readinessProbe:
   initialDelaySeconds: 10
   failureThreshold: 10
   periodSeconds: 5
+
 # -- LivenessProbe
 # @default -- {}
 livenessProbe:
@@ -127,6 +143,7 @@ tolerations: []
 # -- Pod labels affinity
 affinity: {}
 
+# -- Restart policy
 restartPolicy: "Always"
 
 #
@@ -164,23 +181,17 @@ autoscaling:
 # Pod identity and KV connection
 #
 
+# -- Service account configuration
+# @default -- -
 serviceAccount:
   create: false
-  annotations: {}
   name: ""
+  annotations: {}
 
 serviceMonitor:
   # -- (bool) Create or not the service monitor
   create: false
   endpoints: []
-
-# -- Configure deployment
-# @default -- -
-replicas: 1
-# -- (bool) Force redeploy container
-forceRedeploy: false
-ports:
-  - 8080
 
 service:
   # -- (bool) create the service manifest
@@ -200,8 +211,8 @@ ingress:
   host: ""
   # -- (int) service port to reach
   servicePort: 8080
-  # -- Path where the application can response like: `/app`
-  path: "/app(/|$)(.*)"
+  # -- Path where the application can response like: `/app(/|$)(.*)`
+  path: "/please-put-a-path"
   pathType: Prefix
   # -- (bool) if force ssl redirect is enabled
   forceSslRedirect: true
