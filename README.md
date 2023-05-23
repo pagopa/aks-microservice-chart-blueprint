@@ -24,12 +24,6 @@ see [CHANGELOG](CHANGELOG) to see the new features and the breking changes
 
 - helm & kubernetes
 
-### Static analysis
-
-Install:
-
-- <https://github.com/norwoodj/helm-docs>
-
 ## Installation
 
 This is the official and recommended method to adopt this chart.
@@ -110,7 +104,7 @@ App:
 Azure:
 
 - TLS certificate are present into the kv (for ingress)
-- Managed POD identity are created
+- Azure: Managed POD identity was created
 
 K8s:
 
@@ -120,69 +114,115 @@ K8s:
 
 Here you can find a result of the template [final result](docs/FINAL_RESULT_EXAMPLE.md)
 
-## Examples
-
-In the [`example`](example/) folder, you can find a working examples.
-
-### Progessive-delivery
-
-Use spring-boot-app-color to test canary deployment
-
-### Azure function App
-
-It is an elementary version of an Azure Function App written in NodeJS.
-
-It has three functions:
-
-- `ready` that responds to the readiness probe;
-- `live` that responds to the liveness probe;
-- `secrets` that return a USER and a PASS taken respectively from a K8s ConfigMap
-  and an Azure Key Vault.
-
-To try it locally use either the [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash)
-or [Docker](example/Dockerfile).
-
-You can also find a [generic pipeline](example/.devops).
-
-### SpringBoot (Java) web app colors
-
-<https://github.com/pagopa/devops-java-springboot-color>
-
-there are two folders called:
-
-- spring-boot-app-bar
-- spring-boot-app-foo
-
-This are only a helm chart that install a simple web application written in java springboot.
-
-This can be usefull to check how works aks with two applications
-
-### Static Application Security Testing
-
-We strongly suggest performing SAST on your microservice Helm chart. You could
-look at this [GitHub Action](.github/workflows/check_helm.yml).
-
-## Yaml chart configuration properties (values.yaml)
+## Values keys/Yaml chart configuration properties (values.yaml)
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
 
-### Yaml: how to load values from externals config maps and use as ENV variable
+### `envConfig`: load values in an internal configmap with the same name of the release
 
-Is possibile to load inside the deployment the values of an external config map, into ENV variables.
-
-To do so, you can use this example snippet code:
+Is possible to load env variables inside the pod, with the creation of a configmap called as the release name
 
 ```yaml
-envConfigMapExternals:
-  progressive-delivery-mock-one:
-    PLAYER_INITIAL_LIVES_ENV: player_initial_lives
-    UI_PROPERTIES_FILE_NAME_ENV: ui_properties_file_name
+  envConfig:
+    <env variable name>: <value>
+
+  envConfig:
+    APP: foo
+    MY_APP_COLOR: "green"
 ```
 
+### `envSecret`: load secrets from keyvault and add as env variables
+
 ```yaml
-envConfigMapExternals:
-  <config map name>:
-    <ENV variable name>: <key name inside the config map>
+  envSecret:
+    <env variable name>: <secret name inside kv>
+
+  envSecret:
+    MY_MANDATORY_SECRET: dvopla-d-neu-dev01-aks-apiserver-url
+
+  # configuration
+  keyvault:
+    name: "dvopla-d-diego-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+```
+
+### `configMapFromFile`: load file defined inside internal configMap and mount in a pod as file
+
+this property allows to load from a configMap (denfined inside the values) a file, and mount into pod as file.
+
+the default file path is `/mnt/file-config/<file name>`
+
+```yaml
+  configMapFromFile:
+    <key and filename>: <value>
+
+  configMapFromFile:
+    logback.xml: |-
+      <?xml version="1.0" encoding="UTF-8"?>
+      <configuration scan="true" scanPeriod="30 seconds">
+          <root level="INFO">
+              <appender-ref ref="CONSOLE_APPENDER_ASYNC" />
+          </root>
+      </configuration>
+```
+
+### `externalConfigMapValues`: load values from others configmaps and load as env variables
+
+> usefull when you have a shared configmap and you want to load his values
+
+- `name`: name of the external configmap
+- `key`: key to load inside the external configmap
+
+```yaml
+
+  externalConfigMapValues:
+    create: true
+    configMaps:
+      - name: <config map name>
+        key: <config map key>
+
+  externalConfigMapValues:
+    create: true
+    configMaps:
+      - name: external-configmap-values
+        key: database
+      - name: external-configmap-values
+        key: database_uri
+```
+
+### `externalConfigMapFiles`: load files values from others configmaps and load inside pod as files
+
+> usefull when you have a shared config map with files, and you want to load inside your pod
+
+All the files are created inside the path: `/mnt/file-config-external/<config-map-name>/`
+
+```yaml
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: <config map name>
+        key: <config map key>
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: external-configmap-files
+        key: game.properties
+      - name: external-configmap-files
+        key: user-interface.xml
+```
+
+### `tmpVolumeMount`: allow to create local folders with write permissions
+
+```yaml
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: logs
+        mountPath: /logs
 ```
 
 ## Advanced
@@ -224,7 +264,7 @@ To update the page content, use `bin/publish`.
 
 *livenessProbe*
 *readinessProbe*
-Now chose if enable tcpSocket ot httpGet 
+Now chose if enable tcpSocket ot httpGet
 
 ```yaml
   livenessProbe:
@@ -349,3 +389,51 @@ Now use a list of ports and not more a single value
     path: /rtd/progressive-delivery/(.*)
     servicePort: 8080
 ```
+
+## Static analysis
+
+Install:
+
+- <https://github.com/norwoodj/helm-docs>
+
+## Examples
+
+In the [`example`](example/) folder, you can find a working examples.
+
+### Progessive-delivery
+
+Use spring-boot-app-color to test canary deployment
+
+### Azure function App
+
+It is an elementary version of an Azure Function App written in NodeJS.
+
+It has three functions:
+
+- `ready` that responds to the readiness probe;
+- `live` that responds to the liveness probe;
+- `secrets` that return a USER and a PASS taken respectively from a K8s ConfigMap
+  and an Azure Key Vault.
+
+To try it locally use either the [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash)
+or [Docker](example/Dockerfile).
+
+You can also find a [generic pipeline](example/.devops).
+
+### SpringBoot (Java) web app colors
+
+<https://github.com/pagopa/devops-java-springboot-color>
+
+there are two folders called:
+
+- spring-boot-app-bar
+- spring-boot-app-foo
+
+This are only a helm chart that install a simple web application written in java springboot.
+
+This can be usefull to check how works aks with two applications
+
+### Static Application Security Testing
+
+We strongly suggest performing SAST on your microservice Helm chart. You could
+look at this [GitHub Action](.github/workflows/check_helm.yml).
