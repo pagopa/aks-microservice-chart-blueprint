@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 3.0.0](https://img.shields.io/badge/Version-3.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 4.0.0](https://img.shields.io/badge/Version-4.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -44,7 +44,7 @@ A Helm chart for PagoPA microservice
 | ingress.host | string | `""` | Hostname for the ingress like https://idpay.pagopa.it |
 | ingress.path | string | `"/please-put-a-path"` | Path where the application can response like: `/app(/|$)(.*)` |
 | ingress.proxyBodySize | string | `"1m"` | the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body |
-| ingress.rewriteTarget | string | `"/$2"` | the rewrite target for ingress |
+| ingress.rewriteTarget | string | `"/$1"` | the rewrite target for ingress |
 | ingress.servicePort | int | `8080` | service port to reach |
 | keyvault | object | `{"name":"","tenantId":""}` | Configure keyvault to use inside secret prover to load secret directly |
 | keyvault.name | string | `""` | Key vault name |

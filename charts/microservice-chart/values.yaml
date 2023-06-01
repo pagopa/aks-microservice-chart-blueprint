@@ -217,7 +217,7 @@ ingress:
   # -- (bool) if force ssl redirect is enabled
   forceSslRedirect: true
   # -- the rewrite target for ingress
-  rewriteTarget: /$2
+  rewriteTarget: /$1
   # -- the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body
   proxyBodySize: 1m
   # -- (map) custom annotations for ingress
