@@ -3,6 +3,7 @@ name: Release
 on:
   # Trigger the workflow on push or pull request,
   # but only for the main branch
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -27,7 +28,7 @@ jobs:
       # issue: https://github.com/helm/chart-releaser-action/issues/113
       - name: Force tags download
         run: |
-          git pull --tags   
+          git pull --tags
 
       - name: Configure Git
         run: |
@@ -35,13 +36,13 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Semantic release
-        uses: cycjimmy/semantic-release-action@v2
+        uses: cycjimmy/semantic-release-action@v3
         id: semantic
         with:
           dry_run: true
-          semantic_version: 18.0.0
+          semantic_version: 21.0.2
           extra_plugins: |
-            @semantic-release/release-notes-generator@10.0.3
+            @semantic-release/release-notes-generator@11.0.2
             @semantic-release/git@10.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
