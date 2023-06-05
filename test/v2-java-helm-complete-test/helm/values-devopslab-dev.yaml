@@ -39,6 +39,32 @@ microservice-chart:
   envSecret:
     aks-api-url: dvopla-d-neu-dev01-aks-apiserver-url
 
+  fileConfigExternals:
+    create: true
+    configMaps:
+      - name: v2-confimap-games
+        key: game.properties
+      - name: v2-confimap-games
+        key: user-interface.properties
+      - name: v2-confimap-mongodb
+        key: keys
+
+  fileConfig:
+    internal.properties: |
+      enemy.types=aliens,monsters
+      player.maximum-lives=5
+
+  envConfigMapExternals:
+    v2-confimap-games:
+      PLAYER_INITIAL_LIVES_ENV: player-initial-lives
+      UI_PROPERTIES_FILE_NAME_ENV: ui-properties-file-name
+
+    v2-confimap-mongodb:
+      DATABASE: database
+      DATABASE_URI: database-uri
+
+
+
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
     tag: 0.8.1
