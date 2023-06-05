@@ -81,7 +81,6 @@ externalConfigMapFiles:
   configMaps: []
 
 externalConfigMapValues:
-  create: false
   # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}]
   configMaps: []
 
