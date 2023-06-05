@@ -28,6 +28,15 @@ microservice-chart:
       PLAYER-INITIAL-LIVES: player-initial-lives
       UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 
+  configMapFromFile:
+    logback.xml: |-
+      <?xml version="1.0" encoding="UTF-8"?>
+      <configuration scan="true" scanPeriod="30 seconds">
+          <root level="INFO">
+              <appender-ref ref="CONSOLE_APPENDER_ASYNC" />
+          </root>
+      </configuration>
+
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
     tag: beta-fix-logs-folders
