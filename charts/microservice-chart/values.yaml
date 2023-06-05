@@ -81,7 +81,6 @@ externalConfigMapFiles:
   configMaps: []
 
 externalConfigMapValues:
-  create: false
   # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}]
   configMaps: []
 
@@ -164,7 +163,7 @@ autoscaling:
   cooldownPeriod: 300 # seconds
   # -- Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/)
   triggers: []
-  # -- Autoscaling advanced https://keda.sh/docs/2.9/concepts/scaling-deployments/#advanced
+  # -- Autoscaling advanced <https://keda.sh/docs/2.9/concepts/scaling-deployments/#advanced>
   advanced: {}
   #- advanced:
   #-  restoreToOriginalReplicaCount: false # Optional. Default: false
@@ -207,7 +206,7 @@ service:
 ingress:
   # -- (bool) Create or not the ingress manifest
   create: false
-  # -- Hostname for the ingress like https://idpay.pagopa.it
+  # -- Hostname for the ingress like <https://idpay.pagopa.it>
   host: ""
   # -- (int) service port to reach
   servicePort: 8080

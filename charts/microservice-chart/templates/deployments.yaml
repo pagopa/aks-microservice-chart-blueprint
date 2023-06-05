@@ -105,7 +105,7 @@ spec:
             {{- end }}
             {{- end }}
           env:
-            #secretProviderClass.envSecret
+            #envConfig
             {{- range $key, $val := .Values.envConfig }}
             - name: {{ $key }}
               valueFrom:
@@ -113,6 +113,7 @@ spec:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
             {{- end }}
+            # Secret provider class
             {{- if or .Values.secretProviderClass.create }}
             {{- range $name, $value := .Values.envSecret }}
             - name: {{ $name }}
@@ -122,7 +123,7 @@ spec:
                   key: {{ $value }}
             {{- end }}
             {{- end }}
-            #envConfig
+            #envConfig CANARY
             {{- if .Values.canaryDelivery.create }}
             - name: CANARY
               valueFrom:
@@ -138,13 +139,13 @@ spec:
                   fieldPath: {{ $val }}
             {{- end }}
             #external configmap values
-            {{- if .Values.externalConfigMapValues.create }}
-            {{- range $internKey, $internVal := .Values.externalConfigMapValues.configMaps }}
-            - name: {{ $internVal.key }}
+            {{- range $key, $valMap := .Values.externalConfigMapValues }}
+            {{- range $internKey, $internVal := $valMap }}
+            - name: {{ $internKey }}
               valueFrom:
                 configMapKeyRef:
-                  name: {{ $internVal.name }}
-                  key: {{ $internVal.key }}
+                  name: {{ $key }}
+                  key: {{ $internVal }}
             {{- end }}
             {{- end }}
         {{- with .Values.sidecars }}
