@@ -168,26 +168,24 @@ the default file path is `/mnt/file-config/<file name>`
 
 ### `externalConfigMapValues`: load values from others configmaps and load as env variables
 
-> usefull when you have a shared configmap and you want to load his values
+> usefull when you have a shared configmap and you want to load his values.
 
-- `name`: name of the external configmap
-- `key`: key to load inside the external configmap
+- `ENV VARIABLE NAME`: how the variable must be named inside pod, very usefull for example for spring that have some problems with variables that have hippen in the name
+- `key inside config maps`: which key to load inside the env variable name
 
 ```yaml
 
   externalConfigMapValues:
-    create: true
-    configMaps:
-      - name: <config map name>
-        key: <config map key>
+    <configmap name>:
+      <ENV VARIABLE NAME>: <key inside config maps>
 
   externalConfigMapValues:
-    create: true
-    configMaps:
-      - name: external-configmap-values
-        key: database
-      - name: external-configmap-values
-        key: database_uri
+    external-configmap-values-complete-1:
+      DATABASE_DB_NANE: database-db-name
+
+    external-configmap-values-complete-2:
+      PLAYER-INITIAL-LIVES: player-initial-lives
+      UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 ```
 
 ### `externalConfigMapFiles`: load files values from others configmaps and load inside pod as files
