@@ -139,12 +139,14 @@ spec:
             {{- end }}
             #external configmap values
             {{- if .Values.externalConfigMapValues.create }}
-            {{- range $internKey, $internVal := .Values.externalConfigMapValues.configMaps }}
-            - name: {{ $internVal.key }}
+            {{- range $key, $valMap := .Values.externalConfigMapValues }}
+            {{- range $internKey, $internVal := $valMap }}
+            - name: {{ $internKey }}
               valueFrom:
                 configMapKeyRef:
-                  name: {{ $internVal.name }}
-                  key: {{ $internVal.key }}
+                  name: {{ $key }}
+                  key: {{ $internVal }}
+            {{- end }}
             {{- end }}
             {{- end }}
         {{- with .Values.sidecars }}

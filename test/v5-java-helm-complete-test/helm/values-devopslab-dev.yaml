@@ -21,12 +21,12 @@ microservice-chart:
         key: user-interface.xml
 
   externalConfigMapValues:
-    create: true
-    configMaps:
-      - name: external-configmap-values-complete
-        key: database
-      - name: external-configmap-values-complete
-        key: database_uri
+    external-configmap-values-complete-1:
+      DATABASE_DB_NANE: database-db-name
+
+    external-configmap-values-complete-2:
+      PLAYER-INITIAL-LIVES: player-initial-lives
+      UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
