@@ -10,7 +10,7 @@ A Helm chart for PagoPA microservice
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Pod labels affinity |
 | autoscaling | object | - | Autoscaling using KEDA |
-| autoscaling.advanced | object | `{}` | Autoscaling advanced https://keda.sh/docs/2.9/concepts/scaling-deployments/#advanced |
+| autoscaling.advanced | object | `{}` | Autoscaling advanced <https://keda.sh/docs/2.9/concepts/scaling-deployments/#advanced> |
 | autoscaling.cooldownPeriod | int | `300` | Autoscaling cooldown period |
 | autoscaling.enable | bool | `false` | Enable Autoscaling |
 | autoscaling.maxReplica | int | `1` | Autoscaling maximum replicas |
@@ -40,7 +40,7 @@ A Helm chart for PagoPA microservice
 | ingress.annotations | map | `{}` | custom annotations for ingress |
 | ingress.create | bool | `false` | Create or not the ingress manifest |
 | ingress.forceSslRedirect | bool | `true` | if force ssl redirect is enabled |
-| ingress.host | string | `""` | Hostname for the ingress like https://idpay.pagopa.it |
+| ingress.host | string | `""` | Hostname for the ingress like <https://idpay.pagopa.it> |
 | ingress.path | string | `"/please-put-a-path"` | Path where the application can response like: `/app(/|$)(.*)` |
 | ingress.proxyBodySize | string | `"1m"` | the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body |
 | ingress.rewriteTarget | string | `"/$1"` | the rewrite target for ingress |
