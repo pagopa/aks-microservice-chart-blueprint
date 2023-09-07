@@ -1,0 +1,57 @@
+name: 📌 Release Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+        description: 'Manual version to release, like: 1.0.0'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Check version
+        run: |
+          echo "Version: ${{ inputs.version }}"
+          echo "Current branch: ${{ github.ref_name }}"
+
+          if ! [[ "${{ inputs.version }}" =~ ^([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "❌ version is not valid"
+            exit 1
+          fi
+
+      # issue: https://github.com/helm/chart-releaser-action/issues/113
+      - name: Force tags download
+        run: |
+          git pull --tags
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Bump new version
+        run: |
+          yq -i ".version = \"${{ inputs.version }}\"" "charts/microservice-chart/Chart.yaml"
+          git add "charts/microservice-chart/Chart.yaml"
+          git commit -m "Bump microservice chart version ${{ inputs.version }}"
+          git push -u origin ${{ github.ref_name }}
+
+      - uses: azure/setup-helm@v3
+        with:
+            version: '3.12.0'
+        id: install_helm
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.5.0
+        env:
+          CR_TOKEN: "${{ secrets.RELEASE_TOKEN }}"

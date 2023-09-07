@@ -28,6 +28,17 @@ see [CHANGELOG](CHANGELOG) to see the new features and the breking changes
 
 This is the official and recommended method to adopt this chart.
 
+## LTS support
+
+To support the various teams we have decided that the 2.x releases and the 5.x releases will have LTS support.
+
+By LTS we mean support aimed at solving bugs or blocking problems, but not new features for which it will be necessary to upgrade the version
+
+These are the supported LTS releases and until when:
+
+- `2.x`: March 2024
+- `5.x`: July 2024
+
 ### Quick start
 
 Create a `helm` folder inside your microservice project in which install the
