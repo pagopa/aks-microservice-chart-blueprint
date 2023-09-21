@@ -61,7 +61,7 @@ livenessProbe:
   failureThreshold: 10
   periodSeconds: 5
 
-# -- Environment config to use for the canary container
+# -- Environment config to use for the container
 envConfig: {}
 
 # -- Load secrets as environment variables from kv
@@ -230,8 +230,40 @@ canaryDelivery:
   create: false
   # -- This section allow to configure ingress inside canary deployment
   # @default -- -
+  # -- Configure how ingress canary should be
   ingress:
     header: true
     bluegreen: false
+      # -- the header name used to call the canary deployment
     headerName: X-Canary
+      # -- the header values used to call the canary deployment
     headerValue: pagopa
+      # -- the weight percent used into canary deployment. Can be used toghether with header
+    weightPercent: 10
+
+  deployment:
+    # -- (bool) Create or not the deployment manifest
+    create: true
+    # -- (int) Number of replicas (will be replaced by autoscaling if enabled)
+    replicas: 1
+    # -- (bool) Force redeploy container
+    forceRedeploy: false
+
+    image:
+      # -- Docker reposity for the container canary
+      repository: ghcr.io/pagopa/devops-java-springboot-color
+      # -- Container TAG
+      tag: 0.7.1
+      # -- Pull policy to use
+      pullPolicy: Always
+
+    # -- Environment config to use for the canary container
+    envConfig: { }
+
+    # -- Load secrets as environment variables from kv for the canary container
+    envSecret: { }
+
+  serviceMonitor:
+    # -- (bool) Create or not the service monitor
+    create: false
+    endpoints: [ ]

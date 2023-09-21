@@ -1,18 +1,18 @@
-{{- if .Values.deployment.create -}}
+{{- if .Values.canaryDelivery.create -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "microservice-chart.fullname" . }}
+  name: {{ include "microservice-chart.fullnameCanaryDelivery" . }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "microservice-chart.labels" . | nindent 4 }}
+    {{- include "microservice-chart.labelsCanaryDelivery" . | nindent 4 }}
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.canaryDelivery.deployment.replicas }}
   selector:
     matchLabels:
-      {{- include "microservice-chart.selectorLabels" . | nindent 6 }}
+      {{- include "microservice-chart.selectorLabelsCanaryDelivery" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -20,12 +20,12 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- if .Values.forceRedeploy }}
+        {{- if .Values.canaryDelivery.deployment.forceRedeploy }}
         redeploy: {{ now | unixEpoch | quote }}
         {{- end }}
         aadpodidbinding: "{{ .Values.namespace }}-pod-identity"
-        {{- include "microservice-chart.selectorLabels" . | nindent 8 }}
-        {{- include "microservice-chart.extraLabels" . | nindent 8 }}
+        {{- include "microservice-chart.selectorLabelsCanaryDelivery" . | nindent 8 }}
+        {{- include "microservice-chart.extraLabelsCanaryDelivery" . | nindent 8 }}
     spec:
       automountServiceAccountToken: false
       serviceAccountName: {{ include "microservice-chart.serviceAccountName" . }}
@@ -35,8 +35,8 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.canaryDelivery.deployment.image.repository }}:{{ .Values.canaryDelivery.deployment.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.canaryDelivery.deployment.image.pullPolicy }}
           ports:
           {{- range .Values.service.ports }}
             - name: app-port-{{ . }}
@@ -71,59 +71,59 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             {{- if .Values.tmpVolumeMount.create }}
-            {{- range $i, $val := .Values.tmpVolumeMount.mounts }}
-            #tmp folders
-            - name: {{ $val.name }}
-              mountPath: {{ $val.mountPath }}
-            {{- end }}
-            {{- end }}
-            {{- if or .Values.secretProviderClass.create .Values.providedVolumeMount.create }}
+              {{- range $i, $val := .Values.tmpVolumeMount.mounts }}
+              #tmp folders
+              - name: {{ $val.name }}
+                mountPath: {{ $val.mountPath }}
+              {{- end }}
+              {{- end }}
+            {{- if or .Values.envSecret .Values.providedVolumeMount.create }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
             {{- end }}
-            {{- if .Values.configMapFromFile }}
-            {{- range $key, $val := .Values.configMapFromFile }}
-            - name: file-config
-              mountPath: "/mnt/file-config/{{ $key }}"
-              subPath: {{ $key }}
-              readOnly: true
-            {{- end }}
-            {{- end }}
-            {{- if .Values.externalConfigMapFiles.create }}
-            {{- range $i, $v := .Values.externalConfigMapFiles.configMaps }}
-            - name: {{ $v.name }}-{{ $i }}
-              mountPath: "/mnt/file-config-external/{{ $v.name }}/{{ $v.key }}"
-              subPath: {{ $v.key }}
-              readOnly: true
-            {{- end }}
-            {{- end }}
+{{/*            {{- if .Values.configMapFromFile }}*/}}
+{{/*            {{- range $key, $val := .Values.configMapFromFile }}*/}}
+{{/*            - name: file-config*/}}
+{{/*              mountPath: "/mnt/file-config/{{ $key }}"*/}}
+{{/*              subPath: {{ $key }}*/}}
+{{/*              readOnly: true*/}}
+{{/*            {{- end }}*/}}
+{{/*            {{- end }}*/}}
+{{/*            {{- if .Values.externalConfigMapFiles.create }}*/}}
+{{/*            {{- range $i, $v := .Values.externalConfigMapFiles.configMaps }}*/}}
+{{/*            - name: {{ $v.name }}-{{ $i }}*/}}
+{{/*              mountPath: "/mnt/file-config-external/{{ $v.name }}/{{ $v.key }}"*/}}
+{{/*              subPath: {{ $v.key }}*/}}
+{{/*              readOnly: true*/}}
+{{/*            {{- end }}*/}}
+{{/*            {{- end }}*/}}
             {{- if .Values.providedVolumeMount.create }}
             {{- range $i, $v := .Values.providedVolumeMount.folders }}
-            - name: file-azure-{{ $v.name }}
-              mountPath: "/mnt/file-azure/{{ $v.name }}"
+            - name: beta-file-azure-{{ $v.name }}
+              mountPath: "/mnt/beta-file-azure/{{ $v.name }}"
             {{- end }}
             {{- end }}
           env:
             #envConfig
-            {{- range $key, $val := .Values.envConfig }}
+            {{- range $key, $val := .Values.canaryDelivery.deployment.envConfig }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "microservice-chart.fullname" $ }}
+                  name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
                   key: {{ $key }}
             {{- end }}
             # Secret provider class
             {{- if or .Values.secretProviderClass.create }}
-            {{- range $name, $value := .Values.envSecret }}
+            {{- range $name, $value := .Values.canaryDelivery.deployment.envSecret }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "microservice-chart.fullname" $ }}
+                  name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
                   key: {{ $value }}
             {{- end }}
             {{- end }}
-            #envFieldRef
+            #field ref from deployment
             {{- range $key, $val := .Values.envFieldRef }}
             - name: {{ $key }}
               valueFrom:
@@ -131,18 +131,18 @@ spec:
                   fieldPath: {{ $val }}
             {{- end }}
             #external configmap values
-            {{- range $key, $valMap := .Values.externalConfigMapValues }}
-            {{- range $internKey, $internVal := $valMap }}
-            - name: {{ $internKey }}
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $key }}
-                  key: {{ $internVal }}
-            {{- end }}
-            {{- end }}
+{{/*            {{- range $key, $valMap := .Values.externalConfigMapValues }}*/}}
+{{/*            {{- range $internKey, $internVal := $valMap }}*/}}
+{{/*            - name: {{ $internKey }}*/}}
+{{/*              valueFrom:*/}}
+{{/*                configMapKeyRef:*/}}
+{{/*                  name: {{ $key }}*/}}
+{{/*                  key: {{ $internVal }}*/}}
+{{/*            {{- end }}*/}}
+{{/*            {{- end }}*/}}
         {{- with .Values.sidecars }}
         {{- toYaml . | nindent 8 }}
-        {{- end }}
+            {{- end }}
       volumes:
         {{- if .Values.tmpVolumeMount.create }}
         {{- range $i, $val := .Values.tmpVolumeMount.mounts }}
@@ -152,12 +152,12 @@ spec:
         {{- end }}
         {{- if .Values.providedVolumeMount.create }}
         {{- range $i, $v := .Values.providedVolumeMount.folders }}
-        - name: file-azure-{{ $v.name }}
+        - name: beta-file-azure-{{ $v.name }}
           csi:
             driver: file.csi.azure.com
             readOnly: {{ $v.readOnly }}
             volumeAttributes:
-              secretName: {{ include "microservice-chart.fullname" $ }}
+              secretName: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
               shareName: {{ $v.name }}
               mountOptions: {{ $v.mountOptions }}
         {{- end }}
@@ -168,30 +168,30 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ include "microservice-chart.fullname" $ }}
+              secretProviderClass: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}
         {{- end }}
-        {{- if .Values.configMapFromFile }}
-        - name: file-config
-          configMap:
-            name: {{ include "microservice-chart.fullname" $ }}
-            defaultMode: 420
-            items:
-          {{- range $key, $val := .Values.configMapFromFile }}
-              - key: {{ $key }}
-                path: {{ $key }}
-          {{- end }}
-        {{- end }}
-        {{- if .Values.externalConfigMapFiles.create }}
-        {{- range $i, $v := .Values.externalConfigMapFiles.configMaps }}
-        - name: {{ $v.name }}-{{ $i }}
-          configMap:
-            name: {{ $v.name }}
-            defaultMode: 420
-            items:
-              - key: {{ $v.key }}
-                path: {{ $v.key }}
-        {{- end }}
-        {{- end }}
+{{/*        {{- if .Values.configMapFromFile }}*/}}
+{{/*        - name: file-config*/}}
+{{/*          configMap:*/}}
+{{/*            name: {{ include "microservice-chart.fullnameCanaryDelivery" $ }}*/}}
+{{/*            defaultMode: 420*/}}
+{{/*            items:*/}}
+{{/*          {{- range $key, $val := .Values.configMapFromFile }}*/}}
+{{/*              - key: {{ $key }}*/}}
+{{/*                path: {{ $key }}*/}}
+{{/*          {{- end }}*/}}
+{{/*        {{- end }}*/}}
+{{/*        {{- if .Values.externalConfigMapFiles.create }}*/}}
+{{/*        {{- range $i, $v := .Values.externalConfigMapFiles.configMaps }}*/}}
+{{/*        - name: {{ $v.name }}-{{ $i }}*/}}
+{{/*          configMap:*/}}
+{{/*            name: {{ $v.name }}*/}}
+{{/*            defaultMode: 420*/}}
+{{/*            items:*/}}
+{{/*              - key: {{ $v.key }}*/}}
+{{/*                path: {{ $v.key }}*/}}
+{{/*        {{- end }}*/}}
+{{/*        {{- end }}*/}}
       restartPolicy: {{ .Values.restartPolicy }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- with .Values.nodeSelector }}
