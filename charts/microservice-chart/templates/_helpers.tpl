@@ -12,20 +12,9 @@ If release name contains chart name it will be used as a full name.
 */}}
 {{- define "microservice-chart.fullname" -}}
 {{- if .Values.fullnameOverride }}
-
-{{- if .Values.canaryDelivery.create }}
-{{- printf "%s-beta"  .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{- else }}
-{{- if .Values.canaryDelivery.create }}
-{{- printf "%s-beta" .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- printf "%s" .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
 {{- end }}
 {{- end }}
 
