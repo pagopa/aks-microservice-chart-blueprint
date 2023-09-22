@@ -242,8 +242,6 @@ canaryDelivery:
     weightPercent: 10
 
   deployment:
-    # -- (bool) Create or not the deployment manifest
-    create: true
     # -- (int) Number of replicas (will be replaced by autoscaling if enabled)
     replicas: 1
     # -- (bool) Force redeploy container
@@ -262,8 +260,3 @@ canaryDelivery:
 
     # -- Load secrets as environment variables from kv for the canary container
     envSecret: { }
-
-  serviceMonitor:
-    # -- (bool) Create or not the service monitor
-    create: false
-    endpoints: [ ]

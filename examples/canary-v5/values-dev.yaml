@@ -118,4 +118,5 @@ microservice-chart:
       repository: ghcr.io/pagopa/devops-java-springboot-color
       tag: 0.5.0
     envConfig:
+      ENV: 'beta-dev'
     envSecret:
