@@ -110,21 +110,41 @@ spec:
             {{- end }}
           env:
             #envConfig
-            {{- range $key, $val := .Values.envConfig }}
+            {{- if .Values.canaryDelivery.create }}
+            {{- range $key, $val := (mergeOverwrite .Values.envConfig .Values.canaryDelivery.envConfig) }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $key }}
             {{- end }}
+            {{- else }}
+            {{- range $key, $val :=.Values.envConfig }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $key }}
+                {{- end }}
+            {{- end }}
             # Secret provider class
             {{- if or .Values.secretProviderClass.create }}
+            {{- if .Values.canaryDelivery.create }}
+            {{- range $name, $value := (mergeOverwrite .Values.envSecret .Values.canaryDelivery.envSecret) }}
+            - name: {{ $name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $value }}
+            {{- end }}
+            {{- else }}
             {{- range $name, $value := .Values.envSecret }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $value }}
+            {{- end }}
             {{- end }}
             {{- end }}
             #envConfig CANARY

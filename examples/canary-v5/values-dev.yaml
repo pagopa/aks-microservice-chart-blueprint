@@ -2,23 +2,26 @@ microservice-chart:
   namespace: "apiconfig"
   nameOverride: ""
   fullnameOverride: ""
+
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: 0.6.0
+    tag: 0.10.0
+
   livenessProbe:
     httpGet:
-      path: /actuator/health/liveness
+      path: /status/live
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
-      path: /actuator/health/readiness
+      path: /status/ready
       port: 8080
-    initialDelaySeconds: 180
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
+
   deployment:
     create: true
   serviceMonitor:
@@ -37,8 +40,9 @@ microservice-chart:
   ingress:
     create: true
     host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
-    path: /delete_me/(.*)
+    path: /delete_me(/|$)(.*)
     servicePort: 8080
+
   serviceAccount:
     create: false
   podAnnotations: {}
@@ -51,6 +55,7 @@ microservice-chart:
     capabilities:
       drop:
         - all
+        -
   resources:
     requests:
       memory: "512Mi"
@@ -70,33 +75,17 @@ microservice-chart:
           # Required
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "75"
+
   envConfig:
-    WEBSITE_SITE_NAME: 'pagopaapiconfigselfcareintegration' # required to show cloud role name in application insights
-    ENV: 'azure-dev'
-    APP_LOGGING_LEVEL: 'DEBUG'
-    DEFAULT_LOGGING_LEVEL: 'INFO'
-    CORS_CONFIGURATION: '{"origins": ["*"], "methods": ["*"]}'
-    SPRING_DATASOURCE_USERNAME: 'NODO4_CFG'
-    SPRING_DATASOURCE_URL: "jdbc:oracle:thin:@(DESCRIPTION=(ENABLE=BROKEN)(ADDRESS=(PROTOCOL=tcp)(PORT=1522)(HOST=db-nodo-pagamenti.d.db-nodo-pagamenti.com))(CONNECT_DATA=(SERVICE_NAME=NDPSPCT_PP_NODO4_CFG))(SO_KEEPALIVE=true)(TCP_KEEPIDLE=60)(TCP_KEEPINTVL=30)(TCP_KEEPCNT=15))"
-    SPRING_DATASOURCE_DRIVER: 'oracle.jdbc.OracleDriver'
-    DB_CONFIG_DRIVER: 'oracle.jdbc.OracleDriver'
-    DATABASE_SCHEMA: 'NODO4_CFG'
-    SPRING_JPA_DB_PLATFORM: 'org.hibernate.dialect.Oracle12cDialect'
-    OTEL_SERVICE_NAME: "delete-me"
-    OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=azure-dev"
-    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
-    OTEL_LOGS_EXPORTER: none
-    OTEL_TRACES_SAMPLER: "always_on"
-  envFieldRef:
-    APP_NAME: "metadata.labels['app.kubernetes.io/instance']"
-    APP_VERSION: "metadata.labels['app.kubernetes.io/version']"
+    TO_OVERWRITE: "original-value"
+    COMMON: "same"
   envSecret:
-    APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
-    SPRING_DATASOURCE_PASSWORD: 'oracle-db-cfg-password'
-    OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
+    SEC_COMMON: 'ai-d-connection-string'
+    SEC_TO_OVERWRITE: elastic-apm-secret-token
   keyvault:
     name: "pagopa-d-apiconfig-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
   nodeSelector: {}
   tolerations: []
   affinity:
@@ -116,7 +105,10 @@ microservice-chart:
         weightPercent: 0
     image:
       repository: ghcr.io/pagopa/devops-java-springboot-color
-      tag: 0.5.0
+      tag: 0.10.0
     envConfig:
-      ENV: 'beta-dev'
+      TO_OVERWRITE: "over-witten"
+      NEW_ITEM: "new item"
     envSecret:
+      SEC_NEW_ITEM: 'oracle-db-cfg-password'
+      SEC_TO_OVERWRITE: 'oracle-db-cfg-password'

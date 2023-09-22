@@ -241,19 +241,11 @@ canaryDelivery:
       # -- the weight percent used into canary deployment. Can be used toghether with header
     weightPercent: 10
 
-  deployment:
-    # -- (int) Number of replicas (will be replaced by autoscaling if enabled)
-    replicas: 1
-    # -- (bool) Force redeploy container
-    forceRedeploy: false
-
     image:
       # -- Docker reposity for the container canary
       repository: ghcr.io/pagopa/devops-java-springboot-color
       # -- Container TAG
       tag: 0.7.1
-      # -- Pull policy to use
-      pullPolicy: Always
 
     # -- Environment config to use for the canary container
     envConfig: { }
