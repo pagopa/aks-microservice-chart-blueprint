@@ -125,7 +125,7 @@ K8s:
 
 Here you can find a result of the template [final result](docs/FINAL_RESULT_EXAMPLE.md)
 
-## Values keys/Yaml chart configuration properties (values.yaml)
+## Functionality & Values keys/Yaml chart configuration properties (values.yaml)
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
 
@@ -224,6 +224,8 @@ All the files are created inside the path: `/mnt/file-config-external/<config-ma
 
 ### `tmpVolumeMount`: allow to create local folders with write permissions
 
+This volume is create inside the AKS default disk, please don't use to store data, but use only as a tmp folder
+
 ```yaml
   tmpVolumeMount:
     create: true
@@ -232,6 +234,19 @@ All the files are created inside the path: `/mnt/file-config-external/<config-ma
         mountPath: /tmp
       - name: logs
         mountPath: /logs
+```
+
+### `persistentVolumeMounts`: allow to create local folders with persistent volumes and write permissions
+
+This volume use a pvc to persist the data
+
+```yaml
+  persistentVolumeMounts:
+    create: true
+    mounts:
+      - name: pdf-pvc
+        mountPath: /pdf
+        pvcName: blueprint-hdd-pvc
 ```
 
 ## Advanced
