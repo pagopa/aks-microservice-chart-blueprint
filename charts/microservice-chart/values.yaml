@@ -84,6 +84,10 @@ externalConfigMapValues:
   # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}]
   configMaps: []
 
+#
+# Volumes
+#
+
 # -- Configure mounted volumes with secrets needed to mount them
 # @default -- {}
 providedVolumeMount:
@@ -91,10 +95,16 @@ providedVolumeMount:
   envSecret: {}
   folders: []
 
-# -- Configure optional tmp volume to mount
+# -- Configure optional tmp volume to mount (Use instance storage)
 tmpVolumeMount:
   create: false
   # -- (list) Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp"}]])
+  mounts: []
+
+# -- Configure optional volume that mount using a PVC
+persistentVolumeMounts:
+  create: false
+  # -- (list) Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]])
   mounts: []
 
 # -- POD resources section
@@ -212,7 +222,7 @@ ingress:
   servicePort: 8080
   # -- Path where the application can response like: `/app(/|$)(.*)`
   path: "/please-put-a-path"
-  pathType: Prefix
+  pathType: ImplementationSpecific
   # -- (bool) if force ssl redirect is enabled
   forceSslRedirect: true
   # -- the rewrite target for ingress
