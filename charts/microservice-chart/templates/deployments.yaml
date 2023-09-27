@@ -169,16 +169,16 @@ spec:
         {{- end }}
         {{- end }}
         #</tmp volume>
-        #<pvc volume>
-        # {{- if .Values.persistentVolumeMounts.create }}
-        # {{- range $i, $val := .Values.persistentVolumeMounts.mounts }}
-        ciao: ciao
-        # - name: {{ $val.name }}
-        #   persistentVolumeClaim:
-        #     claimName: {{ $val.pvcName }}
-        # {{- end }}
-        # {{- end }}
-        #</pvc volume>
+        # <pvc volume>
+        {{- if .Values.persistentVolumeMounts.create }}
+        {{- range $i, $val := .Values.persistentVolumeMounts.mounts }}
+        - name: {{ $val.name }}
+          persistentVolumeClaim:
+            claimName: {{ $val.pvcName }}
+        {{- end }}
+        {{- end }}
+        # </pvc volume>
+        # <provided>
         {{- if .Values.providedVolumeMount.create }}
         {{- range $i, $v := .Values.providedVolumeMount.folders }}
         - name: file-azure-{{ $v.name }}

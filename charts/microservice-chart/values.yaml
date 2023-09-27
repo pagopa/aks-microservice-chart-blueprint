@@ -104,7 +104,7 @@ tmpVolumeMount:
 # -- Configure optional volume that mount using a PVC
 persistentVolumeMounts:
   create: false
-  # -- (list) Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]])
+  # -- (list) Mounts with pvc volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]])
   mounts: []
 
 # -- POD resources section
