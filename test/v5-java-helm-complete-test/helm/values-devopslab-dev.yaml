@@ -1,5 +1,5 @@
 microservice-chart:
-  namespace: "diego"
+  namespace: "blueprint"
 
   deployment:
     create: true
@@ -49,6 +49,13 @@ microservice-chart:
         mountPath: /tmp
       - name: logs
         mountPath: /app/logs
+
+  persistentVolumeMounts:
+    created: true
+    mounts:
+      - name: pdf-pvc
+        mountPath: /pdf
+        pvcName: blueprint-hdd-pvc
 
   livenessProbe:
     httpGet:
@@ -114,7 +121,7 @@ microservice-chart:
           value: "60"
 
   keyvault:
-    name: "dvopla-d-diego-kv"
+    name: "dvopla-d-blueprint-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
   # nodeSelector: {}

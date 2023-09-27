@@ -153,7 +153,7 @@ Is possible to load env variables inside the pod, with the creation of a configm
 
   # configuration
   keyvault:
-    name: "dvopla-d-diego-kv"
+    name: "dvopla-d-blueprint-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 ```
 

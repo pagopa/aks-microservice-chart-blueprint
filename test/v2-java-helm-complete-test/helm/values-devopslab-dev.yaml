@@ -1,7 +1,5 @@
 microservice-chart:
-  namespace: "diego"
-  nameOverride: ""
-  fullnameOverride: ""
+  namespace: "blueprint"
 
   canaryDelivery:
     create: false
@@ -142,7 +140,7 @@ microservice-chart:
           targetValue: "30"
 
   keyvault:
-    name: "dvopla-d-diego-kv"
+    name: "dvopla-d-blueprint-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
   # nodeSelector: {}
