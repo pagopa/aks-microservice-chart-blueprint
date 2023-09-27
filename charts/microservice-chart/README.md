@@ -53,7 +53,7 @@ A Helm chart for PagoPA microservice
 | namespace | string | `""` | Namespace in which deploy the microservice |
 | nodeSelector | object | `{}` | K8s node selectors |
 | persistentVolumeMounts | object | `{"create":false,"mounts":[]}` | Configure optional volume that mount using a PVC |
-| persistentVolumeMounts.mounts | list | `[]` | Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]]) |
+| persistentVolumeMounts.mounts | list | `[]` | Mounts with pvc volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]]) |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | providedVolumeMount | object | {} | Configure mounted volumes with secrets needed to mount them |
