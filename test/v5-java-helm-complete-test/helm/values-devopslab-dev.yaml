@@ -51,7 +51,7 @@ microservice-chart:
         mountPath: /app/logs
 
   persistentVolumeMounts:
-    created: true
+    create: true
     mounts:
       - name: pdf-pvc
         mountPath: /pdf
