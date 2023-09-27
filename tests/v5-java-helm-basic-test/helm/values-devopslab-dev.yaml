@@ -1,5 +1,5 @@
 microservice-chart:
-  namespace: "diego"
+  namespace: "blueprint"
 
   deployment:
     create: true
@@ -63,5 +63,5 @@ microservice-chart:
       cpu: "150m"
 
   keyvault:
-    name: "dvopla-d-diego-kv"
+    name: "dvopla-d-blueprint-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

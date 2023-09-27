@@ -4,6 +4,9 @@ VALUES_FILE_NAME=$1
 NAMESPACE=$2
 APP_NAME=$3
 
+echo "✂️ Delete charts folder"
+rm -rf charts || true
+
 echo "🚀 start helm installation"
 
 helm dep build && helm template . -f "$VALUES_FILE_NAME"  --debug
