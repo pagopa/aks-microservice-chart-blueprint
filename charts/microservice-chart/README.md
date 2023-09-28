@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 2.3.0](https://img.shields.io/badge/Version-2.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 2.8.0](https://img.shields.io/badge/Version-2.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -10,6 +10,7 @@ A Helm chart for PagoPA microservice
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Pod labels affinity |
 | autoscaling | object | - | Autoscaling using KEDA |
+| autoscaling.advanced | object | `{}` | Autoscaling advanced https://keda.sh/docs/2.9/concepts/scaling-deployments/#advanced |
 | autoscaling.cooldownPeriod | int | `300` | Autoscaling cooldown period |
 | autoscaling.enable | bool | `false` | Enable Autoscaling |
 | autoscaling.maxReplica | int | `1` | Autoscaling maximum replicas |
@@ -50,8 +51,7 @@ A Helm chart for PagoPA microservice
 | envFieldRef | object | `{}` | Environment config from k8s metadata |
 | envSecret | object | `{}` | Environment secrets to use for the canary container |
 | fileConfig | object | `{}` | File config pattern to mount |
-| fileConfigExternals.configMaps | list | `[]` |  |
-| fileConfigExternals.create | bool | `false` |  |
+| fileConfigExternals | object | `{"configMaps":[],"create":false}` | Generate file inside pod from configmap |
 | fileShare.create | bool | `false` | create the service manifest |
 | fileShare.folders | list | `[]` | Which fileshare use (! this name is used even inside the deployment) |
 | fullnameOverride | string | `""` | Helm chart fullname override |
@@ -71,29 +71,36 @@ A Helm chart for PagoPA microservice
 | keyvault.name | string | `""` | KV name |
 | keyvault.tenantId | string | `""` | Tenant id (uuid) |
 | livenessProbe.failureThreshold | int | `6` | Numbers of failures before consider the pod fail |
-| livenessProbe.httpGet | object | - | httpGet will be put as is into deployment yaml |
+| livenessProbe.handlerType | string | - | httpGet will be put as is into deployment yaml |
 | livenessProbe.httpGet.path | string | `"/healthz/live"` | Live (health) path used by app |
 | livenessProbe.httpGet.port | int | `80` | Live (health) port used by app |
 | livenessProbe.initialDelaySeconds | int | `60` | Initial delay before start checking |
 | livenessProbe.periodSeconds | int | `10` | Numbers of seconds between one failure and other |
+| livenessProbe.tcpSocket.port | int | `80` |  |
 | nameOverride | string | `""` | Helm chart name override |
 | namespace | string | `""` | Namespace in which deploy the microservice |
 | nodeSelector | object | `{}` | K8s node selectors |
 | podAnnotations | object | `{}` |  |
+| podDisruptionBudget | object | `{"create":false,"maxUnavailable":"","minAvailable":0}` | generate PodDisruptionBudget |
+| podDisruptionBudget.maxUnavailable | mutually exclusive with minAvailable | `""` | Max number of pods unavailable before destroy node |
+| podDisruptionBudget.minAvailable | mutually exclusive with maxUnavailable | `0` | Min number of pods that must be alive before destroy node |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | readinessProbe.failureThreshold | int | `6` | Numbers of failures before consider the pod fail |
-| readinessProbe.httpGet | object | - | httpGet will be put as is into deployment yaml |
+| readinessProbe.handlerType | string | - | httpGet will be put as is into deployment yaml |
 | readinessProbe.httpGet.path | string | `"/healthz/ready"` | Ready (health) path used by app |
 | readinessProbe.httpGet.port | int | `80` | Ready (health) port used by app |
 | readinessProbe.initialDelaySeconds | int | `60` | Initial delay before start checking |
 | readinessProbe.periodSeconds | int | `10` | Numbers of seconds between one failure and other |
+| readinessProbe.tcpSocket.port | int | `80` |  |
 | resources | object | - | POD resources section |
 | resources.limits | object | `{"cpu":"150m","memory":"128Mi"}` | limits is mandatory |
 | resources.requests | object | `{"cpu":"40m","memory":"96Mi"}` | request is mandatory |
 | restartPolicy | string | `"Always"` |  |
 | secretProviderClass | object | - | Secrect provider class allow to connect to azure kv |
 | secretProviderClass.create | bool | `true` | create or not the secret provider class manifest |
-| securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["all"]},"readOnlyRootFilesystem":true}` | Deploy/Pod security configuration |
+| securityContext.allowPrivilegeEscalation | bool | `false` | Allow sudo inside pod |
+| securityContext.readOnlyRootFilesystem | bool | `true` | Allow to write inside root folder /, useful for temp folder like: data, logs |
 | service.create | bool | `true` | create the service manifest |
 | service.ports | list | `[]` | Which ports use (! this port is used even inside the deployment) |
 | service.type | string | `"ClusterIP"` | Which type of service to use |
@@ -107,6 +114,8 @@ A Helm chart for PagoPA microservice
 | strategy.rollingUpdate.maxUnavailable | string | `"25%"` |  |
 | strategy.type | string | `"RollingUpdate"` |  |
 | terminationGracePeriodSeconds | int | `30` |  |
+| tmpFolder.mountPath | string | `"/tmp"` |  |
+| tmpFolder.name | string | `"tmp"` |  |
 | tolerations | list | `[]` | Pod taints toleration |
 
 ----------------------------------------------
