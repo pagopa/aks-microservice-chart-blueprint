@@ -229,7 +229,27 @@ To update the page content, use `bin/publish`.
 
 - None.
 
-## Breaking changes
+## New Features & Breaking changes
+
+### v2.9.0
+
+#### Temp folder
+
+Allow to create a tmp folder with a custom name and path, where you can save data even if the root file system is locked
+
+```yaml
+  tmpFolder:
+    name: log
+    mountPath: /app/logs
+```
+
+#### PodDisruptionBudget
+
+```yaml
+  podDisruptionBudget:
+    create: true
+    minAvailable: 0
+```
 
 ### v2.4.0
 
