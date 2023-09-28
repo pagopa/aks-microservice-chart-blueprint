@@ -310,3 +310,7 @@ podDisruptionBudget:
   minAvailable: 0
   # -- (mutually exclusive with minAvailable) Max number of pods unavailable before destroy node
   maxUnavailable: ""
+
+tmpFolder:
+  name: tmp
+  mountPath: /tmp
