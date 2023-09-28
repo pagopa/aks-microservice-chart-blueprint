@@ -111,6 +111,10 @@ microservice-chart:
 
   securityContext:
     allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - all
+    readOnlyRootFilesystem: true
 
   resources:
     requests:
@@ -135,6 +139,14 @@ microservice-chart:
   keyvault:
     name: "dvopla-d-blueprint-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  podDisruptionBudget:
+    create: true
+    minAvailable: 0
+
+  tmpFolder:
+    name: log
+    mountPath: /app/logs
 
   # nodeSelector: {}
 
