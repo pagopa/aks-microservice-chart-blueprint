@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: v2-confimap-games
+  namespace: diego
+data:
+  # property-like keys; each key maps to a simple value
+  player-initial-lives: "3"
+  ui-properties-file-name: "user-interface.properties"
+
+  # file-like keys
+  game.properties: |
+    enemy.types=aliens,monsters
+    player.maximum-lives=5
+  user-interface.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: v2-confimap-mongodb
+  namespace: diego
+data:
+  # Configuration values can be set as key-value properties
+  database: mongodb
+  database-uri: mongodb://localhost:27017
+
+  # Or set as complete file contents (even JSON!)
+  keys: |
+    image.public.key=771
+    rsa.public.key=42

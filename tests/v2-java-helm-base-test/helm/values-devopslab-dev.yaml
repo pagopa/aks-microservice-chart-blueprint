@@ -1,0 +1,82 @@
+microservice-chart:
+  namespace: "blueprint"
+
+  deployment:
+    create: true
+    replicas: 1
+
+  envConfig:
+    APP: foo
+    MY_APP_COLOR: "green"
+
+  envSecret:
+    aks-api-url: dvopla-d-neu-dev01-aks-apiserver-url
+
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: 0.8.1
+    pullPolicy: Always
+
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 60
+    failureThreshold: 6
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 60
+    failureThreshold: 6
+    periodSeconds: 10
+
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+
+  ingress:
+    create: false
+    host: ""
+    path: /diego/v2-test-simple(/|$)(.*)
+    rewriteTarget: /$2
+    servicePort: 8080
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "150m"
+    limits:
+      memory: "128Mi"
+      cpu: "150m"
+
+  autoscaling:
+    enable: true
+    minReplica: 1
+    maxReplica: 3
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 300 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
+
+  keyvault:
+    name: "dvopla-d-blueprint-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  # nodeSelector: {}
+
+  # tolerations: []
+
+  # affinity: {}
