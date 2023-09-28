@@ -45,6 +45,7 @@ Common labels
 */}}
 {{- define "microservice-chart.labels" -}}
 helm.sh/chart: {{ include "microservice-chart.chart" . }}
+helm.sh/blueprint-version: {{ .Chart.Version }}
 {{ include "microservice-chart.selectorLabels" . }}
 {{- include "microservice-chart.extraLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
