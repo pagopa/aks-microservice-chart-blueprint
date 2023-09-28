@@ -167,6 +167,7 @@ envFieldRef: {}
 # -- File config pattern to mount
 fileConfig: {}
 
+# -- Generate file inside pod from configmap
 fileConfigExternals:
   create: false
   configMaps: []
@@ -177,8 +178,15 @@ podSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
+# -- Deploy/Pod security configuration
 securityContext:
+  # -- Allow sudo inside pod
   allowPrivilegeEscalation: false
+  # -- Allow to write inside root folder /, useful for temp folder like: data, logs
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - all
 
 # -- K8s node selectors
 nodeSelector: {}
@@ -227,8 +235,6 @@ fileShare:
   create: false
   # -- (list) Which fileshare use (! this name is used even inside the deployment)
   folders: []
-
-
 
 service:
   # -- (bool) create the service manifest
@@ -297,7 +303,10 @@ serviceMonitor:
   create: false
   endpoints: []
 
+# -- generate PodDisruptionBudget
 podDisruptionBudget:
   create: false
+  # -- (mutually exclusive with maxUnavailable) Min number of pods that must be alive before destroy node
   minAvailable: 0
+  # -- (mutually exclusive with minAvailable) Max number of pods unavailable before destroy node
   maxUnavailable: ""
