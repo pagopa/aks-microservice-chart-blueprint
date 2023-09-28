@@ -87,7 +87,7 @@ spec:
             {{- end }}
             {{- if .Values.fileConfigExternals.create }}
             {{- range $k, $v := .Values.fileConfigExternals.configMaps }}
-            - name: file-config-external-{{ $v.name }}
+            - name: file-config-external-{{ $v.key | sha1sum | trunc 5 }}
               mountPath: "/mnt/file-config-external/{{ $v.name }}/{{ $v.key }}"
               subPath: {{ $v.key }}
               readOnly: true
@@ -172,7 +172,7 @@ spec:
         {{- end }}
         {{- if .Values.fileConfigExternals.create }}
         {{- range $k, $v := .Values.fileConfigExternals.configMaps }}
-        - name: file-config-external-{{ $v.name }}
+        - name: file-config-external-{{ $v.key | sha1sum | trunc 5 }}
           configMap:
             name: {{ $v.name }}
             defaultMode: 420
