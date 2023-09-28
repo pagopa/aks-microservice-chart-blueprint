@@ -296,3 +296,8 @@ serviceMonitor:
   # -- (bool) Create or not the service monitor
   create: false
   endpoints: []
+
+podDisruptionBudget:
+  create: false
+  minAvailable: 0
+  maxUnavailable: ""
