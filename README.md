@@ -249,6 +249,14 @@ This volume use a pvc to persist the data
         pvcName: blueprint-hdd-pvc
 ```
 
+### `PodDisruptionBudget`
+
+```yaml
+  podDisruptionBudget:
+    create: true
+    minAvailable: 0
+```
+
 ## Advanced
 
 For more information, visit the [complete documentation](https://pagopa.atlassian.net/wiki/spaces/DEVOPS/pages/479658690/Microservice+template).

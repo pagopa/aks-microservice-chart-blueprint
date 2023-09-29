@@ -50,7 +50,7 @@ microservice-chart:
   ingress:
     create: true
     host: dev01.diego.internal.devopslab.pagopa.it
-    path: /diego/java-helm-basic-test(/|$)(.*)
+    path: /diego/v5-java-helm-basic-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
@@ -65,3 +65,7 @@ microservice-chart:
   keyvault:
     name: "dvopla-d-blueprint-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  podDisruptionBudget:
+    create: true
+    minAvailable: 0
