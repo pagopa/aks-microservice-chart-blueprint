@@ -15,16 +15,16 @@ microservice-chart:
   externalConfigMapFiles:
     create: true
     configMaps:
-      - name: external-configmap-files-complete
+      - name: v5-complete-configmap-files
         key: game.properties
-      - name: external-configmap-files-complete
+      - name: v5-complete-configmap-files
         key: user-interface.xml
 
   externalConfigMapValues:
-    external-configmap-values-complete-1:
+    v5-complete-external-configmap-values-1:
       DATABASE_DB_NANE: database-db-name
 
-    external-configmap-values-complete-2:
+    v5-complete-external-configmap-values-2:
       PLAYER-INITIAL-LIVES: player-initial-lives
       UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 
@@ -82,7 +82,7 @@ microservice-chart:
   ingress:
     create: true
     host: dev01.diego.internal.devopslab.pagopa.it
-    path: /diego/java-helm-complete-test(/|$)(.*)
+    path: /diego/v5-java-helm-complete-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
@@ -119,6 +119,10 @@ microservice-chart:
         metadata:
           type: Utilization
           value: "60"
+
+  podDisruptionBudget:
+    create: true
+    minAvailable: 0
 
   keyvault:
     name: "dvopla-d-blueprint-kv"
