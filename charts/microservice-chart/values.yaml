@@ -245,3 +245,11 @@ canaryDelivery:
     bluegreen: false
     headerName: X-Canary
     headerValue: pagopa
+
+# -- generate PodDisruptionBudget
+podDisruptionBudget:
+  create: false
+  # -- (mutually exclusive with maxUnavailable) Min number of pods that must be alive before destroy node
+  minAvailable: 0
+  # -- (mutually exclusive with minAvailable) Max number of pods unavailable before destroy node
+  maxUnavailable: ""
