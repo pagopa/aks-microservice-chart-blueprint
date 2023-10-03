@@ -66,7 +66,7 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: 0.8.1
+    tag: 0.10.0
     pullPolicy: Always
 
   livenessProbe:
