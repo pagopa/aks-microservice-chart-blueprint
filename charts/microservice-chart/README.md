@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 5.1.1](https://img.shields.io/badge/Version-5.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 5.2.0](https://img.shields.io/badge/Version-5.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -78,8 +78,8 @@ A Helm chart for PagoPA microservice
 | sidecars | list | `[]` | Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind |
 | strategy | object | {} | strategy type for deployment: Recreate or RollingUpdate |
 | terminationGracePeriodSeconds | int | `30` | Termination grace period in seconds |
-| tmpVolumeMount | object | `{"create":false,"mounts":[]}` | Configure optional tmp volume to mount (Use instance storage) |
-| tmpVolumeMount.mounts | list | `[]` | Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp"}]]) |
+| tmpVolumeMount | object | `{"create":true,"mounts":[{"mountPath":"/tmp","name":"tmp"}]}` | Configure optional tmp volume to mount (Use instance storage) |
+| tmpVolumeMount.mounts | list | `[{"mountPath":"/tmp","name":"tmp"}]` | Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp"}]]) |
 | tolerations | list | `[]` | Pod taints toleration |
 
 ----------------------------------------------

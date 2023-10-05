@@ -97,9 +97,11 @@ providedVolumeMount:
 
 # -- Configure optional tmp volume to mount (Use instance storage)
 tmpVolumeMount:
-  create: false
+  create: true
   # -- (list) Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp"}]])
-  mounts: []
+  mounts:
+    - name: tmp
+      mountPath: /tmp
 
 # -- Configure optional volume that mount using a PVC
 persistentVolumeMounts:

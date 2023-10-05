@@ -1,7 +1,5 @@
 microservice-chart:
-  namespace: "diego"
-  nameOverride: ""
-  fullnameOverride: ""
+  namespace: "blueprint"
 
   canaryDelivery:
     create: false
@@ -39,9 +37,36 @@ microservice-chart:
   envSecret:
     aks-api-url: dvopla-d-neu-dev01-aks-apiserver-url
 
+  fileConfigExternals:
+    create: false
+    configMaps:
+      - name: v2-migration-configmap-games
+        key: game.properties
+      - name: v2-migration-configmap-games
+        key: user-interface.properties
+      - name: v2-migration-configmap-mongodb
+        key: keys
+
+  fileConfig:
+    internal.properties: |
+      game.types=rock,scissors,paper
+      player.max=2
+    internal-user.properties: |
+      id.types=name,surname,age
+      secret.types=magic
+
+  envConfigMapExternals:
+    v2-migration-configmap-games:
+      PLAYER_INITIAL_LIVES_ENV: player-initial-lives
+      UI_PROPERTIES_FILE_NAME_ENV: ui-properties-file-name
+
+    v2-migration-configmap-mongodb:
+      DATABASE: database
+      DATABASE_URI: database-uri
+
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: 0.8.1
+    tag: 0.10.0
     pullPolicy: Always
 
   livenessProbe:
@@ -67,9 +92,9 @@ microservice-chart:
       - 8080
 
   ingress:
-    create: false
-    host: ""
-    path: /blueprint/color(/|$)(.*)
+    create: true
+    host: dev01.blueprint.internal.devopslab.pagopa.it
+    path: /blueprint/v2-migration-java-helm-complete-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
@@ -84,40 +109,37 @@ microservice-chart:
     seccompProfile:
       type: RuntimeDefault
 
-  securityContext:
-    allowPrivilegeEscalation: false
-
   resources:
     requests:
       memory: "128Mi"
       cpu: "150m"
     limits:
-      memory: "256Mi"
-      cpu: "300m"
+      memory: "128Mi"
+      cpu: "150m"
 
   autoscaling:
-    enable: false
+    enable: true
     minReplica: 1
-    maxReplica: 2
+    maxReplica: 3
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
-      - type: azure-monitor
+      - type: cpu
         metadata:
-          tenantId: 7788edaf-0346-4068-9d79-c868aed15b3d
-          subscriptionId: ac17914c-79bf-48fa-831e-1359ef74c1d5
-          resourceGroupName: dvopla-d-sec-rg
-          resourceURI: Microsoft.KeyVault/vaults/dvopla-d-neu-kv
-          metricName: ServiceApiHit
-          # metricNamespace: Microsoft.KeyVault/vaults
-          # metricFilter: namespace eq 'default'
-          # metricAggregationInterval: "-1:1:0"
-          metricAggregationType: Count
-          targetValue: "30"
+          type: Utilization
+          value: "60"
 
   keyvault:
     name: "dvopla-d-blueprint-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  podDisruptionBudget:
+    create: true
+    minAvailable: 0
+
+  tmpFolder:
+    name: log
+    mountPath: /app/logs
 
   # nodeSelector: {}
 
