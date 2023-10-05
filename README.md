@@ -39,6 +39,10 @@ These are the supported LTS releases and until when:
 - `2.x`: March 2024
 - `5.x`: July 2024
 
+## Migration guide
+
+please see this page about how to manage a migration for one version to another [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
+
 ### Quick start
 
 Create a `helm` folder inside your microservice project in which install the
@@ -157,7 +161,7 @@ Is possible to load env variables inside the pod, with the creation of a configm
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 ```
 
-### `configMapFromFile`: load file defined inside internal configMap and mount in a pod as file
+### `configMapFromFile`: load file defined inside internal value configMap and mount in a pod as file
 
 this property allows to load from a configMap (denfined inside the values) a file, and mount into pod as file.
 
