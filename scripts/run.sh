@@ -15,6 +15,6 @@ echo "✅ Tempalte helm chart"
 
 helm dep build && helm upgrade --namespace "$NAMESPACE" \
   --install --values "$VALUES_FILE_NAME" \
-  --wait --timeout 2m0s "$APP_NAME" .
+  --wait --timeout 3m0s "$APP_NAME" .
 
 echo "✅ Completed helm installation"

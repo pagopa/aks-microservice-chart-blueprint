@@ -3,7 +3,7 @@ microservice-chart:
 
   deployment:
     create: true
-    replicas: 1
+    replicas: 3
 
   envConfig:
     APP: foo
@@ -68,4 +68,23 @@ microservice-chart:
 
   podDisruptionBudget:
     create: true
-    minAvailable: 0
+    minAvailable: 1
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.azure.com/mode
+            operator: In
+            values:
+            - user
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              aadpodidbinding: blueprint-pod-identity
+          namespaces: ["blueprint"]
+          topologyKey: topology.kubernetes.io/zone
