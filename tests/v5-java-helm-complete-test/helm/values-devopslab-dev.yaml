@@ -50,12 +50,12 @@ microservice-chart:
       - name: logs
         mountPath: /app/logs
 
-  persistentVolumeMounts:
-    create: true
-    mounts:
-      - name: pdf-pvc
-        mountPath: /pdf
-        pvcName: blueprint-hdd-pvc
+  # persistentVolumeMounts:
+  #   create: true
+  #   mounts:
+  #     - name: pdf-pvc
+  #       mountPath: /pdf
+  #       pvcName: blueprint-ssd-az-pvc
 
   livenessProbe:
     httpGet:
@@ -110,7 +110,7 @@ microservice-chart:
 
   autoscaling:
     enable: true
-    minReplica: 1
+    minReplica: 3
     maxReplica: 3
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
@@ -122,7 +122,7 @@ microservice-chart:
 
   podDisruptionBudget:
     create: true
-    minAvailable: 0
+    minAvailable: 1
 
   keyvault:
     name: "dvopla-d-blueprint-kv"
@@ -132,4 +132,26 @@ microservice-chart:
 
   # tolerations: []
 
-  # affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node_type
+            operator: In
+            values:
+            - user
+        - matchExpressions:
+          - key: elastic
+            operator: In
+            values:
+            - eck
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              aadpodidbinding: blueprint-pod-identity
+          namespaces: ["blueprint"]
+          topologyKey: topology.kubernetes.io/zone
