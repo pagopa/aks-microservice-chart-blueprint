@@ -261,6 +261,36 @@ This volume use a pvc to persist the data
     minAvailable: 0
 ```
 
+### `affinity (HA)`
+
+This snippet allows to install pod into different nodes, created in different AZ's
+
+```yaml
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node_type
+            operator: In
+            values:
+            - user
+        - matchExpressions:
+          - key: elastic
+            operator: In
+            values:
+            - eck
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              aadpodidbinding: blueprint-pod-identity
+          namespaces: ["blueprint"]
+          topologyKey: topology.kubernetes.io/zone
+```
+
 ## Advanced
 
 For more information, visit the [complete documentation](https://pagopa.atlassian.net/wiki/spaces/DEVOPS/pages/479658690/Microservice+template).
