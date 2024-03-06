@@ -84,6 +84,10 @@ externalConfigMapValues:
   # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}]
   configMaps: []
 
+#
+# Volumes
+#
+
 # -- Configure mounted volumes with secrets needed to mount them
 # @default -- {}
 providedVolumeMount:
@@ -91,10 +95,18 @@ providedVolumeMount:
   envSecret: {}
   folders: []
 
-# -- Configure optional tmp volume to mount
+# -- Configure optional tmp volume to mount (Use instance storage)
 tmpVolumeMount:
-  create: false
+  create: true
   # -- (list) Mounts to add to the tmp volume: (e.g. [{name: "tmp", mountPath: "/tmp"}]])
+  mounts:
+    - name: tmp
+      mountPath: /tmp
+
+# -- Configure optional volume that mount using a PVC
+persistentVolumeMounts:
+  create: false
+  # -- (list) Mounts with pvc volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]])
   mounts: []
 
 # -- POD resources section
@@ -212,7 +224,7 @@ ingress:
   servicePort: 8080
   # -- Path where the application can response like: `/app(/|$)(.*)`
   path: "/please-put-a-path"
-  pathType: Prefix
+  pathType: ImplementationSpecific
   # -- (bool) if force ssl redirect is enabled
   forceSslRedirect: true
   # -- the rewrite target for ingress
@@ -238,6 +250,7 @@ canaryDelivery:
     headerName: X-Canary
       # -- the header values used to call the canary deployment
     headerValue: pagopa
+
       # -- the weight percent used into canary deployment. Can be used toghether with header
     weightPercent: 10
 
@@ -252,3 +265,12 @@ canaryDelivery:
 
     # -- Load secrets as environment variables from kv for the canary container
     envSecret: { }
+
+
+# -- generate PodDisruptionBudget
+podDisruptionBudget:
+  create: false
+  # -- (mutually exclusive with maxUnavailable) Min number of pods that must be alive before destroy node
+  minAvailable: 0
+  # -- (mutually exclusive with minAvailable) Max number of pods unavailable before destroy node
+  maxUnavailable: ""

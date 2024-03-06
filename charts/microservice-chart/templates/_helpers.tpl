@@ -35,6 +35,7 @@ Common labels
 */}}
 {{- define "microservice-chart.labels" -}}
 helm.sh/chart: {{ include "microservice-chart.chart" . }}
+helm.sh/blueprint-version: {{ .Chart.Version }}
 {{ include "microservice-chart.selectorLabels" . }}
 {{- include "microservice-chart.extraLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
@@ -49,15 +50,13 @@ app.kubernetes.io/version: {{ (.Values.image.tag | default .Chart.AppVersion) | 
 {{- end }}
 {{- end }}
 
-
-
-
 {{/*
 Selector labels
 */}}
 {{- define "microservice-chart.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+canaryDelivery: "false"
 {{- end }}
 
 {{/*

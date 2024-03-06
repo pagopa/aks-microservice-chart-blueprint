@@ -1,9 +1,9 @@
 microservice-chart:
-  namespace: "diego"
+  namespace: "blueprint"
 
   deployment:
     create: true
-    replicas: 1
+    replicas: 3
 
   envConfig:
     APP: foo
@@ -14,7 +14,7 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: beta-fix-logs-folders
+    tag: 0.10.0
     pullPolicy: Always
 
   tmpVolumeMount:
@@ -49,8 +49,8 @@ microservice-chart:
 
   ingress:
     create: true
-    host: dev01.diego.internal.devopslab.pagopa.it
-    path: /diego/java-helm-basic-test(/|$)(.*)
+    host: dev01.blueprint.internal.devopslab.pagopa.it
+    path: /blueprint/v5-java-helm-basic-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
@@ -63,5 +63,28 @@ microservice-chart:
       cpu: "150m"
 
   keyvault:
-    name: "dvopla-d-diego-kv"
+    name: "dvopla-d-blueprint-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  podDisruptionBudget:
+    create: true
+    minAvailable: 1
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.azure.com/mode
+            operator: In
+            values:
+            - user
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              aadpodidbinding: blueprint-pod-identity
+          namespaces: ["blueprint"]
+          topologyKey: topology.kubernetes.io/zone

@@ -9,7 +9,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
       {{- include "microservice-chart.selectorLabels" . | nindent 6 }}
@@ -74,13 +74,22 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
+            #<tmp folders>
             {{- if .Values.tmpVolumeMount.create }}
             {{- range $i, $val := .Values.tmpVolumeMount.mounts }}
-            #tmp folders
             - name: {{ $val.name }}
               mountPath: {{ $val.mountPath }}
             {{- end }}
             {{- end }}
+            #</tmp folder>
+            #<pvc mount>
+            {{- if .Values.persistentVolumeMounts.create }}
+            {{- range $i, $val := .Values.persistentVolumeMounts.mounts }}
+            - name: {{ $val.name }}
+              mountPath: {{ $val.mountPath }}
+            {{- end }}
+            {{- end }}
+            #</pvc mount>
             {{- if or .Values.secretProviderClass.create .Values.providedVolumeMount.create }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
@@ -176,12 +185,24 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       volumes:
+        #<tmp volume>
         {{- if .Values.tmpVolumeMount.create }}
         {{- range $i, $val := .Values.tmpVolumeMount.mounts }}
         - name: {{ $val.name }}
           emptyDir: {}
         {{- end }}
         {{- end }}
+        #</tmp volume>
+        # <pvc volume>
+        {{- if .Values.persistentVolumeMounts.create }}
+        {{- range $i, $val := .Values.persistentVolumeMounts.mounts }}
+        - name: {{ $val.name }}
+          persistentVolumeClaim:
+            claimName: {{ $val.pvcName }}
+        {{- end }}
+        {{- end }}
+        # </pvc volume>
+        # <provided>
         {{- if .Values.providedVolumeMount.create }}
         {{- range $i, $v := .Values.providedVolumeMount.folders }}
         - name: file-azure-{{ $v.name }}

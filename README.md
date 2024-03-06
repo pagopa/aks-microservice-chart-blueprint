@@ -39,6 +39,10 @@ These are the supported LTS releases and until when:
 - `2.x`: March 2024
 - `5.x`: July 2024
 
+## Migration guide
+
+please see this page about how to manage a migration for one version to another [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
+
 ### Quick start
 
 Create a `helm` folder inside your microservice project in which install the
@@ -125,7 +129,7 @@ K8s:
 
 Here you can find a result of the template [final result](docs/FINAL_RESULT_EXAMPLE.md)
 
-## Values keys/Yaml chart configuration properties (values.yaml)
+## Functionality & Values keys/Yaml chart configuration properties (values.yaml)
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
 
@@ -153,11 +157,11 @@ Is possible to load env variables inside the pod, with the creation of a configm
 
   # configuration
   keyvault:
-    name: "dvopla-d-diego-kv"
+    name: "dvopla-d-blueprint-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 ```
 
-### `configMapFromFile`: load file defined inside internal configMap and mount in a pod as file
+### `configMapFromFile`: load file defined inside internal value configMap and mount in a pod as file
 
 this property allows to load from a configMap (denfined inside the values) a file, and mount into pod as file.
 
@@ -224,6 +228,8 @@ All the files are created inside the path: `/mnt/file-config-external/<config-ma
 
 ### `tmpVolumeMount`: allow to create local folders with write permissions
 
+This volume is create inside the AKS default disk, please don't use to store data, but use only as a tmp folder
+
 ```yaml
   tmpVolumeMount:
     create: true
@@ -232,6 +238,57 @@ All the files are created inside the path: `/mnt/file-config-external/<config-ma
         mountPath: /tmp
       - name: logs
         mountPath: /logs
+```
+
+### `persistentVolumeMounts`: allow to create local folders with persistent volumes and write permissions
+
+This volume use a pvc to persist the data
+
+```yaml
+  persistentVolumeMounts:
+    create: true
+    mounts:
+      - name: pdf-pvc
+        mountPath: /pdf
+        pvcName: blueprint-hdd-pvc
+```
+
+### `PodDisruptionBudget`
+
+```yaml
+  podDisruptionBudget:
+    create: true
+    minAvailable: 0
+```
+
+### `affinity (HA)`
+
+This snippet allows to install pod into different nodes, created in different AZ's
+
+```yaml
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node_type
+            operator: In
+            values:
+            - user
+        - matchExpressions:
+          - key: elastic
+            operator: In
+            values:
+            - eck
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              aadpodidbinding: blueprint-pod-identity
+          namespaces: ["blueprint"]
+          topologyKey: topology.kubernetes.io/zone
 ```
 
 ## Advanced

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v5.1.0
+
+- added `persistentVolumeMounts` to manage mount volumes with pvc
+
 ## v5.0.0 (Breking change)
 
 - rollback of the logic that allow to create `externalConfigMapValues` see the documentation for more info and examples

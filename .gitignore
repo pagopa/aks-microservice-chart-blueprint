@@ -1,4 +1,7 @@
 **/helm/charts
+# !tests/**/helm/charts
+
+
 **/.DS_Store
 
 DELETEME*
