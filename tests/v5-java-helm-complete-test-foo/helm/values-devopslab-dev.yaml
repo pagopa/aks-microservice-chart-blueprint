@@ -82,7 +82,7 @@ microservice-chart:
   ingress:
     create: true
     host: dev01.blueprint.internal.devopslab.pagopa.it
-    path: /blueprint/v5-java-helm-complete-test(/|$)(.*)
+    path: /blueprint/v5-java-helm-complete-test-foo(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
