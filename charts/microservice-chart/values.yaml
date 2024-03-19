@@ -104,7 +104,7 @@ tmpVolumeMount:
       mountPath: /tmp
 
 # -- Configure optional volume that mount using a PVC
-persistentVolumeMounts:
+persistentVolumeClaimsMounts:
   create: false
   # -- (list) Mounts with pvc volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]])
   mounts: []

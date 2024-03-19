@@ -79,8 +79,8 @@ spec:
             {{- end }}
             #</tmp folder>
             #<pvc mount>
-            {{- if .Values.persistentVolumeMounts.create }}
-            {{- range $i, $val := .Values.persistentVolumeMounts.mounts }}
+            {{- if .Values.persistentVolumeClaimsMounts.create }}
+            {{- range $i, $val := .Values.persistentVolumeClaimsMounts.mounts }}
             - name: {{ $val.name }}
               mountPath: {{ $val.mountPath }}
             {{- end }}
@@ -170,8 +170,8 @@ spec:
         {{- end }}
         #</tmp volume>
         # <pvc volume>
-        {{- if .Values.persistentVolumeMounts.create }}
-        {{- range $i, $val := .Values.persistentVolumeMounts.mounts }}
+        {{- if .Values.persistentVolumeClaimsMounts.create }}
+        {{- range $i, $val := .Values.persistentVolumeClaimsMounts.mounts }}
         - name: {{ $val.name }}
           persistentVolumeClaim:
             claimName: {{ $val.pvcName }}

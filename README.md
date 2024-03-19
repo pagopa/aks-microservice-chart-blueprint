@@ -240,12 +240,12 @@ This volume is create inside the AKS default disk, please don't use to store dat
         mountPath: /logs
 ```
 
-### `persistentVolumeMounts`: allow to create local folders with persistent volumes and write permissions
+### `persistentVolumeClaimsMounts`: allow to create local folders with persistent volumes (pv) and write permissions
 
 This volume use a pvc to persist the data
 
 ```yaml
-  persistentVolumeMounts:
+  persistentVolumeClaimsMounts:
     create: true
     mounts:
       - name: pdf-pvc

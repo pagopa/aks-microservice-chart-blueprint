@@ -6,7 +6,7 @@ microservice-chart:
     replicas: 1
 
   envConfig:
-    APP: foo
+    APP: bar
     MY_APP_COLOR: "green"
 
   envSecret:
@@ -15,16 +15,16 @@ microservice-chart:
   externalConfigMapFiles:
     create: true
     configMaps:
-      - name: v5-complete-configmap-files
+      - name: v5-complete-bar-configmap-files
         key: game.properties
-      - name: v5-complete-configmap-files
+      - name: v5-complete-bar-configmap-files
         key: user-interface.xml
 
   externalConfigMapValues:
-    v5-complete-external-configmap-values-1:
+    v5-complete-bar-external-configmap-values-1:
       DATABASE_DB_NANE: database-db-name
 
-    v5-complete-external-configmap-values-2:
+    v5-complete-bar-external-configmap-values-2:
       PLAYER-INITIAL-LIVES: player-initial-lives
       UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 
@@ -50,12 +50,12 @@ microservice-chart:
       - name: logs
         mountPath: /app/logs
 
-  # persistentVolumeMounts:
-  #   create: true
-  #   mounts:
-  #     - name: pdf-pvc
-  #       mountPath: /pdf
-  #       pvcName: blueprint-ssd-az-pvc
+  persistentVolumeClaimsMounts:
+    create: true
+    mounts:
+      - name: csv
+        mountPath: /csv
+        pvcName: blueprint-file-share-zrs
 
   livenessProbe:
     httpGet:
@@ -82,7 +82,7 @@ microservice-chart:
   ingress:
     create: true
     host: dev01.blueprint.internal.devopslab.pagopa.it
-    path: /blueprint/v5-java-helm-complete-test(/|$)(.*)
+    path: /blueprint/v5-java-helm-complete-test-bar(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
@@ -110,8 +110,8 @@ microservice-chart:
 
   autoscaling:
     enable: true
-    minReplica: 3
-    maxReplica: 3
+    minReplica: 1
+    maxReplica: 1
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
