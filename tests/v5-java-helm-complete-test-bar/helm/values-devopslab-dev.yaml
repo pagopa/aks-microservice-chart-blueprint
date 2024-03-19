@@ -1,0 +1,157 @@
+microservice-chart:
+  namespace: "blueprint"
+
+  deployment:
+    create: true
+    replicas: 1
+
+  envConfig:
+    APP: bar
+    MY_APP_COLOR: "green"
+
+  envSecret:
+    MY_KV_SECRET: dvopla-d-neu-dev01-aks-apiserver-url
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: v5-complete-bar-configmap-files
+        key: game.properties
+      - name: v5-complete-bar-configmap-files
+        key: user-interface.xml
+
+  externalConfigMapValues:
+    v5-complete-bar-external-configmap-values-1:
+      DATABASE_DB_NANE: database-db-name
+
+    v5-complete-bar-external-configmap-values-2:
+      PLAYER-INITIAL-LIVES: player-initial-lives
+      UI_PROPERTIES_FILE_NAME: ui-properties-file-name
+
+  configMapFromFile:
+    logback.xml: |-
+      <?xml version="1.0" encoding="UTF-8"?>
+      <configuration scan="true" scanPeriod="30 seconds">
+          <root level="INFO">
+              <appender-ref ref="CONSOLE_APPENDER_ASYNC" />
+          </root>
+      </configuration>
+
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: 0.10.0
+    pullPolicy: Always
+
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: logs
+        mountPath: /app/logs
+
+  # persistentVolumeMounts:
+  #   create: true
+  #   mounts:
+  #     - name: pdf-pvc
+  #       mountPath: /pdf
+  #       pvcName: blueprint-ssd-az-pvc
+
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+
+  ingress:
+    create: true
+    host: dev01.blueprint.internal.devopslab.pagopa.it
+    path: /blueprint/v5-java-helm-complete-test(/|$)(.*)
+    rewriteTarget: /$2
+    servicePort: 8080
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "40m"
+    limits:
+      memory: "256Mi"
+      cpu: "150m"
+
+  autoscaling:
+    enable: true
+    minReplica: 3
+    maxReplica: 3
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 300 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
+
+  podDisruptionBudget:
+    create: true
+    minAvailable: 1
+
+  keyvault:
+    name: "dvopla-d-blueprint-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  # nodeSelector: {}
+
+  # tolerations: []
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node_type
+            operator: In
+            values:
+            - user
+        - matchExpressions:
+          - key: elastic
+            operator: In
+            values:
+            - eck
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              aadpodidbinding: blueprint-pod-identity
+          namespaces: ["blueprint"]
+          topologyKey: topology.kubernetes.io/zone
