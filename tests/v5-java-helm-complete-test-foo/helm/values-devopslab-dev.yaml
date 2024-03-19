@@ -50,12 +50,12 @@ microservice-chart:
       - name: logs
         mountPath: /app/logs
 
-  # persistentVolumeClaimsMounts:
-  #   create: true
-  #   mounts:
-  #     - name: pdf-pvc
-  #       mountPath: /pdf
-  #       pvcName: blueprint-ssd-az-pvc
+  persistentVolumeClaimsMounts:
+    create: true
+    mounts:
+      - name: csv
+        mountPath: /csv
+        pvcName: blueprint-file-share-zrs
 
   livenessProbe:
     httpGet:
@@ -110,8 +110,8 @@ microservice-chart:
 
   autoscaling:
     enable: true
-    minReplica: 3
-    maxReplica: 3
+    minReplica: 1
+    maxReplica: 1
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
