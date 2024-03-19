@@ -52,8 +52,8 @@ A Helm chart for PagoPA microservice
 | nameOverride | string | `""` | Helm chart name override |
 | namespace | string | `""` | Namespace in which deploy the microservice |
 | nodeSelector | object | `{}` | K8s node selectors |
-| persistentVolumeMounts | object | `{"create":false,"mounts":[]}` | Configure optional volume that mount using a PVC |
-| persistentVolumeMounts.mounts | list | `[]` | Mounts with pvc volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]]) |
+| persistentVolumeClaimsMounts | object | `{"create":false,"mounts":[]}` | Configure optional volume that mount using a PVC |
+| persistentVolumeClaimsMounts.mounts | list | `[]` | Mounts with pvc volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]]) |
 | podAnnotations | object | `{}` |  |
 | podDisruptionBudget | object | `{"create":false,"maxUnavailable":"","minAvailable":0}` | generate PodDisruptionBudget |
 | podDisruptionBudget.maxUnavailable | mutually exclusive with minAvailable | `""` | Max number of pods unavailable before destroy node |

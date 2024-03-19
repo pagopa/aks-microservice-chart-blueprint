@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v5.5.0
+
+- added `persistentVolumeClaimMounts` to manage mount volumes with pvc. Formelly `persistentVolumeMounts` or `fileShared`
+
 ## v5.1.0
 
 - added `persistentVolumeMounts` to manage mount volumes with pvc
