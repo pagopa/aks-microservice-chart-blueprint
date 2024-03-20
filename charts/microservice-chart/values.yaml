@@ -41,23 +41,63 @@ image:
 # -- Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind
 sidecars: []
 
+# -- LivenessProbe
+# @default -- {}
+livenessProbe:
+  create: true
+  # Choose the probe type: "httpGet" | "exec" | tcpSocket
+  handlerType: "httpGet"
+  # httpGet options
+  httpGet:
+    path: /alive
+    port: 9999
+  # exec options
+  exec:
+    command: []
+  # tcpSocket options
+  tcpSocket:
+    port: 9999
+  initialDelaySeconds: 15
+  failureThreshold: 10
+  periodSeconds: 5
+
 # -- ReadinessProbe
 # @default -- {}
 readinessProbe:
+  create: true
+  # Choose the probe type: "httpGet" | "exec" | tcpSocket
+  handlerType: "httpGet"
+  # httpGet options
   httpGet:
     path: /ready
+    port: 9999
+  # exec options
+  exec:
+    command: []
+  # tcpSocket options
+  tcpSocket:
     port: 9999
   initialDelaySeconds: 10
   failureThreshold: 10
   periodSeconds: 5
 
-# -- LivenessProbe
+# -- startupProbe
 # @default -- {}
-livenessProbe:
+startupProbe:
+  create: false
+  # Choose the probe type: "httpGet" | "exec" | tcpSocket
+  handlerType: "httpGet"
+  # httpGet options
   httpGet:
-    path: /alive
+    path: /ready
     port: 9999
-  initialDelaySeconds: 15
+  # exec options
+  exec:
+    command: []
+  # tcpSocket options
+  tcpSocket:
+    port: 9999
+  initialDelaySeconds: 10
   failureThreshold: 10
   periodSeconds: 5
 
