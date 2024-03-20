@@ -75,10 +75,13 @@ microservice-chart:
 
   startupProbe:
     create: true
+    handlerType: "exec"
+    exec:
+      command: ["/bin/sh", "-c", '[ -d "/csv" ]']
     httpGet:
       path: /status/ready
       port: 8080
-    initialDelaySeconds: 30
+    initialDelaySeconds: 1
     failureThreshold: 6
     periodSeconds: 10
 
