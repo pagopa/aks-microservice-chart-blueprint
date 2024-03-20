@@ -54,7 +54,8 @@ spec:
               port: {{ .Values.livenessProbe.tcpSocket.port }}
             {{ else if eq .Values.livenessProbe.handlerType "exec" }}
             exec:
-              command: {{ .Values.livenessProbe.exec.command }}
+              command:
+                {{- toYaml .Values.startupProbe.exec.command | nindent 16 }}
             {{- else }}
             httpGet:
               path: {{ .Values.livenessProbe.httpGet.path }}
@@ -72,7 +73,8 @@ spec:
               port: {{ .Values.readinessProbe.tcpSocket.port }}
             {{ else if eq .Values.readinessProbe.handlerType "exec" }}
             exec:
-              command: {{ .Values.readinessProbe.exec.command }}
+              command:
+                {{- toYaml .Values.startupProbe.exec.command | nindent 16 }}
             {{- else }}
             httpGet:
               path: {{ .Values.readinessProbe.httpGet.path }}
@@ -91,7 +93,7 @@ spec:
             {{ else if eq .Values.startupProbe.handlerType "exec" }}
             exec:
               command:
-                {{- toYaml .Values.startupProbe.exec.command | nindent 12 }}
+                {{- toYaml .Values.startupProbe.exec.command | nindent 16 }}
             {{- else }}
             httpGet:
               path: {{ .Values.startupProbe.httpGet.path }}
@@ -101,6 +103,9 @@ spec:
             failureThreshold: {{ .Values.startupProbe.failureThreshold }}
             periodSeconds: {{ .Values.startupProbe.periodSeconds }}
           {{- end}}
+          #
+          # RESOURCE
+          #
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

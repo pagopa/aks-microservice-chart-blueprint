@@ -57,9 +57,9 @@ livenessProbe:
   # tcpSocket options
   tcpSocket:
     port: 9999
-  initialDelaySeconds: 15
-  failureThreshold: 10
-  periodSeconds: 5
+  initialDelaySeconds: 1
+  failureThreshold: 1
+  periodSeconds: 1
 
 # -- ReadinessProbe
 # @default -- {}
@@ -77,9 +77,9 @@ readinessProbe:
   # tcpSocket options
   tcpSocket:
     port: 9999
-  initialDelaySeconds: 10
-  failureThreshold: 10
-  periodSeconds: 5
+  initialDelaySeconds: 1
+  failureThreshold: 1
+  periodSeconds: 1
 
 # -- startupProbe
 # @default -- {}
@@ -89,17 +89,17 @@ startupProbe:
   handlerType: "httpGet"
   # httpGet options
   httpGet:
-    path: /ready
+    path: /start
     port: 9999
   # exec options
   exec:
-    command: []
+    command: ["ciao"]
   # tcpSocket options
   tcpSocket:
     port: 9999
-  initialDelaySeconds: 10
-  failureThreshold: 10
-  periodSeconds: 5
+  initialDelaySeconds: 1
+  failureThreshold: 1
+  periodSeconds: 1
 
 # -- Environment config to use for the canary container
 envConfig: {}
