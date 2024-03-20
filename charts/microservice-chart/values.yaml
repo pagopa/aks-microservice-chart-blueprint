@@ -23,9 +23,13 @@ deployment:
 # -- strategy type for deployment: Recreate or RollingUpdate
 # @default -- {}
 strategy:
+  # -- type
   type: RollingUpdate
+  # -- rollingUpdate
   rollingUpdate:
+    # -- maxUnavailable
     maxUnavailable: 0
+    # -- maxSurge
     maxSurge: 1
 
 # -- image: configuration for the container
@@ -41,25 +45,89 @@ image:
 # -- Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind
 sidecars: []
 
-# -- ReadinessProbe
-# @default -- {}
-readinessProbe:
-  httpGet:
-    path: /ready
-    port: 9999
-  initialDelaySeconds: 10
-  failureThreshold: 10
-  periodSeconds: 5
-
 # -- LivenessProbe
 # @default -- {}
 livenessProbe:
+  ## -- create
+  create: true
+  # -- Choose the probe type: "httpGet" or "exec" or "tcpSocket"
+  handlerType: "httpGet"
+  # -- httpGet options
   httpGet:
+    # -- path
     path: /alive
+    # -- port
     port: 9999
-  initialDelaySeconds: 15
-  failureThreshold: 10
-  periodSeconds: 5
+  # -- exec options
+  exec:
+    # -- Command can be in yaml or array version e.g.: command: ["/bin/sh", "-c", '[ -d "/csv" ]']
+    command: []
+  # -- tcpSocket options
+  tcpSocket:
+    # -- tcpSocket.port
+    port: 9999
+  # -- initialDelaySeconds
+  initialDelaySeconds: 1
+  # -- failureThreshold
+  failureThreshold: 1
+  # -- periodSeconds
+  periodSeconds: 1
+
+# -- ReadinessProbe
+# @default -- {}
+readinessProbe:
+  ## -- create
+  create: true
+  # -- Choose the probe type: "httpGet" or "exec" or "tcpSocket"
+  handlerType: "httpGet"
+  # -- httpGet options
+  httpGet:
+    # -- path
+    path: /alive
+    # -- port
+    port: 9999
+  # -- exec options
+  exec:
+    # -- Command can be in yaml or array version e.g.: command: ["/bin/sh", "-c", '[ -d "/csv" ]']
+    command: []
+  # -- tcpSocket options
+  tcpSocket:
+    # -- tcpSocket.port
+    port: 9999
+  # -- initialDelaySeconds
+  initialDelaySeconds: 1
+  # -- failureThreshold
+  failureThreshold: 1
+  # -- periodSeconds
+  periodSeconds: 1
+
+# -- startupProbe
+# @default -- {}
+startupProbe:
+  ## -- create
+  create: false
+  # -- Choose the probe type: "httpGet" or "exec" or "tcpSocket"
+  handlerType: "httpGet"
+  # -- httpGet options
+  httpGet:
+    # -- path
+    path: /alive
+    # -- port
+    port: 9999
+  # -- exec options
+  exec:
+    # -- (list) Command can be in yaml or array version e.g.: command: ["/bin/sh", "-c", '[ -d "/csv" ]']
+    command: []
+  # -- tcpSocket options
+  tcpSocket:
+    # -- tcpSocket.port
+    port: 9999
+  # -- initialDelaySeconds
+  initialDelaySeconds: 1
+  # -- failureThreshold
+  failureThreshold: 1
+  # -- periodSeconds
+  periodSeconds: 1
 
 # -- Environment config to use for the canary container
 envConfig: {}
@@ -114,15 +182,20 @@ persistentVolumeClaimsMounts:
 resources:
   # -- request is mandatory
   requests:
+    # -- memory
     memory: "96Mi"
+    # -- cpu
     cpu: "40m"
   # -- limits is mandatory
   limits:
+    # -- memory
     memory: "128Mi"
+    # -- cpu
     cpu: "150m"
 
 # -- Configure secret provider with secrets to mount as environment variables
 secretProviderClass:
+  # -- create
   create: true
 
 # -- Configure keyvault to use inside secret prover to load secret directly
@@ -132,16 +205,25 @@ keyvault:
   # -- Tenant ID
   tenantId: ""
 
+# -- podAnnotations
 podAnnotations: {}
 
+# -- podSecurityContext
 podSecurityContext:
+  # -- seccompProfile
   seccompProfile:
+    # -- type
     type: RuntimeDefault
 
+# -- securityContext
 securityContext:
+  # -- readOnlyRootFilesystem
   readOnlyRootFilesystem: true
+  # -- allowPrivilegeEscalation
   allowPrivilegeEscalation: false
+  # -- capabilities
   capabilities:
+    # -- drop
     drop:
       - all
 
@@ -224,6 +306,7 @@ ingress:
   servicePort: 8080
   # -- Path where the application can response like: `/app(/|$)(.*)`
   path: "/please-put-a-path"
+  # -- pathType
   pathType: ImplementationSpecific
   # -- (bool) if force ssl redirect is enabled
   forceSslRedirect: true
@@ -250,6 +333,7 @@ canaryDelivery:
 
 # -- generate PodDisruptionBudget
 podDisruptionBudget:
+  # -- create
   create: false
   # -- (mutually exclusive with maxUnavailable) Min number of pods that must be alive before destroy node
   minAvailable: 0
