@@ -47,10 +47,27 @@ spec:
               containerPort: {{ . }}
               protocol: TCP
           {{- end }}
+          {{- if not (empty .Values.container.command) }}
+          command:
+            {{- toYaml .Values.container.command | nindent 12 }}
+          {{- end}}
+          {{- if not (empty .Values.container.args) }}
+          args:
+            {{- toYaml .Values.container.args | nindent 12 }}
+          {{- end}}
+          #
+          # PROBES
+          #
+          ### LIVENESS
+          {{- if .Values.livenessProbe.create }}
           livenessProbe:
             {{- if eq .Values.livenessProbe.handlerType "tcpSocket" }}
             tcpSocket:
               port: {{ .Values.livenessProbe.tcpSocket.port }}
+            {{ else if eq .Values.livenessProbe.handlerType "exec" }}
+            exec:
+              command:
+                {{- toYaml .Values.livenessProbe.exec.command | nindent 16 }}
             {{- else }}
             httpGet:
               path: {{ .Values.livenessProbe.httpGet.path }}
@@ -59,10 +76,21 @@ spec:
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            terminationGracePeriodSeconds: {{ .Values.livenessProbe.terminationGracePeriodSeconds }}
+
+          {{- end}}
+          ### READINESS
+          {{- if .Values.readinessProbe.create }}
           readinessProbe:
             {{- if eq .Values.readinessProbe.handlerType "tcpSocket" }}
             tcpSocket:
               port: {{ .Values.readinessProbe.tcpSocket.port }}
+            {{ else if eq .Values.readinessProbe.handlerType "exec" }}
+            exec:
+              command:
+                {{- toYaml .Values.readinessProbe.exec.command | nindent 16 }}
             {{- else }}
             httpGet:
               path: {{ .Values.readinessProbe.httpGet.path }}
@@ -71,6 +99,34 @@ spec:
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          {{- end}}
+          ### STARTUP
+          {{- if .Values.startupProbe.create }}
+          startupProbe:
+            {{- if eq .Values.startupProbe.handlerType "tcpSocket" }}
+            tcpSocket:
+              port: {{ .Values.startupProbe.tcpSocket.port }}
+            {{ else if eq .Values.startupProbe.handlerType "exec" }}
+            exec:
+              command:
+                {{- toYaml .Values.startupProbe.exec.command | nindent 16 }}
+            {{- else }}
+            httpGet:
+              path: {{ .Values.startupProbe.httpGet.path }}
+              port: {{ .Values.startupProbe.httpGet.port }}
+            {{- end}}
+            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.startupProbe.successThreshold }}
+            terminationGracePeriodSeconds: {{ .Values.startupProbe.terminationGracePeriodSeconds }}
+          {{- end}}
+          #
+          # RESOURCE
+          #
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -83,8 +139,8 @@ spec:
             {{- end }}
             #</tmp folder>
             #<pvc mount>
-            {{- if .Values.persistentVolumeMounts.create }}
-            {{- range $i, $val := .Values.persistentVolumeMounts.mounts }}
+            {{- if .Values.persistentVolumeClaimsMounts.create }}
+            {{- range $i, $val := .Values.persistentVolumeClaimsMounts.mounts }}
             - name: {{ $val.name }}
               mountPath: {{ $val.mountPath }}
             {{- end }}
@@ -194,8 +250,8 @@ spec:
         {{- end }}
         #</tmp volume>
         # <pvc volume>
-        {{- if .Values.persistentVolumeMounts.create }}
-        {{- range $i, $val := .Values.persistentVolumeMounts.mounts }}
+        {{- if .Values.persistentVolumeClaimsMounts.create }}
+        {{- range $i, $val := .Values.persistentVolumeClaimsMounts.mounts }}
         - name: {{ $val.name }}
           persistentVolumeClaim:
             claimName: {{ $val.pvcName }}

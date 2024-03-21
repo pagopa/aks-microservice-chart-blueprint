@@ -125,11 +125,7 @@ K8s:
 
 - Reloader of other tools that allow to restar the pod in case of some of the config map or secret are changed
 
-## Final Result
-
-Here you can find a result of the template [final result](docs/FINAL_RESULT_EXAMPLE.md)
-
-## Functionality & Values keys/Yaml chart configuration properties (values.yaml)
+## 🚀 Functionality & Values keys/Yaml chart configuration properties (values.yaml)
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
 
@@ -240,12 +236,12 @@ This volume is create inside the AKS default disk, please don't use to store dat
         mountPath: /logs
 ```
 
-### `persistentVolumeMounts`: allow to create local folders with persistent volumes and write permissions
+### `persistentVolumeClaimsMounts`: allow to create local folders with persistent volumes (pv) and write permissions
 
 This volume use a pvc to persist the data
 
 ```yaml
-  persistentVolumeMounts:
+  persistentVolumeClaimsMounts:
     create: true
     mounts:
       - name: pdf-pvc
@@ -289,6 +285,56 @@ This snippet allows to install pod into different nodes, created in different AZ
               aadpodidbinding: blueprint-pod-identity
           namespaces: ["blueprint"]
           topologyKey: topology.kubernetes.io/zone
+```
+
+### Probe: Liveness, Readiness, Starup
+
+#### `livenessProbe`
+
+```yaml
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 10
+    failureThreshold: 6
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    terminationGracePeriodSeconds: 30
+```
+
+#### `readinessProbe`
+
+```yaml
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+```
+
+#### `startupProbe`
+
+```yaml
+  startupProbe:
+    create: true
+    handlerType: "exec"
+    exec:
+      command: ["/bin/sh", "-c", '[ -d "/csv" ]']
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 1
+    failureThreshold: 6
+    periodSeconds: 10
+    timeoutSeconds: 10
+    successThreshold: 1
+    terminationGracePeriodSeconds: 30
 ```
 
 ## Advanced

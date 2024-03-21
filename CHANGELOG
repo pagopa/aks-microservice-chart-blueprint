@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## v5.8.0
+
+- for probe added this new properties: timeoutSeconds, successThreshold, terminateGracePeriodSeconds
+
+## v5.7.0
+
+- Added container.[command|args] options
+- fix: probe typo
+
+## v5.6.0
+
+- Liveness & readiness probe optional + starupProbe added and now exec command can be used
+
+## v5.5.0
+
+- added `persistentVolumeClaimMounts` to manage mount volumes with pvc. Formelly `persistentVolumeMounts` or `fileShared`
+
 ## v5.1.0
 
 - added `persistentVolumeMounts` to manage mount volumes with pvc

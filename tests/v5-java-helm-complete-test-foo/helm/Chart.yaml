@@ -1,0 +1,10 @@
+apiVersion: v2
+name: v5-java-helm-complete-test-foo
+description: An example application with Java spring boot
+type: application
+version: 1.0.0
+appVersion: 1.0.0
+dependencies:
+- name: microservice-chart
+  version: 5.7.0
+  repository: file://../../../charts/microservice-chart

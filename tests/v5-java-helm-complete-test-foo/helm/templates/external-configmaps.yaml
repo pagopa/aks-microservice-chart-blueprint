@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: v5-complete-configmap-files
+  name: v5-complete-foo-configmap-files
   namespace: "blueprint"
 data:
   # file-like keys
@@ -19,7 +19,7 @@ data:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: v5-complete-external-configmap-values-1
+  name: v5-complete-foo-external-configmap-values-1
   namespace: "blueprint"
 data:
   # Configuration values can be set as key-value properties
@@ -30,7 +30,7 @@ data:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: v5-complete-external-configmap-values-2
+  name: v5-complete-foo-external-configmap-values-2
   namespace: "blueprint"
 data:
   # property-like keys; each key maps to a simple value
