@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 5.6.0](https://img.shields.io/badge/Version-5.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 5.7.0](https://img.shields.io/badge/Version-5.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -61,8 +61,11 @@ A Helm chart for PagoPA microservice
 | livenessProbe.httpGet.port | int | `9999` | port |
 | livenessProbe.initialDelaySeconds | int | `1` | initialDelaySeconds |
 | livenessProbe.periodSeconds | int | `1` | periodSeconds |
+| livenessProbe.successThreshold | int | `1` | successThreshold |
 | livenessProbe.tcpSocket | object | `{"port":9999}` | tcpSocket options |
 | livenessProbe.tcpSocket.port | int | `9999` | tcpSocket.port |
+| livenessProbe.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds |
+| livenessProbe.timeoutSeconds | int | `1` | timeoutSeconds |
 | nameOverride | string | `""` | Helm chart name override |
 | namespace | string | `""` | Namespace in which deploy the microservice |
 | nodeSelector | object | `{}` | K8s node selectors |
@@ -87,8 +90,10 @@ A Helm chart for PagoPA microservice
 | readinessProbe.httpGet.port | int | `9999` | port |
 | readinessProbe.initialDelaySeconds | int | `1` | initialDelaySeconds |
 | readinessProbe.periodSeconds | int | `1` | periodSeconds |
+| readinessProbe.successThreshold | int | `1` | successThreshold |
 | readinessProbe.tcpSocket | object | `{"port":9999}` | tcpSocket options |
 | readinessProbe.tcpSocket.port | int | `9999` | tcpSocket.port |
+| readinessProbe.timeoutSeconds | int | `1` | timeoutSeconds |
 | resources | object | - | POD resources section |
 | resources.limits | object | `{"cpu":"150m","memory":"128Mi"}` | limits is mandatory |
 | resources.limits.cpu | string | `"150m"` | cpu |
@@ -121,8 +126,11 @@ A Helm chart for PagoPA microservice
 | startupProbe.httpGet.port | int | `9999` | port |
 | startupProbe.initialDelaySeconds | int | `1` | initialDelaySeconds |
 | startupProbe.periodSeconds | int | `1` | periodSeconds |
+| startupProbe.successThreshold | int | `1` | successThreshold |
 | startupProbe.tcpSocket | object | `{"port":9999}` | tcpSocket options |
 | startupProbe.tcpSocket.port | int | `9999` | tcpSocket.port |
+| startupProbe.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds |
+| startupProbe.timeoutSeconds | int | `1` | timeoutSeconds |
 | strategy | object | {} | strategy type for deployment: Recreate or RollingUpdate |
 | strategy.rollingUpdate | object | `{"maxSurge":1,"maxUnavailable":0}` | rollingUpdate |
 | strategy.rollingUpdate.maxSurge | int | `1` | maxSurge |

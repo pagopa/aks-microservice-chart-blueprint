@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v5.8.0
+
+- for probe added this new properties: timeoutSeconds, successThreshold, terminateGracePeriodSeconds
+
 ## v5.7.0
 
 - Added container.[command|args] options

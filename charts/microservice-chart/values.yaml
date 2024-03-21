@@ -72,6 +72,12 @@ livenessProbe:
   failureThreshold: 1
   # -- periodSeconds
   periodSeconds: 1
+  # -- successThreshold
+  successThreshold: 1
+  # -- timeoutSeconds
+  timeoutSeconds: 1
+  # -- terminationGracePeriodSeconds
+  terminationGracePeriodSeconds: 30
 
 # -- ReadinessProbe
 # @default -- {}
@@ -100,6 +106,10 @@ readinessProbe:
   failureThreshold: 1
   # -- periodSeconds
   periodSeconds: 1
+  # -- successThreshold
+  successThreshold: 1
+  # -- timeoutSeconds
+  timeoutSeconds: 1
 
 # -- startupProbe
 # @default -- {}
@@ -128,6 +138,12 @@ startupProbe:
   failureThreshold: 1
   # -- periodSeconds
   periodSeconds: 1
+  # -- successThreshold
+  successThreshold: 1
+  # -- timeoutSeconds
+  timeoutSeconds: 1
+  # -- terminationGracePeriodSeconds
+  terminationGracePeriodSeconds: 30
 
 # -- Environment config to use for the canary container
 envConfig: {}
