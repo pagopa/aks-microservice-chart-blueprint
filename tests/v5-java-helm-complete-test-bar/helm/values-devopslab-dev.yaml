@@ -68,6 +68,9 @@ microservice-chart:
     initialDelaySeconds: 10
     failureThreshold: 6
     periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    terminationGracePeriodSeconds: 30
 
   readinessProbe:
     httpGet:
@@ -76,6 +79,8 @@ microservice-chart:
     initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
 
   startupProbe:
     create: true
@@ -88,6 +93,9 @@ microservice-chart:
     initialDelaySeconds: 1
     failureThreshold: 6
     periodSeconds: 10
+    timeoutSeconds: 10
+    successThreshold: 1
+    terminationGracePeriodSeconds: 30
 
   service:
     create: true
