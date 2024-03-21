@@ -90,8 +90,10 @@ A Helm chart for PagoPA microservice
 | readinessProbe.httpGet.port | int | `9999` | port |
 | readinessProbe.initialDelaySeconds | int | `1` | initialDelaySeconds |
 | readinessProbe.periodSeconds | int | `1` | periodSeconds |
+| readinessProbe.successThreshold | int | `1` | successThreshold |
 | readinessProbe.tcpSocket | object | `{"port":9999}` | tcpSocket options |
 | readinessProbe.tcpSocket.port | int | `9999` | tcpSocket.port |
+| readinessProbe.timeoutSeconds | int | `1` | timeoutSeconds |
 | resources | object | - | POD resources section |
 | resources.limits | object | `{"cpu":"150m","memory":"128Mi"}` | limits is mandatory |
 | resources.limits.cpu | string | `"150m"` | cpu |
@@ -124,8 +126,11 @@ A Helm chart for PagoPA microservice
 | startupProbe.httpGet.port | int | `9999` | port |
 | startupProbe.initialDelaySeconds | int | `1` | initialDelaySeconds |
 | startupProbe.periodSeconds | int | `1` | periodSeconds |
+| startupProbe.successThreshold | int | `1` | successThreshold |
 | startupProbe.tcpSocket | object | `{"port":9999}` | tcpSocket options |
 | startupProbe.tcpSocket.port | int | `9999` | tcpSocket.port |
+| startupProbe.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds |
+| startupProbe.timeoutSeconds | int | `1` | timeoutSeconds |
 | strategy | object | {} | strategy type for deployment: Recreate or RollingUpdate |
 | strategy.rollingUpdate | object | `{"maxSurge":1,"maxUnavailable":0}` | rollingUpdate |
 | strategy.rollingUpdate.maxSurge | int | `1` | maxSurge |
