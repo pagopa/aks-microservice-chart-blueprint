@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 5.6.0](https://img.shields.io/badge/Version-5.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 5.7.0](https://img.shields.io/badge/Version-5.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -61,8 +61,11 @@ A Helm chart for PagoPA microservice
 | livenessProbe.httpGet.port | int | `9999` | port |
 | livenessProbe.initialDelaySeconds | int | `1` | initialDelaySeconds |
 | livenessProbe.periodSeconds | int | `1` | periodSeconds |
+| livenessProbe.successThreshold | int | `1` | successThreshold |
 | livenessProbe.tcpSocket | object | `{"port":9999}` | tcpSocket options |
 | livenessProbe.tcpSocket.port | int | `9999` | tcpSocket.port |
+| livenessProbe.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds |
+| livenessProbe.timeoutSeconds | int | `1` | timeoutSeconds |
 | nameOverride | string | `""` | Helm chart name override |
 | namespace | string | `""` | Namespace in which deploy the microservice |
 | nodeSelector | object | `{}` | K8s node selectors |
