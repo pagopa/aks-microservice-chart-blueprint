@@ -57,6 +57,10 @@ microservice-chart:
         mountPath: /csv
         pvcName: blueprint-file-share-zrs
 
+  # container:
+  #   command: ["printenv"]
+  #   args: ["HOSTNAME", "KUBERNETES_PORT"]
+
   livenessProbe:
     httpGet:
       path: /status/live

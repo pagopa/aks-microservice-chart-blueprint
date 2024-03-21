@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v5.7.0
+
+- Added container.[command|args] options
+- fix: probe typo
+
+## v5.6.0
+
+- Liveness & readiness probe optional + starupProbe added and now exec command can be used
+
 ## v5.5.0
 
 - added `persistentVolumeClaimMounts` to manage mount volumes with pvc. Formelly `persistentVolumeMounts` or `fileShared`
