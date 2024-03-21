@@ -193,6 +193,11 @@ resources:
     # -- cpu
     cpu: "150m"
 
+# @default -- -
+container:
+  command: []
+  args: []
+
 # -- Configure secret provider with secrets to mount as environment variables
 secretProviderClass:
   # -- create

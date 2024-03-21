@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 5.5.0](https://img.shields.io/badge/Version-5.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 5.6.0](https://img.shields.io/badge/Version-5.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -21,6 +21,8 @@ A Helm chart for PagoPA microservice
 | canaryDelivery.create | bool | `false` | Beta/Enable Canary/BlueGreen Deployment |
 | canaryDelivery.ingress | object | - | This section allow to configure ingress inside canary deployment |
 | configMapFromFile | object | `{}` | Configure files to mount as config maps |
+| container.args | list | `[]` |  |
+| container.command | list | `[]` |  |
 | deployment | object | - | Configure deployment |
 | deployment.create | bool | `true` | Create or not the deployment manifest |
 | deployment.forceRedeploy | bool | `false` | Force redeploy container |

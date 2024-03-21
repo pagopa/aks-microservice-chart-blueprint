@@ -43,6 +43,14 @@ spec:
               containerPort: {{ . }}
               protocol: TCP
           {{- end }}
+          {{- if not (empty .Values.container.command) }}
+          command:
+            {{- toYaml .Values.container.command | nindent 12 }}
+          {{- end}}
+          {{- if not (empty .Values.container.args) }}
+          args:
+            {{- toYaml .Values.container.args | nindent 12 }}
+          {{- end}}
           #
           # PROBES
           #
@@ -55,7 +63,7 @@ spec:
             {{ else if eq .Values.livenessProbe.handlerType "exec" }}
             exec:
               command:
-                {{- toYaml .Values.startupProbe.exec.command | nindent 16 }}
+                {{- toYaml .Values.livenessProbe.exec.command | nindent 16 }}
             {{- else }}
             httpGet:
               path: {{ .Values.livenessProbe.httpGet.path }}
@@ -74,7 +82,7 @@ spec:
             {{ else if eq .Values.readinessProbe.handlerType "exec" }}
             exec:
               command:
-                {{- toYaml .Values.startupProbe.exec.command | nindent 16 }}
+                {{- toYaml .Values.readinessProbe.exec.command | nindent 16 }}
             {{- else }}
             httpGet:
               path: {{ .Values.readinessProbe.httpGet.path }}
