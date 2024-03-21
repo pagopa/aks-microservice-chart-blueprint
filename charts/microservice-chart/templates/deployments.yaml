@@ -43,6 +43,14 @@ spec:
               containerPort: {{ . }}
               protocol: TCP
           {{- end }}
+          {{- if not (empty .Values.container.command) }}
+          command:
+            {{- toYaml .Values.container.command | nindent 12 }}
+          {{- end}}
+          {{- if not (empty .Values.container.args) }}
+          args:
+            {{- toYaml .Values.container.args | nindent 12 }}
+          {{- end}}
           #
           # PROBES
           #
