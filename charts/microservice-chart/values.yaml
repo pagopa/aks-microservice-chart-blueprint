@@ -360,9 +360,9 @@ canaryDelivery:
 
     image:
       # -- Docker reposity for the container canary
-      repository: ghcr.io/pagopa/devops-java-springboot-color
+      repository: ""
       # -- Container TAG
-      tag: 0.7.1
+      tag: ""
 
     # -- Environment config to use for the canary container
     envConfig: { }
