@@ -337,6 +337,36 @@ This snippet allows to install pod into different nodes, created in different AZ
     terminationGracePeriodSeconds: 30
 ```
 
+### `canary`: example with canary
+
+```yaml
+... 
+  envConfig:
+    TO_OVERWRITE: "original-value"
+    COMMON: "same"
+  envSecret:
+    SEC_COMMON: 'common-secret'
+    SEC_TO_OVERWRITE: 'value-to-overwrite'
+  keyvault:
+    name: "pagopa-kv"
+    tenantId: "123123123123123"
+
+
+  canaryDelivery:
+   ...
+    envConfig:
+      TO_OVERWRITE: "over-witten"
+      NEW_ITEM: "new item"
+    envSecret:
+      SEC_NEW_ITEM: 'new-secret'
+      SEC_TO_OVERWRITE: 'new-value'
+```
+
+In a Canary deployment, the configurations from the `envConfig` of the stable version are merged with its own configuration. 
+It is the same for the `envSecret`.
+
+You can add new variables to the canary (see `SEC_NEW_ITEM`) or overwrite values of the stable version (see `SEC_TO_OVERWRITE`).
+
 ## Advanced
 
 For more information, visit the [complete documentation](https://pagopa.atlassian.net/wiki/spaces/DEVOPS/pages/479658690/Microservice+template).
