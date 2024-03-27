@@ -145,7 +145,7 @@ startupProbe:
   # -- terminationGracePeriodSeconds
   terminationGracePeriodSeconds: 30
 
-# -- Environment config to use for the canary container
+# -- Environment config to use for the container
 envConfig: {}
 
 # -- Load secrets as environment variables from kv
@@ -346,11 +346,30 @@ canaryDelivery:
   create: false
   # -- This section allow to configure ingress inside canary deployment
   # @default -- -
+  # -- Configure how ingress canary should be
   ingress:
     header: true
     bluegreen: false
+      # -- the header name used to call the canary deployment
     headerName: X-Canary
+      # -- the header values used to call the canary deployment
     headerValue: pagopa
+
+      # -- the weight percent used into canary deployment. Can be used toghether with header
+    weightPercent: 10
+
+    image:
+      # -- Docker reposity for the container canary
+      repository: ""
+      # -- Container TAG
+      tag: ""
+
+    # -- Environment config to use for the canary container
+    envConfig: { }
+
+    # -- Load secrets as environment variables from kv for the canary container
+    envSecret: { }
+
 
 # -- generate PodDisruptionBudget
 podDisruptionBudget:
