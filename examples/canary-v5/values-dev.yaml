@@ -1,0 +1,114 @@
+microservice-chart:
+  namespace: "apiconfig"
+  nameOverride: ""
+  fullnameOverride: ""
+
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: 0.10.0
+
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  deployment:
+    create: true
+  serviceMonitor:
+    create: true
+    endpoints:
+      - interval: 10s #jmx-exporter
+        targetPort: 12345
+        path: /metrics
+  ports:
+    - 80 #http
+    - 12345 #jmx-exporter
+  service:
+    type: ClusterIP
+    ports:
+      - 8080
+  ingress:
+    create: true
+    host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
+    path: /delete_me(/|$)(.*)
+    servicePort: 8080
+
+  serviceAccount:
+    create: false
+  podAnnotations: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    readOnlyRootFilesystem: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - all
+        -
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "0.40"
+    limits:
+      memory: "512Mi"
+      cpu: "0.5"
+  autoscaling:
+    enable: true
+    minReplica: 1
+    maxReplica: 2
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 60 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          # Required
+          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+          value: "75"
+
+  envConfig:
+    TO_OVERWRITE: "original-value"
+    COMMON: "same"
+  envSecret:
+    SEC_COMMON: 'ai-d-connection-string'
+    SEC_TO_OVERWRITE: elastic-apm-secret-token
+  keyvault:
+    name: "pagopa-d-apiconfig-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
+  canaryDelivery:
+    create: true
+    ingress:
+        headerName: X-Canary
+        headerValue: canary
+        weightPercent: 0
+    image:
+      repository: ghcr.io/pagopa/devops-java-springboot-color
+      tag: 0.10.0
+    envConfig:
+      TO_OVERWRITE: "over-witten"
+      NEW_ITEM: "new item"
+    envSecret:
+      SEC_NEW_ITEM: 'oracle-db-cfg-password'
+      SEC_TO_OVERWRITE: 'oracle-db-cfg-password'
