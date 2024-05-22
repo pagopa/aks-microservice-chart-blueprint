@@ -125,7 +125,7 @@ microservice-chart:
     minAvailable: 1
 
   keyvault:
-    name: "dvopla-d-testit-kv"
+    name: "dvopla-d-itn-testit-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
   # nodeSelector: {}
