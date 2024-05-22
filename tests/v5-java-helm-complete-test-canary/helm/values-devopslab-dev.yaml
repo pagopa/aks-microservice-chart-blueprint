@@ -1,5 +1,5 @@
 microservice-chart:
-  namespace: "blueprint"
+  namespace: "testit"
 
   deployment:
     create: true
@@ -10,8 +10,8 @@ microservice-chart:
     COMMON: "same"
 
   envSecret:
-    SEC_TO_OVERWRITE: dvopla-d-neu-dev01-aks-apiserver-url
-    MY_KV_SECRET: dvopla-d-neu-dev01-aks-apiserver-url
+    SEC_TO_OVERWRITE: dvopla-d-itn-dev-aks-apiserver-url
+    MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
 
   externalConfigMapFiles:
     create: true
@@ -56,7 +56,7 @@ microservice-chart:
     mounts:
       - name: csv
         mountPath: /csv
-        pvcName: blueprint-file-share-zrs
+        pvcName: testit-file-share-zrs
 
   livenessProbe:
     httpGet:
@@ -82,8 +82,8 @@ microservice-chart:
 
   ingress:
     create: true
-    host: dev01.blueprint.internal.devopslab.pagopa.it
-    path: /blueprint/v5-java-helm-complete-test-canary(/|$)(.*)
+    host: testit.itn.internal.devopslab.pagopa.it
+    path: /testit/v5-java-helm-complete-test-canary(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
@@ -126,7 +126,7 @@ microservice-chart:
     minAvailable: 1
 
   keyvault:
-    name: "dvopla-d-blueprint-kv"
+    name: "dvopla-d-testit-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
   # nodeSelector: {}
@@ -153,8 +153,8 @@ microservice-chart:
         podAffinityTerm:
           labelSelector:
             matchLabels:
-              aadpodidbinding: blueprint-pod-identity
-          namespaces: ["blueprint"]
+              aadpodidbinding: testit-pod-identity
+          namespaces: ["testit"]
           topologyKey: topology.kubernetes.io/zone
 
   canaryDelivery:

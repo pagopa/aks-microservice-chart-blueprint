@@ -1,5 +1,5 @@
 microservice-chart:
-  namespace: "blueprint"
+  namespace: "testit"
 
   canaryDelivery:
     create: false
@@ -24,7 +24,7 @@ microservice-chart:
         MY_APP_COLOR: "blue"
         progressive-delivery: "ok"
       envSecret:
-        aks-api-url: dvopla-d-neu-dev01-aks-apiserver-url
+        aks-api-url: dvopla-d-itn-dev-aks-apiserver-url
 
   deployment:
     create: true
@@ -35,7 +35,7 @@ microservice-chart:
     MY_APP_COLOR: "green"
 
   envSecret:
-    aks-api-url: dvopla-d-neu-dev01-aks-apiserver-url
+    aks-api-url: dvopla-d-itn-dev-aks-apiserver-url
 
   # fileConfigExternals:
   #   create: false
@@ -116,8 +116,8 @@ microservice-chart:
 
   ingress:
     create: true
-    host: dev01.blueprint.internal.devopslab.pagopa.it
-    path: /blueprint/v2-migration-java-helm-complete-test(/|$)(.*)
+    host: testit.itn.internal.devopslab.pagopa.it
+    path: /testit/v2-migration-java-helm-complete-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
@@ -153,7 +153,7 @@ microservice-chart:
           value: "60"
 
   keyvault:
-    name: "dvopla-d-blueprint-kv"
+    name: "dvopla-d-testit-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
   podDisruptionBudget:
