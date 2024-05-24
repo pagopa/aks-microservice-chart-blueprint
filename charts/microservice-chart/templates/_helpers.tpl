@@ -27,7 +27,7 @@ If release name contains chart name it will be used as a full name.
 Create chart name and version as used by the chart label.
 */}}
 {{- define "microservice-chart.chart" -}}
-{{- printf "%s-%s" .Chart.Name (.Values.image.tag | default .Chart.Version) | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Chart.Name (.Values.image.tag | default .Chart.Version) | replace "@sha256:" "_" | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -46,7 +46,7 @@ Extra labels
 */}}
 {{- define "microservice-chart.extraLabels" -}}
 {{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ (.Values.image.tag | default .Chart.AppVersion) | quote }}
+app.kubernetes.io/version: {{ (.Values.image.tag | default .Chart.AppVersion) | replace "@sha256:" "_" | trunc 63 | quote }}
 {{- end }}
 {{- end }}
 

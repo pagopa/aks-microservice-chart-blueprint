@@ -1,6 +1,6 @@
 dependencies:
 - name: microservice-chart
   repository: file://../../../charts/microservice-chart
-  version: 5.8.0
-digest: sha256:46c7d2f553b97fc0468723c8b315743f5d6869ed941d534ba31e065642933a0c
-generated: "2024-03-22T16:08:58.699277+01:00"
+  version: 5.9.0
+digest: sha256:8890aa322d3ea0ce725bcbff2f9b243037b2fec73a6eea690ff7d5673ecf8275
+generated: "2024-05-22T15:49:53.40939+02:00"

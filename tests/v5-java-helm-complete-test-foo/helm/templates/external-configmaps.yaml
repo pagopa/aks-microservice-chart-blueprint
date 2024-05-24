@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: v5-complete-foo-configmap-files
-  namespace: "blueprint"
+  namespace: "testit"
 data:
   # file-like keys
   game.properties: |
@@ -20,7 +20,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: v5-complete-foo-external-configmap-values-1
-  namespace: "blueprint"
+  namespace: "testit"
 data:
   # Configuration values can be set as key-value properties
   database-db-name: mongodb
@@ -31,7 +31,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: v5-complete-foo-external-configmap-values-2
-  namespace: "blueprint"
+  namespace: "testit"
 data:
   # property-like keys; each key maps to a simple value
   player-initial-lives: "3"

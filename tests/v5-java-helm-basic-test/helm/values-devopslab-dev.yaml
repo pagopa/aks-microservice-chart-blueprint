@@ -1,5 +1,5 @@
 microservice-chart:
-  namespace: "blueprint"
+  namespace: "testit"
 
   deployment:
     create: true
@@ -10,11 +10,11 @@ microservice-chart:
     MY_APP_COLOR: "green"
 
   envSecret:
-    MY_KV_SECRET: dvopla-d-neu-dev01-aks-apiserver-url
+    MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: 0.10.0
+    tag: 0.10.0@sha256:3d448ec474944068f5a907a81d399cc00e9e54d42b386b55985451fcf6bf1c90
     pullPolicy: Always
 
   tmpVolumeMount:
@@ -49,8 +49,8 @@ microservice-chart:
 
   ingress:
     create: true
-    host: dev01.blueprint.internal.devopslab.pagopa.it
-    path: /blueprint/v5-java-helm-basic-test(/|$)(.*)
+    host: testit.itn.internal.devopslab.pagopa.it
+    path: /testit/v5-java-helm-basic-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
@@ -63,7 +63,7 @@ microservice-chart:
       cpu: "150m"
 
   keyvault:
-    name: "dvopla-d-blueprint-kv"
+    name: "dvopla-d-itn-testit-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
   podDisruptionBudget:
@@ -85,6 +85,6 @@ microservice-chart:
         podAffinityTerm:
           labelSelector:
             matchLabels:
-              aadpodidbinding: blueprint-pod-identity
-          namespaces: ["blueprint"]
+              aadpodidbinding: testit-pod-identity
+          namespaces: ["testit"]
           topologyKey: topology.kubernetes.io/zone

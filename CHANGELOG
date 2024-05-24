@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v5.9.1
+
+- fix label: now support image version with `@sha256`
+
+## v5.9.0
+
+- canary completed and running
+
 ## v5.8.0
 
 - for probe added this new properties: timeoutSeconds, successThreshold, terminateGracePeriodSeconds
