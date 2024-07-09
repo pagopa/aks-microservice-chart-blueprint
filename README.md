@@ -73,7 +73,7 @@ version: 1.0.0
 appVersion: 1.0.0
 dependencies:
 - name: microservice-chart
-  version: 1.19.0
+  version: 5.9.1
   repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
 EOF
 ```
@@ -125,7 +125,7 @@ K8s:
 
 - Reloader of other tools that allow to restar the pod in case of some of the config map or secret are changed
 
-## 🚀 Functionality & Values keys/Yaml chart configuration properties (values.yaml)
+## 📑 Functionality & Values keys/Yaml chart configuration properties (values.yaml)
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
 
