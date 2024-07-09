@@ -141,11 +141,6 @@ microservice-chart:
             operator: In
             values:
             - user
-        - matchExpressions:
-          - key: elastic
-            operator: In
-            values:
-            - eck
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 100

@@ -73,7 +73,7 @@ version: 1.0.0
 appVersion: 1.0.0
 dependencies:
 - name: microservice-chart
-  version: 1.19.0
+  version: 5.9.1
   repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
 EOF
 ```
@@ -125,7 +125,7 @@ K8s:
 
 - Reloader of other tools that allow to restar the pod in case of some of the config map or secret are changed
 
-## 🚀 Functionality & Values keys/Yaml chart configuration properties (values.yaml)
+## 📑 Functionality & Values keys/Yaml chart configuration properties (values.yaml)
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
 
@@ -257,7 +257,7 @@ This volume use a pvc to persist the data
     minAvailable: 0
 ```
 
-### `affinity (HA)`
+### `Affinity/HA (nodeAffinity & podAntiAffinity)`
 
 This snippet allows to install pod into different nodes, created in different AZ's
 
@@ -285,6 +285,31 @@ This snippet allows to install pod into different nodes, created in different AZ
               aadpodidbinding: blueprint-pod-identity
           namespaces: ["blueprint"]
           topologyKey: topology.kubernetes.io/zone
+```
+
+This code snippet in AKS forces the pods not to be all in the same node but to distribute themselves as much as possible in nodes created in different AZs, this is not blocking but only a desire, in fact if it is not possible the pods will still be deployed inside a node
+
+```yaml
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              aadpodidbinding: blueprint-pod-identity
+          namespaces: ["blueprint"]
+          topologyKey: topology.kubernetes.io/zone
+```
+
+### Tolerations
+
+```yaml
+  tolerations:
+    - effect: "NoSchedule"
+      key: "paymentWalletOnly"
+      operator: "Equal"
+      value: "true"
 ```
 
 ### Probe: Liveness, Readiness, Starup

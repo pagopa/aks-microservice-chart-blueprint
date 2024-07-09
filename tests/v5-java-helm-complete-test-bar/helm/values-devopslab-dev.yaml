@@ -154,7 +154,11 @@ microservice-chart:
 
   # nodeSelector: {}
 
-  # tolerations: []
+  tolerations:
+    - effect: "NoSchedule"
+      key: "paymentWalletOnly"
+      operator: "Equal"
+      value: "true"
 
   affinity:
     nodeAffinity:
@@ -165,11 +169,6 @@ microservice-chart:
             operator: In
             values:
             - user
-        - matchExpressions:
-          - key: elastic
-            operator: In
-            values:
-            - eck
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 100
