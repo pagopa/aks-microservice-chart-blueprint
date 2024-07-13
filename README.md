@@ -212,12 +212,14 @@ All the files are created inside the path: `/mnt/file-config-external/<config-ma
     configMaps:
       - name: <config map name>
         key: <config map key>
+        mountPath: <complete mount path with file name> #(Optional)
 
   externalConfigMapFiles:
     create: true
     configMaps:
       - name: external-configmap-files
         key: game.properties
+        mountPath: "/config/game.properties"
       - name: external-configmap-files
         key: user-interface.xml
 ```

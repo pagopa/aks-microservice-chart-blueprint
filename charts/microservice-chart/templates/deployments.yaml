@@ -163,7 +163,11 @@ spec:
             {{- if .Values.externalConfigMapFiles.create }}
             {{- range $i, $v := .Values.externalConfigMapFiles.configMaps }}
             - name: {{ $v.name }}-{{ $i }}
+              {{- if $v.mountPath }}
+              mountPath: "{{ $v.mountPath }}"
+              {{- else }}
               mountPath: "{{ $root.Values.externalConfigMapFilesCustomPath}}/{{ $v.name }}/{{ $v.key }}"
+              {{- end }}
               subPath: {{ $v.key }}
               readOnly: true
             {{- end }}
@@ -171,7 +175,7 @@ spec:
             {{- if .Values.providedVolumeMount.create }}
             {{- range $i, $v := .Values.providedVolumeMount.folders }}
             - name: file-azure-{{ $v.name }}
-              mountPath: "{{ $root.Values.providedVolumeMountCustomPath }}/{{ $v.name }}"
+              mountPath: "/mnt/file-azure/{{ $v.name }}"
             {{- end }}
             {{- end }}
           env:

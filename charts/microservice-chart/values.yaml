@@ -163,7 +163,7 @@ envFieldRef: {}
 # @default -- {}
 externalConfigMapFiles:
   create: false
-  # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "user.xml"}]
+  # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "user.xml", mountPath: "/config/user.xml" }]
   configMaps: []
 # -- CustomPath to allow to choose where to put your files
 externalConfigMapFilesCustomPath: "/mnt/file-config-external"
@@ -177,14 +177,12 @@ externalConfigMapValues:
 # Volumes
 #
 
-# -- Configure mounted volumes with secrets needed to mount them
+# -- Configure how secrets taken from SecretS storage Class are mounted inside the pod
 # @default -- {}
 providedVolumeMount:
   create: false
   envSecret: {}
   folders: []
-# -- CustomPath to allow to choose where to put your files
-providedVolumeMountCustomPath: "/mnt/file-azure"
 
 # -- Configure optional tmp volume to mount (Use instance storage)
 tmpVolumeMount:
@@ -194,7 +192,7 @@ tmpVolumeMount:
     - name: tmp
       mountPath: /tmp
 
-# -- Configure optional volume that mount using a PVC
+# -- Configure optional volume that will be mount (using a PVC)
 persistentVolumeClaimsMounts:
   create: false
   # -- (list) Mounts with pvc volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]])
