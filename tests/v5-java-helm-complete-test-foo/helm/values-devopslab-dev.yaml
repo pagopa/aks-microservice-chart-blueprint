@@ -17,6 +17,7 @@ microservice-chart:
     configMaps:
       - name: v5-complete-foo-configmap-files
         key: game.properties
+        mountPath: "/config/games.properties"
       - name: v5-complete-foo-configmap-files
         key: user-interface.xml
 

@@ -151,8 +151,10 @@ envConfig: {}
 # -- Load secrets as environment variables from kv
 envSecret: {}
 
-# -- Configure files to mount as config maps
+# -- Configure files to mount as config map. This files definition are inside the values*.yaml file
 configMapFromFile: {}
+# -- CustomPath to allow to choose where to put your files
+configMapFromFileCustomPath: "/mnt/file-config"
 
 # -- Environment config from k8s metadata
 envFieldRef: {}
@@ -163,6 +165,9 @@ externalConfigMapFiles:
   create: false
   # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "user.xml"}]
   configMaps: []
+# -- CustomPath to allow to choose where to put your files
+externalConfigMapFilesCustomPath: "/mnt/file-config-external"
+
 
 externalConfigMapValues:
   # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}]
@@ -178,6 +183,8 @@ providedVolumeMount:
   create: false
   envSecret: {}
   folders: []
+# -- CustomPath to allow to choose where to put your files
+providedVolumeMountCustomPath: "/mnt/file-azure"
 
 # -- Configure optional tmp volume to mount (Use instance storage)
 tmpVolumeMount:
