@@ -3,6 +3,16 @@ entries:
   microservice-chart:
   - apiVersion: v2
     appVersion: 0.0.0
+    created: "2024-07-15T09:01:50.906490476Z"
+    description: A Helm chart for PagoPA microservice
+    digest: b04697fc7349eb07143eb8ca80dbdbb1b2a2aec0ef16e6732d293aceba8ebfc0
+    name: microservice-chart
+    type: application
+    urls:
+    - https://github.com/pagopa/aks-microservice-chart-blueprint/releases/download/microservice-chart-5.11.0/microservice-chart-5.11.0.tgz
+    version: 5.11.0
+  - apiVersion: v2
+    appVersion: 0.0.0
     created: "2024-07-09T14:20:08.090134251Z"
     description: A Helm chart for PagoPA microservice
     digest: a1ee5785b65e044b5e2c4bd6faf12962987bb265890d5c67ee5b2b4a832da0d5
@@ -501,4 +511,4 @@ entries:
     urls:
     - https://github.com/pagopa/template-microservizio-k8s/releases/download/microservice-chart-1.8.1/microservice-chart-1.8.1.tgz
     version: 1.8.1
-generated: "2024-07-09T14:20:08.090411067Z"
+generated: "2024-07-15T09:01:50.906777586Z"
