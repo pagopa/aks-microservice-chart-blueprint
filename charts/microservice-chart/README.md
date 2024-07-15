@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 5.9.1](https://img.shields.io/badge/Version-5.9.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 5.10.0](https://img.shields.io/badge/Version-5.10.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -27,7 +27,8 @@ A Helm chart for PagoPA microservice
 | canaryDelivery.ingress.image.repository | string | `""` | Docker reposity for the container canary |
 | canaryDelivery.ingress.image.tag | string | `""` | Container TAG |
 | canaryDelivery.ingress.weightPercent | int | `10` | the weight percent used into canary deployment. Can be used toghether with header |
-| configMapFromFile | object | `{}` | Configure files to mount as config maps |
+| configMapFromFile | object | `{}` | Configure files to mount as config map. This files definition are inside the values*.yaml file |
+| configMapFromFileCustomPath | string | `"/mnt/file-config"` | CustomPath to allow to choose where to put your files |
 | container.args | list | `[]` |  |
 | container.command | list | `[]` |  |
 | deployment | object | - | Configure deployment |
@@ -38,7 +39,8 @@ A Helm chart for PagoPA microservice
 | envFieldRef | object | `{}` | Environment config from k8s metadata |
 | envSecret | object | `{}` | Load secrets as environment variables from kv |
 | externalConfigMapFiles | object | {} | Configure values from config maps external to chart. E.g already present into cluster, see documentation |
-| externalConfigMapFiles.configMaps | list | `[]` | Config maps to mount as files: e.g. [{name: "configmap", key: "user.xml"}] |
+| externalConfigMapFiles.configMaps | list | `[]` | Config maps to mount as files: e.g. [{name: "configmap", key: "user.xml", mountPath: "/config/user.xml" }] |
+| externalConfigMapFilesCustomPath | string | `"/mnt/file-config-external"` | CustomPath to allow to choose where to put your files |
 | externalConfigMapValues.configMaps | list | `[]` | Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}] |
 | fullnameOverride | string | `""` | Helm chart fullname override |
 | image | object | {} | image: configuration for the container |
@@ -76,7 +78,7 @@ A Helm chart for PagoPA microservice
 | nameOverride | string | `""` | Helm chart name override |
 | namespace | string | `""` | Namespace in which deploy the microservice |
 | nodeSelector | object | `{}` | K8s node selectors |
-| persistentVolumeClaimsMounts | object | `{"create":false,"mounts":[]}` | Configure optional volume that mount using a PVC |
+| persistentVolumeClaimsMounts | object | `{"create":false,"mounts":[]}` | Configure optional volume that will be mount (using a PVC) |
 | persistentVolumeClaimsMounts.mounts | list | `[]` | Mounts with pvc volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]]) |
 | podAnnotations | object | `{}` | podAnnotations |
 | podDisruptionBudget | object | `{"create":false,"maxUnavailable":"","minAvailable":0}` | generate PodDisruptionBudget |
@@ -86,7 +88,7 @@ A Helm chart for PagoPA microservice
 | podSecurityContext | object | `{"seccompProfile":{"type":"RuntimeDefault"}}` | podSecurityContext |
 | podSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | seccompProfile |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | type |
-| providedVolumeMount | object | {} | Configure mounted volumes with secrets needed to mount them |
+| providedVolumeMount | object | {} | Configure how secrets taken from SecretS storage Class are mounted inside the pod |
 | readinessProbe | object | {} | ReadinessProbe |
 | readinessProbe.exec | object | `{"command":[]}` | exec options |
 | readinessProbe.exec.command | list | `[]` | Command can be in yaml or array version e.g.: command: ["/bin/sh", "-c", '[ -d "/csv" ]'] |
