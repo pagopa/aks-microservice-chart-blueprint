@@ -145,7 +145,7 @@ microservice-chart:
           value: "60"
 
   podDisruptionBudget:
-    create: true
+    create: false
     minAvailable: 1
 
   keyvault:
