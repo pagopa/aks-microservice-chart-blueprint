@@ -13,6 +13,10 @@ microservice-chart:
     MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
     TEST: test
 
+  serviceAccount:
+    create: true
+    name: testit-workload-identity
+
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
     tag: 0.10.0@sha256:3d448ec474944068f5a907a81d399cc00e9e54d42b386b55985451fcf6bf1c90
