@@ -392,5 +392,5 @@ podDisruptionBudget:
 azure:
   # -- (bool) Enabled Labels and configuration for workload identity
   workloadIdentityEnabled: true
-  # -- Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
+  # -- Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
   workloadIdentityClientId: ""
