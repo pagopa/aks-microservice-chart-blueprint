@@ -17,23 +17,49 @@ handle_error() {
 
 # Parameter verification
 VALUES_FILE_NAME=$1
-NAMESPACE=$2
-CLUSTER_NAME=$3  # New parameter for cluster name
-APP_NAME=$4
+CLUSTER_NAME=$2  # New parameter for cluster name
+APP_NAME=$3
+SECRET_NAME="workload-identity-client-id"
 
-if [ -z "$VALUES_FILE_NAME" ] || [ -z "$NAMESPACE" ] || [ -z "$APP_NAME" ] || [ -z "$CLUSTER_NAME" ]; then
+if [ -z "$VALUES_FILE_NAME" ] || [ -z "$APP_NAME" ] || [ -z "$CLUSTER_NAME" ]; then
     handle_error "All parameters are required: VALUES_FILE_NAME NAMESPACE APP_NAME CLUSTER_NAME"
 fi
 
-echo "🪚 Delete charts folder"
-rm -rf charts || true
+#
+# VALUES
+#
+NAMESPACE=$(yq eval '.microservice-chart.namespace' "$VALUES_FILE_NAME")
 
-# Check if kubectl is installed
+if [ -z "$NAMESPACE" ]; then
+    echo "Errore: Impossible to read the namespace"
+    exit 1
+fi
+
+#
+# 🔒 KV
+#
+KEYVAULT_NAME=$(yq eval '.microservice-chart.keyvault.name' "$VALUES_FILE_NAME")
+
+if [ -z "$KEYVAULT_NAME" ]; then
+    echo "Errore: Impossibile leggere il nome del Key Vault dal file YAML"
+    exit 1
+fi
+
+CLIENT_ID=$(az keyvault secret show --name "$SECRET_NAME" --vault-name "$KEYVAULT_NAME" --query "value" -o tsv)
+
+# Verifica che il segreto sia stato recuperato correttamente
+if [ -z "$CLIENT_ID" ]; then
+    echo "Errore: Impossible to read the secret value"
+    exit 1
+fi
+
+#
+# K8s
+#
 if ! command -v kubectl &> /dev/null; then
     handle_error "kubectl is not installed. Please install it and try again."
 fi
 
-# Check if helm is installed
 if ! command -v helm &> /dev/null; then
     handle_error "Helm is not installed. Please install it and try again."
 fi
@@ -43,17 +69,20 @@ if ! kubectl config use-context "$CLUSTER_NAME"; then
     handle_error "Unable to switch context to $CLUSTER_NAME. Make sure the cluster exists in your kubeconfig."
 fi
 
+#
+# ⎈ HELM
+#
 echo "🪚 Deleting charts folder"
 rm -rf charts || handle_error "Unable to delete charts folder"
 
 echo "🔨 Starting Helm Template"
 helm dep build && helm template . -f "$VALUES_FILE_NAME"  --debug
 
-
 echo "🚀 Launch helm deploy"
 # Execute helm upgrade/install command and capture output and exit code
 helm upgrade --namespace "$NAMESPACE" \
     --install --values "$VALUES_FILE_NAME" \
+    --set workloadIdentityClientID="$CLIENT_ID" \
     --wait --timeout 3m0s "$APP_NAME" .
 
 exit_code=$?
