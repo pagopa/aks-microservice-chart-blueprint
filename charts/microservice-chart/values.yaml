@@ -303,9 +303,13 @@ autoscaling:
 # -- Service account configuration
 # @default -- -
 serviceAccount:
+  # -- (bool) Create the service account object. If true use this object, otherwise use only the name reference
   create: false
+  # -- Service account name, this service account already exists
   name: ""
   annotations: {}
+  # -- (bool)
+  automount: false
 
 serviceMonitor:
   # -- (bool) Create or not the service monitor
