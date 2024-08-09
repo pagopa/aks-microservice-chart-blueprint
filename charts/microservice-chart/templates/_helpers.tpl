@@ -49,7 +49,7 @@ Extra labels
 app.kubernetes.io/version: {{ (.Values.image.tag | default .Chart.AppVersion) | replace "@sha256:" "_" | trunc 63 | quote }}
 {{- end }}
 {{- if .Values.azure.workloadIdentityEnabled }}
-azure.workload.identity/use: {{ .Values.azure.workloadIdentityEnabled }}
+azure.workload.identity/use: "{{ .Values.azure.workloadIdentityEnabled }}"
 {{- end }}
 {{- end }}
 
