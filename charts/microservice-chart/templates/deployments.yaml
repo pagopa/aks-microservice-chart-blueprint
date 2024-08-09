@@ -24,7 +24,6 @@ spec:
         {{- if .Values.forceRedeploy }}
         redeploy: {{ now | unixEpoch | quote }}
         {{- end }}
-        aadpodidbinding: "{{ .Values.namespace }}-pod-identity"
         {{- include "microservice-chart.selectorLabels" . | nindent 8 }}
         {{- include "microservice-chart.extraLabels" . | nindent 8 }}
     spec:
