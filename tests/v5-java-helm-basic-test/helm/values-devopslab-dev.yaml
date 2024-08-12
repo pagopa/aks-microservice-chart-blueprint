@@ -14,7 +14,6 @@ microservice-chart:
     TEST: test
 
   serviceAccount:
-    create: false
     name: testit-workload-identity
 
   image:
