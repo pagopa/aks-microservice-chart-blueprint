@@ -127,9 +127,39 @@ K8s:
 
 - Reloader of other tools that allow to restar the pod in case of some of the config map or secret are changed
 
-## 📑 Functionality & Values keys/Yaml chart configuration properties (values.yaml)
+## 🔨 Functionality & Values keys/Yaml chart configuration properties (values.yaml)
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
+
+### `workload identity`
+
+To use the workload identity and be able to load secrets directly from kv, you need to setup this two things.
+
+### Service account linked to workload identity
+
+```yaml
+  serviceAccount:
+    name: testit-workload-identity
+```
+
+> this service account was setuped before, and linked to the workload identity
+
+### Workload Identity ClientID (ex Pod Identity)
+
+to be able to use the workload identity is mandatory to setup the client id associated to this one. To do so, you will have to pass as a parameter (DON'T COMMIT AS VALUE) as shown below
+
+```yaml
+microservice-chart:
+  azure:
+    # -- (bool) Enable workload identity
+    workloadIdentityEnabled: true
+    # -- Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
+    workloadIdentityClientId: ""
+```
+
+```yaml
+--set microservice-chart.azure.workloadIdentityClientId="$CLIENT_ID"
+```
 
 ### `envConfig`: load values in an internal configmap with the same name of the release
 

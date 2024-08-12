@@ -23,11 +23,12 @@ Was removed
 to be able to use the workload identity is mandatory to setup the client id associated to this one. To do so, you will have to pass as a parameter (DON'T COMMIT AS VALUE) as shown below
 
 ```yaml
-azure:
-  # -- (bool) Enable workload identity
-  workloadIdentityEnabled: true
-  # -- Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
-  workloadIdentityClientId: ""
+microservice-chart:
+  azure:
+    # -- (bool) Enable workload identity
+    workloadIdentityEnabled: true
+    # -- Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
+    workloadIdentityClientId: ""
 ```
 
 ```yaml
