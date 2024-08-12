@@ -76,14 +76,18 @@ echo "🪚 Deleting charts folder"
 rm -rf charts || handle_error "Unable to delete charts folder"
 
 echo "🔨 Starting Helm Template"
-helm dep build && helm template . -f "$VALUES_FILE_NAME"  --debug
+helm dep build && \
+helm template . -f "$VALUES_FILE_NAME" \
+  --set microservice-chart.azure.workloadIdentityClientId="$CLIENT_ID" \
+  --debug
 
 echo "🚀 Launch helm deploy"
 # Execute helm upgrade/install command and capture output and exit code
 helm upgrade --namespace "$NAMESPACE" \
-    --install --values "$VALUES_FILE_NAME" \
-    --set workloadIdentityClientID="$CLIENT_ID" \
-    --wait --timeout 3m0s "$APP_NAME" .
+    --install \
+    --set microservice-chart.azure.workloadIdentityClientId="$CLIENT_ID" \
+    --values "$VALUES_FILE_NAME" \
+    --wait --debug --timeout 3m0s "$APP_NAME" .
 
 exit_code=$?
 
