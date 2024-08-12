@@ -1,6 +1,40 @@
 <!-- markdownlint-disable MD029  -->
 # Migration guide
 
+## (Breaking) from v5.x to v7.x
+
+To use the workload identity and be able to load secrets directly from kv, you need to setup this two things.
+
+### Service account linked to workload identity
+
+```yaml
+  serviceAccount:
+    name: testit-workload-identity
+```
+
+> this service account was setuped before, and linked to the workload identity
+
+### POD Identity
+
+Was removed
+
+### Workload ClientID (ex Pod Identity)
+
+to be able to use the workload identity is mandatory to setup the client id associated to this one. To do so, you will have to pass as a parameter (DON'T COMMIT AS VALUE) as shown below
+
+```yaml
+microservice-chart:
+  azure:
+    # -- (bool) Enable workload identity
+    workloadIdentityEnabled: true
+    # -- Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
+    workloadIdentityClientId: ""
+```
+
+```yaml
+--set microservice-chart.azure.workloadIdentityClientId="$CLIENT_ID"
+```
+
 ## from v2.x to v5.3+
 
 the guaranteed version of 5.x is 5.3 which contains all the fixes necessary to minimize the inconvenience of a migration

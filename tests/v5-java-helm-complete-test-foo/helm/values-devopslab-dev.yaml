@@ -5,6 +5,9 @@ microservice-chart:
     create: true
     replicas: 1
 
+  serviceAccount:
+    name: testit-workload-identity
+
   envConfig:
     APP: foo
     MY_APP_COLOR: "green"
@@ -87,11 +90,6 @@ microservice-chart:
     rewriteTarget: /$2
     servicePort: 8080
 
-  serviceAccount:
-    create: false
-    annotations: {}
-    name: ""
-
   podAnnotations: {}
 
   podSecurityContext:
@@ -122,7 +120,7 @@ microservice-chart:
           value: "60"
 
   podDisruptionBudget:
-    create: true
+    create: false
     minAvailable: 1
 
   keyvault:

@@ -7,10 +7,12 @@ configured.
 
 Some of the key benefits of this chart are:
 
-- Highly secure environment thanks to Secret Store CSI Provider;
+- Highly secure environment thanks to `Workload Identity` and secrets load by SecretProviderClass;
 - Ingress HTTPS connection;
 - Improved scalability and reliability thanks to **Keda**;
 - Simpified way to setup secrets and configMaps
+
+> ⚠️ The 7.x version drop compatibility to podIdentity and use workload identity
 
 ## Architecture
 
@@ -19,6 +21,10 @@ To see the entire architecture please see this page [architecture](docs/ARCHITEC
 ## Changelog
 
 see [CHANGELOG](CHANGELOG) to see the new features and the breking changes
+
+## Migration guide
+
+please see this page about how to manage a migration for one version to another [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
 
 ## Pre requisites
 
@@ -38,10 +44,6 @@ These are the supported LTS releases and until when:
 
 - `2.x`: March 2024
 - `5.x`: July 2024
-
-## Migration guide
-
-please see this page about how to manage a migration for one version to another [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
 
 ### Quick start
 
@@ -125,9 +127,39 @@ K8s:
 
 - Reloader of other tools that allow to restar the pod in case of some of the config map or secret are changed
 
-## 📑 Functionality & Values keys/Yaml chart configuration properties (values.yaml)
+## 🔨 Functionality & Values keys/Yaml chart configuration properties (values.yaml)
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
+
+### `workload identity`
+
+To use the workload identity and be able to load secrets directly from kv, you need to setup this two things.
+
+### Service account linked to workload identity
+
+```yaml
+  serviceAccount:
+    name: testit-workload-identity
+```
+
+> this service account was setuped before, and linked to the workload identity
+
+### Workload Identity ClientID (ex Pod Identity)
+
+to be able to use the workload identity is mandatory to setup the client id associated to this one. To do so, you will have to pass as a parameter (DON'T COMMIT AS VALUE) as shown below
+
+```yaml
+microservice-chart:
+  azure:
+    # -- (bool) Enable workload identity
+    workloadIdentityEnabled: true
+    # -- Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
+    workloadIdentityClientId: ""
+```
+
+```yaml
+--set microservice-chart.azure.workloadIdentityClientId="$CLIENT_ID"
+```
 
 ### `envConfig`: load values in an internal configmap with the same name of the release
 

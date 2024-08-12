@@ -303,9 +303,13 @@ autoscaling:
 # -- Service account configuration
 # @default -- -
 serviceAccount:
+  # -- (bool) Create the service account object. If true use this object, otherwise use only the name reference
   create: false
+  # -- Service account name, this service account already exists
   name: ""
   annotations: {}
+  # -- (bool)
+  automount: false
 
 serviceMonitor:
   # -- (bool) Create or not the service monitor
@@ -384,3 +388,9 @@ podDisruptionBudget:
   minAvailable: 0
   # -- (mutually exclusive with minAvailable) Max number of pods unavailable before destroy node
   maxUnavailable: ""
+
+azure:
+  # -- (bool) Enable workload identity
+  workloadIdentityEnabled: true
+  # -- Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
+  workloadIdentityClientId: ""
