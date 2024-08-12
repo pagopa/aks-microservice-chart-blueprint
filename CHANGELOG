@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v7.1.0
+
+Version 7.x is the first release to fully utilize workload identities
+for automatic secret loading from kv, and also removed support for pod identities.
+
+## v5.11.0
+
+- configMaps: now support custom mount paths
+
 ## v5.9.1
 
 - fix label: now support image version with `@sha256`
