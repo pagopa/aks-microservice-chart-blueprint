@@ -5,16 +5,16 @@ microservice-chart:
     create: true
     replicas: 1
 
+  serviceAccount:
+    name: testit-workload-identity
+
   envConfig:
-    APP: foo
+    APP: basic
     MY_APP_COLOR: "green"
 
   envSecret:
     MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
     TEST: test
-
-  serviceAccount:
-    name: testit-workload-identity
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color

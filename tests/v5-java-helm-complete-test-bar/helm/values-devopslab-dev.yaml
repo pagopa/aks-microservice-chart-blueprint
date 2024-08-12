@@ -5,6 +5,9 @@ microservice-chart:
     create: true
     replicas: 1
 
+  serviceAccount:
+    name: testit-workload-identity
+
   envConfig:
     APP: bar
     MY_APP_COLOR: "green"
@@ -109,11 +112,6 @@ microservice-chart:
     path: /testit/v5-java-helm-complete-test-bar(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
-
-  serviceAccount:
-    create: false
-    annotations: {}
-    name: ""
 
   podAnnotations: {}
 
