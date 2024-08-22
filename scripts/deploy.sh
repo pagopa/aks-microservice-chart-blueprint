@@ -19,7 +19,7 @@ handle_error() {
 VALUES_FILE_NAME=$1
 CLUSTER_NAME=$2  # New parameter for cluster name
 APP_NAME=$3
-SECRET_NAME="workload-identity-client-id"
+SECRET_NAME="testit-workload-identity-client-id"
 
 if [ -z "$VALUES_FILE_NAME" ] || [ -z "$APP_NAME" ] || [ -z "$CLUSTER_NAME" ]; then
     handle_error "All parameters are required: VALUES_FILE_NAME NAMESPACE APP_NAME CLUSTER_NAME"
