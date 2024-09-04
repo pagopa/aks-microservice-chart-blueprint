@@ -75,7 +75,7 @@ version: 1.0.0
 appVersion: 1.0.0
 dependencies:
 - name: microservice-chart
-  version: 5.9.1
+  version: 7.1.1
   repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
 EOF
 ```
@@ -131,35 +131,9 @@ K8s:
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
 
-### `workload identity`
+### `Workload Identity`
 
-To use the workload identity and be able to load secrets directly from kv, you need to setup this two things.
-
-### Service account linked to workload identity
-
-```yaml
-  serviceAccount:
-    name: testit-workload-identity
-```
-
-> this service account was setuped before, and linked to the workload identity
-
-### Workload Identity ClientID (ex Pod Identity)
-
-to be able to use the workload identity is mandatory to setup the client id associated to this one. To do so, you will have to pass as a parameter (DON'T COMMIT AS VALUE) as shown below
-
-```yaml
-microservice-chart:
-  azure:
-    # -- (bool) Enable workload identity
-    workloadIdentityEnabled: true
-    # -- Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
-    workloadIdentityClientId: ""
-```
-
-```yaml
---set microservice-chart.azure.workloadIdentityClientId="$CLIENT_ID"
-```
+To use the workload identity and be able to load secrets directly from kv, follow the [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md).
 
 ### `envConfig`: load values in an internal configmap with the same name of the release
 
