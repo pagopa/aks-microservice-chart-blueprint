@@ -389,8 +389,23 @@ podDisruptionBudget:
   # -- (mutually exclusive with minAvailable) Max number of pods unavailable before destroy node
   maxUnavailable: ""
 
+# -- Azure configuration (e.g. Workload identities)
 azure:
   # -- (bool) Enable workload identity
   workloadIdentityEnabled: true
   # -- Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123)
   workloadIdentityClientId: ""
+
+# -- Postman meta tags
+# @default -- -
+postman-test:
+  # -- (bool) run or not the tests
+  run: true
+  # -- repoName: github repo name (e.g. devops-java-springboot-color)
+  repoName: ""
+  # -- directory where the postman file are saved (e.g. src/test/postman)
+  dir: ""
+  # -- collection name path (e.g. mil-papos.postman_collection.json)
+  collectionName: ""
+  # -- env variable name path (e.g dev.postman_environment.json)
+  envVariablesFile: ""

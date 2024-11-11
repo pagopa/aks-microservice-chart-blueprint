@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 7.0.0](https://img.shields.io/badge/Version-7.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 7.1.1](https://img.shields.io/badge/Version-7.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -17,6 +17,7 @@ A Helm chart for PagoPA microservice
 | autoscaling.minReplica | int | `1` | Autoscaling minimum replicas |
 | autoscaling.pollingInterval | int | `10` | Autoscaling event polling intervall |
 | autoscaling.triggers | list | `[]` | Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/) |
+| azure | object | `{"workloadIdentityClientId":"","workloadIdentityEnabled":true}` | Azure configuration (e.g. Workload identities) |
 | azure.workloadIdentityClientId | string | `""` | Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123) |
 | azure.workloadIdentityEnabled | bool | `true` | Enable workload identity |
 | canaryDelivery | object | - | This section allow to configure canary deployment |
@@ -90,6 +91,12 @@ A Helm chart for PagoPA microservice
 | podSecurityContext | object | `{"seccompProfile":{"type":"RuntimeDefault"}}` | podSecurityContext |
 | podSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | seccompProfile |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | type |
+| postman-test | object | - | Postman meta tags |
+| postman-test.collectionName | string | `""` | collection name path (e.g. mil-papos.postman_collection.json) |
+| postman-test.dir | string | `""` | directory where the postman file are saved (e.g. src/test/postman) |
+| postman-test.envVariablesFile | string | `""` | env variable name path (e.g dev.postman_environment.json) |
+| postman-test.repoName | string | `""` | repoName: github repo name (e.g. devops-java-springboot-color) |
+| postman-test.run | bool | `true` | run or not the tests |
 | providedVolumeMount | object | {} | Configure how secrets taken from SecretS storage Class are mounted inside the pod |
 | readinessProbe | object | {} | ReadinessProbe |
 | readinessProbe.exec | object | `{"command":[]}` | exec options |
