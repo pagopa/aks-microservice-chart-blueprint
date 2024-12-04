@@ -5,12 +5,16 @@ microservice-chart:
     create: true
     replicas: 1
 
+  serviceAccount:
+    name: testit-workload-identity
+
   envConfig:
-    APP: foo
+    APP: basic
     MY_APP_COLOR: "green"
 
   envSecret:
     MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
+    TEST: test
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
@@ -67,7 +71,7 @@ microservice-chart:
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
   podDisruptionBudget:
-    create: true
+    create: false
     minAvailable: 1
 
   affinity:
