@@ -135,7 +135,7 @@ see [README/Microservice Chart configuration](charts/microservice-chart/README.m
 
 To use the workload identity and be able to load secrets directly from kv, follow the [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md).
 
-### `forceRedeploy`: allow to re-create pod every time that an helm release in launched
+### `forceRedeploy`: allow to re-create pod every time an helm release is launched
 
 If you want to force the re-deploy of pods without changing values, you can use this value
 
