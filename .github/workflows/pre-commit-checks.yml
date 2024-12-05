@@ -29,6 +29,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install pre-commit
 
+      - name: Set up Helm
+        # v4.2.0 - https://github.com/Azure/setup-helm/releases/tag/v4.2.0
+        uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814
+        with:
+          version: 'latest'
+
+      - name: Add helm repositories
+        run: |
+          helm repo add pagopa-microservice https://pagopa.github.io/aks-microservice-chart-blueprint
+          helm repo update
+
+      - name: Set up chart-testing
+        # v2.6.1 - https://github.com/helm/chart-testing-action/releases/tag/v2.6.0
+        uses: helm/chart-testing-action@b43128a8b25298e1e7b043b78ea6613844e079b1
+
+      #
+      # Run pre-commit
+      #
       - name: Run pre-commit on all files
         run: pre-commit run --all-files
         continue-on-error: false
