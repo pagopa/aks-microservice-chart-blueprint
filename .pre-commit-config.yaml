@@ -18,6 +18,8 @@ repos:
         exclude_types: [sql]
       - id: check-yaml
         exclude: charts
+        args:
+          - --unsafe
       - id: check-executables-have-shebangs
       # Cross platform
       - id: check-case-conflict
