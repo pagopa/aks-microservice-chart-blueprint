@@ -15,7 +15,7 @@ repos:
         exclude_types: [sql]
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-        exclude_types: [sql, md]
+        exclude_types: [sql, markdown]
       - id: check-yaml
         exclude: charts
         args:
