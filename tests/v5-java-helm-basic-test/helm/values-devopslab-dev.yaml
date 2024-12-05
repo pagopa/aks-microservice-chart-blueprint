@@ -4,6 +4,7 @@ microservice-chart:
   deployment:
     create: true
     replicas: 1
+    forceRedeploy: true
 
   serviceAccount:
     name: testit-workload-identity
