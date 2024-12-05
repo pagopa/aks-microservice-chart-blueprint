@@ -1,0 +1,83 @@
+# Basic Chart Testing Configuration
+remote: origin
+target-branch: main
+timeout: 600s
+
+# Required Helm repositories for chart dependencies
+chart-repos:
+  - pagopa-microservice=https://pagopa.github.io/aks-microservice-chart-blueprint
+
+# General validation settings
+validate-maintainers: false
+validate-chart-schema: true
+validate-yaml: true
+check-version-increment: true
+debug: false
+
+# =====================================================
+# Lint and Validation Rules
+# =====================================================
+lint:
+  yamllint:
+    config: |
+      extends: default
+      rules:
+        braces:
+          min-spaces-inside: 0
+          max-spaces-inside: 0
+        brackets:
+          min-spaces-inside: 0
+          max-spaces-inside: 0
+        colons:
+          max-spaces-before: 0
+          max-spaces-after: 1
+        commas:
+          max-spaces-before: 0
+          min-spaces-after: 1
+        comments: disable
+        comments-indentation: disable
+        document-end: disable
+        document-start: disable
+        empty-lines:
+          max: 2
+          max-start: 0
+          max-end: 0
+        hyphens:
+          max-spaces-after: 1
+        indentation:
+          spaces: consistent
+          indent-sequences: true
+          check-multi-line-strings: false
+        key-duplicates: enable
+        line-length: disable
+        new-line-at-end-of-file: enable
+        new-lines: enable
+        trailing-spaces: enable
+        truthy: disable
+
+# Regole di validazione per Chart.yaml e values.yaml possono essere gestite
+# attraverso la configurazione di schema validation di Helm
+schema:
+  values:
+    - name: image.tag
+      required: true
+      type: string
+    - name: replicaCount
+      required: true
+      type: integer
+
+  chart:
+    - name: version
+      required: true
+      type: string
+    - name: appVersion
+      required: true
+      type: string
+    - name: dependencies
+      required: true
+      type: array
+
+  template:
+    - name: metadata.labels
+      required: true
+      type: object

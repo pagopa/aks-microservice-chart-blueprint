@@ -387,7 +387,7 @@ This code snippet in AKS forces the pods not to be all in the same node but to d
 ### `canary`: example with canary
 
 ```yaml
-... 
+...
   envConfig:
     TO_OVERWRITE: "original-value"
     COMMON: "same"
