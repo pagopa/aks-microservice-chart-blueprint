@@ -96,4 +96,3 @@ microservice-chart:
   tolerations: []
 
   affinity: {}
-

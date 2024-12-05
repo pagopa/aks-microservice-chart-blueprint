@@ -8,4 +8,3 @@ skip-check:
   - CKV_K8S_37
   - CKV_K8S_40
   - CKV_K8S_43
-

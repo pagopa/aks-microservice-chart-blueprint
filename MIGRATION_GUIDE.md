@@ -37,7 +37,7 @@ or you can override with an helm parameter in this way bellow, if you don't want
 --set microservice-chart.azure.workloadIdentityClientId="$CLIENT_ID"
 ```
 
-> the client id is not secret, this is why we can put into git 
+> the client id is not secret, this is why we can put into git
 
 ## from v2.x to v5.3+
 
