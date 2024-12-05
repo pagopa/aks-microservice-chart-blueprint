@@ -10,6 +10,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
+  revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
   replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
