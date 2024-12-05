@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v7.2.0
+
+Added `revisionHistoryLimit` in Deployment to allow to configure the number of revisions/replica set to have has history
+
+## v7.1.1
+
+Tests suite updated
+
 ## v7.1.0
 
 Version 7.x is the first release to fully utilize workload identities
