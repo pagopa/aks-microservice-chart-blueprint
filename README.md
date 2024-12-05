@@ -135,6 +135,20 @@ see [README/Microservice Chart configuration](charts/microservice-chart/README.m
 
 To use the workload identity and be able to load secrets directly from kv, follow the [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md).
 
+### `forceRedeploy`: allow to re-create pod every time that an helm release in launched
+
+If you want to force the re-deploy of pods without changing values, you can use this value
+
+```yaml
+microservice-chart:
+  deployment:
+    forceRedeploy: true
+```
+
+this can be very usefull when you need to updated the values of a config map or secret
+
+  ⚠️ ArgoCD: this field can be a problem with argocd because it change one label to force the re-deploy and argocd can think that is an `out of sync`
+
 ### `envConfig`: load values in an internal configmap with the same name of the release
 
 Is possible to load env variables inside the pod, with the creation of a configmap called as the release name
@@ -395,7 +409,7 @@ This code snippet in AKS forces the pods not to be all in the same node but to d
       SEC_TO_OVERWRITE: 'new-value'
 ```
 
-In a Canary deployment, the configurations from the `envConfig` of the stable version are merged with its own configuration. 
+In a Canary deployment, the configurations from the `envConfig` of the stable version are merged with its own configuration.
 It is the same for the `envSecret`.
 
 You can add new variables to the canary (see `SEC_NEW_ITEM`) or overwrite values of the stable version (see `SEC_TO_OVERWRITE`).
