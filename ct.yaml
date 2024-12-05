@@ -3,12 +3,6 @@ remote: origin
 target-branch: main
 timeout: 600s
 
-# Chart directories to scan for changes recursively
-chart-dirs:
-  - helm/dev
-  - helm/uat
-  - helm/prod
-
 # Required Helm repositories for chart dependencies
 chart-repos:
   - pagopa-microservice=https://pagopa.github.io/aks-microservice-chart-blueprint
