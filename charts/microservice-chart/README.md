@@ -38,6 +38,7 @@ A Helm chart for PagoPA microservice
 | deployment.create | bool | `true` | Create or not the deployment manifest |
 | deployment.forceRedeploy | bool | `false` | Force redeploy container |
 | deployment.replicas | int | `1` | Number of replicas (will be replaced by autoscaling if enabled) |
+| deployment.revisionHistoryLimit | int | `3` | Number of revision/replicaSet to have has history + 1 current revision |
 | envConfig | object | `{}` | Environment config to use for the container |
 | envFieldRef | object | `{}` | Environment config from k8s metadata |
 | envSecret | object | `{}` | Load secrets as environment variables from kv |
