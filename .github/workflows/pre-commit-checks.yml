@@ -52,11 +52,16 @@ jobs:
         # v2.6.1 - https://github.com/helm/chart-testing-action/releases/tag/v2.6.0
         uses: helm/chart-testing-action@b43128a8b25298e1e7b043b78ea6613844e079b1
 
-      #
-      # Run pre-commit
-      #
-      - name: Run pre-commit on all files
-        run: pre-commit run --all-files
+      # Pre-commit branch main
+      - name: Run pre-commit for main branch
+        if: github.ref == 'refs/heads/main'
+        run: |
+          SKIP=helm-docs pre-commit run --all-files --color always
         continue-on-error: false
-        env:
-          FORCE_COLOR: "1"
+
+      # Pre-commit others branch
+      - name: Run pre-commit for other branches
+        if: github.ref != 'refs/heads/main'
+        run: |
+          pre-commit run --all-files --color always
+        continue-on-error: false
