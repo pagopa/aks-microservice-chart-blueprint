@@ -53,14 +53,14 @@ jobs:
         uses: helm/chart-testing-action@b43128a8b25298e1e7b043b78ea6613844e079b1
 
       # Pre-commit branch main
-      - name: Run pre-commit for main branch
+      - name: Run pre-commit for MAIN branch
         if: github.ref == 'refs/heads/main'
         run: |
           SKIP=helm-docs pre-commit run --all-files --color always
         continue-on-error: false
 
       # Pre-commit others branch
-      - name: Run pre-commit for other branches
+      - name: Run pre-commit for non main branches
         if: github.ref != 'refs/heads/main'
         run: |
           pre-commit run --all-files --color always
