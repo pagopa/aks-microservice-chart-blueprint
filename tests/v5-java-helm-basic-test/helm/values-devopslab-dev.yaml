@@ -6,6 +6,25 @@ microservice-chart:
     replicas: 1
     forceRedeploy: true
 
+  autoscaling:
+    enable: true
+    minReplica: 0
+    maxReplica: 1
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 10 # seconds
+    triggers:
+      - type: cron
+        metadata:
+          # Required
+          timezone: Europe/Rome  # The acceptable values would be a value from the IANA Time Zone Database.
+          start: 0 9 * * *
+          end: 54 19 * * *
+          desiredReplicas: "1"
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
+
   serviceAccount:
     name: testit-workload-identity
 
