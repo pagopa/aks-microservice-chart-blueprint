@@ -87,7 +87,7 @@ helm upgrade --namespace "$NAMESPACE" \
     --install \
     --set microservice-chart.azure.workloadIdentityClientId="$CLIENT_ID" \
     --values "$VALUES_FILE_NAME" \
-    --wait --debug --timeout 3m0s "$APP_NAME" .
+    --wait --debug --timeout 15m0s "$APP_NAME" .
 
 exit_code=$?
 

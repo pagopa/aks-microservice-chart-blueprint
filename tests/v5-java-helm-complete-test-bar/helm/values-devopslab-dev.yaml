@@ -3,7 +3,6 @@ microservice-chart:
 
   deployment:
     create: true
-    replicas: 1
 
   serviceAccount:
     name: testit-workload-identity
@@ -42,8 +41,35 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: 0.10.0
+    tag: latest
     pullPolicy: Always
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "300m"
+
+  autoscaling:
+    enable: true
+    minReplica: 0
+    maxReplica: 1
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 10 # seconds
+    triggers:
+      - type: cron
+        metadata:
+          # Required
+          timezone: Europe/Rome  # The acceptable values would be a value from the IANA Time Zone Database.
+          start: 0 7 * * *
+          end: 0 21 * * *
+          desiredReplicas: "1"
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
 
   tmpVolumeMount:
     create: true
@@ -121,26 +147,6 @@ microservice-chart:
 
   securityContext:
     allowPrivilegeEscalation: false
-
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "40m"
-    limits:
-      memory: "256Mi"
-      cpu: "150m"
-
-  autoscaling:
-    enable: true
-    minReplica: 1
-    maxReplica: 1
-    pollingInterval: 30 # seconds
-    cooldownPeriod: 300 # seconds
-    triggers:
-      - type: cpu
-        metadata:
-          type: Utilization
-          value: "60"
 
   podDisruptionBudget:
     create: false
