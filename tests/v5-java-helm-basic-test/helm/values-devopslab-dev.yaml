@@ -6,10 +6,23 @@ microservice-chart:
     replicas: 1
     forceRedeploy: true
 
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: latest
+    pullPolicy: Always
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "300m"
+
   autoscaling:
     enable: true
-    minReplica: 0
-    maxReplica: 1
+    minReplica: 2
+    maxReplica: 10
     pollingInterval: 30 # seconds
     cooldownPeriod: 10 # seconds
     triggers:
@@ -17,8 +30,8 @@ microservice-chart:
         metadata:
           # Required
           timezone: Europe/Rome  # The acceptable values would be a value from the IANA Time Zone Database.
-          start: 0 9 * * *
-          end: 54 19 * * *
+          start: 0 21 * * *
+          end: 0 6 * * *
           desiredReplicas: "1"
       - type: cpu
         metadata:
@@ -35,11 +48,6 @@ microservice-chart:
   envSecret:
     MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
     TEST: test
-
-  image:
-    repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: develop-1.8.0
-    pullPolicy: Always
 
   tmpVolumeMount:
     create: true
@@ -77,14 +85,6 @@ microservice-chart:
     path: /testit/v5-java-helm-basic-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
-
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "40m"
-    limits:
-      memory: "256Mi"
-      cpu: "150m"
 
   keyvault:
     name: "dvopla-d-itn-testit-kv"
