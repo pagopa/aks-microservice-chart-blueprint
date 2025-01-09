@@ -21,8 +21,8 @@ microservice-chart:
 
   autoscaling:
     enable: true
-    minReplica: 2
-    maxReplica: 10
+    minReplica: 0
+    maxReplica: 1
     pollingInterval: 30 # seconds
     cooldownPeriod: 10 # seconds
     triggers:
@@ -30,8 +30,8 @@ microservice-chart:
         metadata:
           # Required
           timezone: Europe/Rome  # The acceptable values would be a value from the IANA Time Zone Database.
-          start: 0 21 * * *
-          end: 0 6 * * *
+          start: 0 7 * * *
+          end: 0 21 * * *
           desiredReplicas: "1"
       - type: cpu
         metadata:
