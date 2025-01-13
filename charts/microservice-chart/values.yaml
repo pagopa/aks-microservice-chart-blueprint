@@ -401,13 +401,13 @@ azure:
 # -- Postman meta tags
 # @default -- -
 postman-test:
-  # -- (bool) run or not the tests
+  # -- (bool) Run or not the tests
   run: true
-  # -- repoName: github repo name (e.g. devops-java-springboot-color)
+  # -- repoName: github repo name (e.g. `devops-java-springboot-color`)
   repoName: ""
-  # -- directory where the postman file are saved (e.g. src/test/postman)
+  # -- directory where the postman file are saved (e.g. `src/test/postman``)
   dir: ""
-  # -- collection name path (e.g. mil-papos.postman_collection.json)
+  # -- collection name path (e.g. `mil-papos.postman_collection.json``)
   collectionName: ""
-  # -- env variable name path (e.g dev.postman_environment.json)
+  # -- env variable name path (e.g `dev.postman_environment.json``)
   envVariablesFile: ""

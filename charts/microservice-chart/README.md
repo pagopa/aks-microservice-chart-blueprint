@@ -93,11 +93,11 @@ A Helm chart for PagoPA microservice
 | podSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | seccompProfile |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | type |
 | postman-test | object | - | Postman meta tags |
-| postman-test.collectionName | string | `""` | collection name path (e.g. mil-papos.postman_collection.json) |
-| postman-test.dir | string | `""` | directory where the postman file are saved (e.g. src/test/postman) |
-| postman-test.envVariablesFile | string | `""` | env variable name path (e.g dev.postman_environment.json) |
-| postman-test.repoName | string | `""` | repoName: github repo name (e.g. devops-java-springboot-color) |
-| postman-test.run | bool | `true` | run or not the tests |
+| postman-test.collectionName | string | `""` | collection name path (e.g. `mil-papos.postman_collection.json``) |
+| postman-test.dir | string | `""` | directory where the postman file are saved (e.g. `src/test/postman``) |
+| postman-test.envVariablesFile | string | `""` | env variable name path (e.g `dev.postman_environment.json``) |
+| postman-test.repoName | string | `""` | repoName: github repo name (e.g. `devops-java-springboot-color`) |
+| postman-test.run | bool | `true` | Run or not the tests |
 | providedVolumeMount | object | {} | Configure how secrets taken from SecretS storage Class are mounted inside the pod |
 | readinessProbe | object | {} | ReadinessProbe |
 | readinessProbe.exec | object | `{"command":[]}` | exec options |

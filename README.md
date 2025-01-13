@@ -109,7 +109,7 @@ Change version of the dependency and run the update:
 cd helm && helm dep update .
 ```
 
-## Template/App mandatory resources and configuration
+## 🧭 Template/App mandatory resources and configuration
 
 To work as expect this template must request:
 
@@ -413,6 +413,23 @@ In a Canary deployment, the configurations from the `envConfig` of the stable ve
 It is the same for the `envSecret`.
 
 You can add new variables to the canary (see `SEC_NEW_ITEM`) or overwrite values of the stable version (see `SEC_TO_OVERWRITE`).
+
+### `Postman tests`
+
+> ℹ️ this section is not directly used by aks blueprint but is a place holder for release pipelines. It was inserted here to centralize the information and its documentation
+
+In order to use postman tests you need to configure your yaml as follows:
+
+```yaml
+postman-test:
+  run: true
+  repoName: arc-be
+  dir: postman
+  collectionName: "pagopa-arc-E2E.postman_collection.json"
+  envVariablesFile: "arc_DEV.postman_environment.json" #inside azdo secure files
+```
+
+See [README/Postman tests](charts/microservice-chart/README.md) to understand how to use the values.
 
 ## Advanced
 
