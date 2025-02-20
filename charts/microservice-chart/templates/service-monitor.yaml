@@ -1,5 +1,9 @@
 {{- if .Values.serviceMonitor.create -}}
+{{- if .Values.serviceMonitor.prometheusManaged -}}
 apiVersion: azmonitoring.coreos.com/v1
+{{- else }}
+apiVersion: monitoring.coreos.com/v1
+{{- end }}
 kind: ServiceMonitor
 metadata:
   name: {{ include "microservice-chart.fullname" . }}
