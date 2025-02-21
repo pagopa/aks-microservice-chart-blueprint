@@ -429,6 +429,38 @@ postman-test:
   envVariablesFile: "arc_DEV.postman_environment.json" #inside azdo secure files
 ```
 
+### `Service Monitors`
+
+The **Service Monitor** allows you to configure and send metrics from your 
+application to **Prometheus**, both locally hosted and managed, 
+using this new version of the configuration module. This feature is essential 
+for monitoring application health and gaining real-time insights into its performance.
+
+```yaml
+serviceMonitor:
+  create: true
+  endpoints:
+    - interval: 10s
+      targetPort: 9092
+      path: /
+    - interval: 10s
+      targetPort: 9091
+      path: /metrics
+  promethuesManaged: true
+```
+
+1. `create: true`
+Enables automatic creation of a dedicated Service Monitor for Prometheus.
+2. **`endpoints`**
+A list of endpoints defined to allow Prometheus to scrape metrics from the monitoring targets.
+    - **`interval`**: Specifies how frequently Prometheus should scrape metrics from the endpoint (e.g., every 10 seconds).
+    - **`targetPort`**: Sets the port Prometheus should connect to in order to access metrics.
+    - **`path`**: Defines the HTTP path where metrics are exposed — e.g., `/` for general information and `/metrics` for specific monitoring data.
+3. `promethuesManaged: true`
+Enables integration with a **managed Prometheus system**. This option is useful when using Prometheus as a managed service (e.g., in cloud environments), allowing the Service Monitor to automatically adjust to such setups.
+
+### More info
+
 See [README/Postman tests](charts/microservice-chart/README.md) to understand how to use the values.
 
 ## Advanced

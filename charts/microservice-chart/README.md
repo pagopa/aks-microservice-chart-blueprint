@@ -136,7 +136,7 @@ A Helm chart for PagoPA microservice
 | serviceAccount.name | string | `""` | Service account name, this service account already exists |
 | serviceMonitor.create | bool | `false` | Create or not the service monitor |
 | serviceMonitor.endpoints | list | `[]` |  |
-| serviceMonitor.prometheusManaged | bool | `false` |  |
+| serviceMonitor.prometheusManaged | bool | `false` | Enable the compatibility with Azure Prometheus Managed |
 | sidecars | list | `[]` | Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind |
 | startupProbe | object | {} | startupProbe |
 | startupProbe.exec | object | `{"command":[]}` | exec options |

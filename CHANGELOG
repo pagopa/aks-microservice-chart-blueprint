@@ -1,12 +1,26 @@
 # CHANGELOG
 
+## v7.4.0
+
+Add conditional API version in ServiceMonitor with azmonitoring.coreos.com/v1 and monitoring.coreos.com/v1.
+Add serviceMonitor.prometheusManaged flag to enable new API.
+
+## v7.3.1
+
+fix: pre-commit run with different options depending on branch.
+
+v7.3.0
+
+feat: Updated lint and pre-commit actions.
+fix(Deployment): forceRedeploy value inside deployment.
+
 ## v7.2.0
 
-Added `revisionHistoryLimit` in Deployment to allow to configure the number of revisions/replica set to have has history
+Added `revisionHistoryLimit` in Deployment to allow to configure the number of revisions/replica set to have has history.
 
 ## v7.1.1
 
-Tests suite updated
+Tests suite updated.
 
 ## v7.1.0
 
