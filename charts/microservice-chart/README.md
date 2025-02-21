@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 7.3.1](https://img.shields.io/badge/Version-7.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 7.4.0](https://img.shields.io/badge/Version-7.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -136,6 +136,7 @@ A Helm chart for PagoPA microservice
 | serviceAccount.name | string | `""` | Service account name, this service account already exists |
 | serviceMonitor.create | bool | `false` | Create or not the service monitor |
 | serviceMonitor.endpoints | list | `[]` |  |
+| serviceMonitor.prometheusManaged | bool | `false` | Enable the compatibility with Azure Prometheus Managed |
 | sidecars | list | `[]` | Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind |
 | startupProbe | object | {} | startupProbe |
 | startupProbe.exec | object | `{"command":[]}` | exec options |

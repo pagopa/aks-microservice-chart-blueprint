@@ -317,6 +317,8 @@ serviceMonitor:
   # -- (bool) Create or not the service monitor
   create: false
   endpoints: []
+  # -- (bool) Enable the compatibility with Azure Prometheus Managed
+  prometheusManaged: false
 
 service:
   # -- (bool) create the service manifest
