@@ -5,8 +5,19 @@ metadata:
   name: {{ include "microservice-chart.fullname" . }}
   namespace: {{ .Values.namespace }}
 spec:
+  {{- if ne .Values.autoscaling.authentication.provider "none" }}
   podIdentity:
-    provider: azure
+    provider: {{ .Values.autoscaling.authentication.provider }}
+    {{- with .Values.autoscaling.authentication.podIdentity }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- else }}
+  podIdentity:
+    provider: none
+  {{- end }}
+  {{- with .Values.autoscaling.authentication.config }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
@@ -30,8 +41,10 @@ spec:
       {{- if .metricType }}
       metricType: {{ .metricType }}
       {{- end }}
+      {{- if ne $.Values.autoscaling.authentication.provider "none" }}
       authenticationRef:
         name: {{ include "microservice-chart.fullname" $ }}
+      {{- end }}
       metadata:
         {{- .metadata | toYaml | nindent 8 }}
     {{- end }}
@@ -42,7 +55,6 @@ spec:
     {{- end }}
     {{- if .Values.autoscaling.advanced.horizontalPodAutoscalerConfig }}
     horizontalPodAutoscalerConfig:
-      #name: keda-hpa-{{ include "microservice-chart.fullname" $ }}
       behavior:
         {{- .Values.autoscaling.advanced.horizontalPodAutoscalerConfig.behavior | toYaml | nindent 8 }}
     {{- end }}

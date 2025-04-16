@@ -275,6 +275,14 @@ restartPolicy: "Always"
 autoscaling:
   # -- Enable Autoscaling
   enable: false
+  # -- Autoscaling authentication configuration
+  authentication:
+    # -- Authentication provider to use. Values: none, azure-workload, etc.
+    provider: none
+    # -- Pod identity configuration
+    podIdentity: {}
+    # -- Additional authentication configuration
+    config: {}
   # -- Autoscaling minimum replicas
   minReplica: 1
   # -- Autoscaling maximum replicas
@@ -287,16 +295,6 @@ autoscaling:
   triggers: []
   # -- Autoscaling advanced <https://keda.sh/docs/2.9/concepts/scaling-deployments/#advanced>
   advanced: {}
-  #- advanced:
-  #-  restoreToOriginalReplicaCount: false # Optional. Default: false
-  #-  horizontalPodAutoscalerConfig:
-  #-    behavior:
-  #-      scaleDown:
-  #-        stabilizationWindowSeconds: 300
-  #-        policies:
-  #-        - type: Percent
-  #-          value: 100
-  #-          periodSeconds: 15
 
 #
 # Pod identity and KV connection
