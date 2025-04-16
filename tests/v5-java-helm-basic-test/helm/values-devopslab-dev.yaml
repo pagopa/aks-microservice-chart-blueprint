@@ -14,8 +14,27 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: 0.10.0@sha256:3d448ec474944068f5a907a81d399cc00e9e54d42b386b55985451fcf6bf1c90
+    tag: develop-3.0.0@sha256:0c4859f1dcc145eeab46701e6e4445b114151691a287ed9a23e9578625f0054a
     pullPolicy: Always
+
+  autoscaling:
+    enable: true
+    minReplica: 0
+    maxReplica: 1
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 10 # seconds
+    triggers:
+      - type: cron
+        metadata:
+          # Required
+          timezone: Europe/Rome  # The acceptable values would be a value from the IANA Time Zone Database.
+          start: 0 7 * * *
+          end: 0 21 * * *
+          desiredReplicas: "1"
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
 
   tmpVolumeMount:
     create: true
