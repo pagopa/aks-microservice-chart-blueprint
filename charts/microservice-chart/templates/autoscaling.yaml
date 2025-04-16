@@ -5,8 +5,9 @@ metadata:
   name: {{ include "microservice-chart.fullname" . }}
   namespace: {{ .Values.namespace }}
 spec:
+  #https://keda.sh/docs/2.16/concepts/authentication/#re-use-credentials-and-delegate-auth-with-triggerauthentication
   podIdentity:
-    provider: azure
+    provider: none
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
