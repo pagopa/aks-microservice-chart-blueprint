@@ -1,7 +1,7 @@
 **/helm/charts
 # !tests/**/helm/charts
 
-**/tests/Chart.lock
+**/tests/**/Chart.lock
 
 **/.DS_Store
 
