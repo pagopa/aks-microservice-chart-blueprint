@@ -5,19 +5,8 @@ metadata:
   name: {{ include "microservice-chart.fullname" . }}
   namespace: {{ .Values.namespace }}
 spec:
-  {{- if eq .Values.autoscaling.authentication.provider "none" }}
   podIdentity:
     provider: none
-  {{- else }}
-  podIdentity:
-    provider: {{ .Values.autoscaling.authentication.provider }}
-    {{- with .Values.autoscaling.authentication.podIdentity }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-    {{- with .Values.autoscaling.authentication.config }}
-    {{- toYaml . | nindent 2 }}
-    {{- end }}
-  {{- end }}
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
