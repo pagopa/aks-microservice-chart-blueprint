@@ -131,6 +131,12 @@ K8s:
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
 
+### `Keda TriggerAuthentication provider=none`
+
+Starting with version 2.15, Keda deprecated the azure TriggerAuthentication `provider=azure`.
+You now need to use azure-workload or one of the other providers listed in the documentation.
+<https://keda.sh/docs/2.17/authentication-providers/>
+
 ### `Workload Identity`
 
 To use the workload identity and be able to load secrets directly from kv, follow the [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md).

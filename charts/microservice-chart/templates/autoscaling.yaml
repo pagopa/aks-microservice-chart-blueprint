@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   podIdentity:
-    provider: azure
+    provider: none
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject

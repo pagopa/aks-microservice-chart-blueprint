@@ -1,10 +1,10 @@
 apiVersion: v2
-name: v5-java-helm-basic-test
+name: v7-java-helm-complete-test-canary
 description: An example application with Java spring boot
 type: application
-version: 1.2.3
-appVersion: 1.2.2
+version: 1.0.0
+appVersion: 1.0.0
 dependencies:
 - name: microservice-chart
-  version: 7.3.1
+  version: 5.9.0
   repository: file://../../../charts/microservice-chart

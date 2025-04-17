@@ -287,16 +287,6 @@ autoscaling:
   triggers: []
   # -- Autoscaling advanced <https://keda.sh/docs/2.9/concepts/scaling-deployments/#advanced>
   advanced: {}
-  #- advanced:
-  #-  restoreToOriginalReplicaCount: false # Optional. Default: false
-  #-  horizontalPodAutoscalerConfig:
-  #-    behavior:
-  #-      scaleDown:
-  #-        stabilizationWindowSeconds: 300
-  #-        policies:
-  #-        - type: Percent
-  #-          value: 100
-  #-          periodSeconds: 15
 
 #
 # Pod identity and KV connection
