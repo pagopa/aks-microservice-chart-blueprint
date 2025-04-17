@@ -17,17 +17,17 @@ microservice-chart:
   externalConfigMapFiles:
     create: true
     configMaps:
-      - name: v5-complete-foo-configmap-files
+      - name: v7-complete-foo-configmap-files
         key: game.properties
         mountPath: "/config/game.properties"
-      - name: v5-complete-foo-configmap-files
+      - name: v7-complete-foo-configmap-files
         key: user-interface.xml
 
   externalConfigMapValues:
-    v5-complete-foo-external-configmap-values-1:
+    v7-complete-foo-external-configmap-values-1:
       DATABASE_DB_NANE: database-db-name
 
-    v5-complete-foo-external-configmap-values-2:
+    v7-complete-foo-external-configmap-values-2:
       PLAYER-INITIAL-LIVES: player-initial-lives
       UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 
@@ -85,7 +85,7 @@ microservice-chart:
   ingress:
     create: true
     host: testit.itn.internal.devopslab.pagopa.it
-    path: /testit/v5-java-helm-complete-test-foo(/|$)(.*)
+    path: /testit/v7-java-helm-complete-test-foo(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 

@@ -1,5 +1,5 @@
 apiVersion: v2
-name: v5-java-helm-complete-test-canary
+name: v7-java-helm-complete-test-canary
 description: An example application with Java spring boot
 type: application
 version: 1.0.0

@@ -16,16 +16,16 @@ microservice-chart:
   externalConfigMapFiles:
     create: true
     configMaps:
-      - name: v5-complete-canary-configmap-files
+      - name: v7-complete-canary-configmap-files
         key: game.properties
-      - name: v5-complete-canary-configmap-files
+      - name: v7-complete-canary-configmap-files
         key: user-interface.xml
 
   externalConfigMapValues:
-    v5-complete-canary-external-configmap-values-1:
+    v7-complete-canary-external-configmap-values-1:
       DATABASE_DB_NANE: database-db-name
 
-    v5-complete-canary-external-configmap-values-2:
+    v7-complete-canary-external-configmap-values-2:
       PLAYER-INITIAL-LIVES: player-initial-lives
       UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 
@@ -83,7 +83,7 @@ microservice-chart:
   ingress:
     create: true
     host: testit.itn.internal.devopslab.pagopa.it
-    path: /testit/v5-java-helm-complete-test-canary(/|$)(.*)
+    path: /testit/v7-java-helm-complete-test-canary(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 

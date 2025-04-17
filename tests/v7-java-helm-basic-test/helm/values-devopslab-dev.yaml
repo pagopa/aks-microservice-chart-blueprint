@@ -82,7 +82,7 @@ microservice-chart:
   ingress:
     create: true
     host: testit.itn.internal.devopslab.pagopa.it
-    path: /testit/v5-java-helm-basic-test(/|$)(.*)
+    path: /testit/v7-java-helm-basic-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
