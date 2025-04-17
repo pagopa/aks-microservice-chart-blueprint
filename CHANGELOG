@@ -1,31 +1,34 @@
 # CHANGELOG
 
+## v7.4.1
+
+- Keda TriggerAuthentication now uses `podIdentity: none`.
+
 ## v7.4.0
 
-Add conditional API version in ServiceMonitor with azmonitoring.coreos.com/v1 and monitoring.coreos.com/v1.
-Add serviceMonitor.prometheusManaged flag to enable new API.
+- Add conditional API version in ServiceMonitor with azmonitoring.coreos.com/v1 and monitoring.coreos.com/v1.
+- Add serviceMonitor.prometheusManaged flag to enable new API.
 
 ## v7.3.1
 
-fix: pre-commit run with different options depending on branch.
+- fix: pre-commit run with different options depending on branch.
 
-v7.3.0
+## v7.3.0
 
-feat: Updated lint and pre-commit actions.
-fix(Deployment): forceRedeploy value inside deployment.
+- feat: Updated lint and pre-commit actions.
+- fix(Deployment): forceRedeploy value inside deployment.
 
 ## v7.2.0
 
-Added `revisionHistoryLimit` in Deployment to allow to configure the number of revisions/replica set to have has history.
+- Added `revisionHistoryLimit` in Deployment to allow to configure the number of revisions/replica set to have has history.
 
 ## v7.1.1
 
-Tests suite updated.
+- Tests suite updated.
 
 ## v7.1.0
 
-Version 7.x is the first release to fully utilize workload identities
-for automatic secret loading from kv, and also removed support for pod identities.
+- Version 7.x is the first release to fully utilize workload identities for automatic secret loading from kv, and also removed support for pod identities.
 
 ## v5.11.0
 
@@ -97,24 +100,21 @@ for automatic secret loading from kv, and also removed support for pod identitie
   - renamed to externalConfigMap
 - readinessProbe/livenessProbe default to http
 - securityContext
-  - defaults to readOnlyRootFilesystem: true
+  - defaults to readOnlyRootFilesystem=true
 - canaryDelivery
   - containts only ingress data
   - defaults to header X-Canary:pagopa only
   - header,bluegreen and weightPercent can be set separately
-
-added tmpVolumeMount
+- added tmpVolumeMount
 
 ## v2.0.0 (Breking change)
 
-fix:
-
 - deployment
   - removed crt mounter to avoid to have a replication of containers
-  - flag to allow force deployment: usefull for deployment with same image but different content (e.g. latest)
-- ingress:
+  - flag to allow force deployment usefull for deployment with same image but different content (e.g. latest)
+- ingress
   - added field `proxyBodySize` to allow to set `nginx.ingress.kubernetes.io/proxy-body-size` annotation
   - added field `annotations` to allow to put extra annotations not present into the ingress and canary ingress
   - (breaking) now you need to use the field `ingress.servicePort` to define the port destination for ingress
-- service:
+- service
   - (breaking) now service is a list of service ports
