@@ -6,18 +6,25 @@ microservice-chart:
     replicas: 1
     forceRedeploy: true
     topologySpreadConstraints:
-    - maxSkew: 1
-      topologyKey: topology.kubernetes.io/zone
-      whenUnsatisfiable: DoNotSchedule
-      labelSelector:
-        matchLabels:
-          app.kubernetes.io/instance: v7-java-helm-basic-test
-    - maxSkew: 1
-      topologyKey: kubernetes.io/hostname
-      whenUnsatisfiable: DoNotSchedule
-      labelSelector:
-        matchLabels:
-          app.kubernetes.io/instance: v7-java-helm-basic-test
+      create: true
+      useDefaultConfiguration: true
+      # config:
+      #   - labelSelector:
+      #     matchLabels:
+      #       app.kubernetes.io/instance: v7-java-helm-basic-test
+      #     maxSkew: 1
+      #     topologyKey: kubernetes.io/hostname
+      #     whenUnsatisfiable: DoNotSchedule
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.azure.com/mode
+            operator: In
+            values:
+            - user
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
@@ -34,18 +41,18 @@ microservice-chart:
 
   autoscaling:
     enable: true
-    minReplica: 0
-    maxReplica: 1
+    minReplica: 5
+    maxReplica: 5
     pollingInterval: 30 # seconds
     cooldownPeriod: 10 # seconds
     triggers:
-      - type: cron
-        metadata:
-          # Required
-          timezone: Europe/Rome  # The acceptable values would be a value from the IANA Time Zone Database.
-          start: 0 7 * * *
-          end: 0 21 * * *
-          desiredReplicas: "1"
+      # - type: cron
+      #   metadata:
+      #     # Required
+      #     timezone: Europe/Rome  # The acceptable values would be a value from the IANA Time Zone Database.
+      #     start: 0 7 * * *
+      #     end: 0 21 * * *
+      #     desiredReplicas: "1"
       - type: cpu
         metadata:
           type: Utilization
@@ -102,26 +109,3 @@ microservice-chart:
   keyvault:
     name: "dvopla-d-itn-testit-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-
-  podDisruptionBudget:
-    create: false
-    minAvailable: 1
-
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: kubernetes.azure.com/mode
-            operator: In
-            values:
-            - user
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchLabels:
-              aadpodidbinding: testit-pod-identity
-          namespaces: ["testit"]
-          topologyKey: topology.kubernetes.io/zone
