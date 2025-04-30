@@ -21,6 +21,15 @@ deployment:
   forceRedeploy: false
   # -- (int) Number of revision/replicaSet to have has history + 1 current revision
   revisionHistoryLimit: 3
+  # -- Topology Spread Constraints configuration
+  # create: abilita/disabilita la feature
+  # useDefaultConfiguration: se true usa la configurazione di default (vedi _helpers.tpl), se false usa config
+  # config: array di oggetti topologySpreadConstraints custom
+  topologySpreadConstraints:
+    create: false
+    useDefaultConfiguration: false
+    config: []
+
 
 # -- strategy type for deployment: Recreate or RollingUpdate
 # @default -- {}
