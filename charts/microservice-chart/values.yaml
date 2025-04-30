@@ -21,6 +21,9 @@ deployment:
   forceRedeploy: false
   # -- (int) Number of revision/replicaSet to have has history + 1 current revision
   revisionHistoryLimit: 3
+  # -- Distributes pods across zones/nodes for high availability (topologySpreadConstraints)
+  topologySpreadConstraints: []
+
 
 # -- strategy type for deployment: Recreate or RollingUpdate
 # @default -- {}
