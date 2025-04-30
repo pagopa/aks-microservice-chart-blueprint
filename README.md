@@ -136,20 +136,45 @@ see [README/Microservice Chart configuration](charts/microservice-chart/README.m
 topologySpreadConstraints in Kubernetes is used to control how Pods are distributed across a cluster to improve high availability and fault tolerance.
 It ensures that Pods are spread across different topology domains (such as nodes, zones, or racks) according to defined rules, minimizing the risk of impact if a single domain fails.
 
+> `Default configuration`
+
 ```yaml
-  topologySpreadConstraints:
-  - maxSkew: 1
-    topologyKey: topology.kubernetes.io/zone
-    whenUnsatisfiable: DoNotSchedule
-    labelSelector:
-      matchLabels:
-        app.kubernetes.io/instance: v7-java-helm-basic-test
-  - maxSkew: 1
-    topologyKey: kubernetes.io/hostname
-    whenUnsatisfiable: DoNotSchedule
-    labelSelector:
-      matchLabels:
-        app.kubernetes.io/instance: v7-java-helm-basic-test
+    topologySpreadConstraints:
+      create: true
+      useDefaultConfiguration: false
+```
+
+This configuration create automatically this snippet of code
+
+```yaml
+   topologySpreadConstraints:
+   - labelSelector:
+       matchLabels:
+         app.kubernetes.io/instance: <APP NAME>
+     maxSkew: 1
+     topologyKey: topology.kubernetes.io/zone
+     whenUnsatisfiable: DoNotSchedule
+   - labelSelector:
+       matchLabels:
+         app.kubernetes.io/instance: <APP NAME>
+     maxSkew: 1
+     topologyKey: kubernetes.io/hostname
+     whenUnsatisfiable: DoNotSchedule
+```
+
+
+> `Custom configuration`
+
+```yaml
+    topologySpreadConstraints:
+      create: true
+      config:
+        - labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: v7-java-helm-basic-test
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
 ```
 
 ### `Keda TriggerAuthentication provider=none`
