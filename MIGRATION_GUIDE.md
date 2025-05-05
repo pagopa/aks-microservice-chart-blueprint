@@ -28,6 +28,7 @@ kubectl annotate scaledobject v7-java-helm-complete-test-foo-microservice-chart 
 ```
 
 After labeling and annotating the ScaledObject run again the deployment and check with this useful command.
+
 ```bash
 helm get manifest <release-name> -n <namespace> | grep ScaledObject -A 10
 ```
