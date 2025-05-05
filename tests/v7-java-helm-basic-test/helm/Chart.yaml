@@ -6,5 +6,5 @@ version: 1.2.3
 appVersion: 1.2.2
 dependencies:
 - name: microservice-chart
-  version: 7.4.0
+  version: 7.5.0
   repository: file://../../../charts/microservice-chart

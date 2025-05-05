@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v7.6.0
+
+Added `deployment.topologySpreadConstraints` to the deployment template. This allows you to specify how pods should be distributed across different failure domains, such as zones or nodes.
+
 ## v7.4.1
 
 - Keda TriggerAuthentication now uses `podIdentity: none`.

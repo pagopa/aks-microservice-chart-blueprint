@@ -28,6 +28,16 @@ spec:
         {{- include "microservice-chart.selectorLabels" . | nindent 8 }}
         {{- include "microservice-chart.extraLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.deployment.topologySpreadConstraints }}
+      {{- if and .create (or .useDefaultConfiguration (gt (len .config) 0)) }}
+      topologySpreadConstraints:
+        {{- if .useDefaultConfiguration }}
+        {{- include "microservice-chart.defaultTopologySpreadConstraints" $root | nindent 8 }}
+        {{- else if .config }}
+        {{- toYaml .config | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
       automountServiceAccountToken: false
       serviceAccountName: {{ include "microservice-chart.serviceAccountName" . }}
       securityContext:
