@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD029  -->
 # Migration guide
 
-## migration to v7.7
+## Migrating from v5.x/v7.x to v8.x
 
 > This version fixes KEDA helm managing, regarding the helm manifest to support delete.
 
