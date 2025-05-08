@@ -36,6 +36,8 @@ helm get manifest <release-name> -n <namespace> | grep ScaledObject -A 10
 **They must return the rows with the ScaledObject definition, otherwise 
 the import was not done, and you have to redo the annotations and labeling.** 
 
+> There is a script in [migrate_from_v7_to_v8.sh](./scripts/migrate_from_v7_to_v8.sh) that can be used to perform this migration.
+
 ## (Breaking) from v5.x to v7.x
 
 > This version drop the support for the POD IDENTITY
