@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 8.0.1
+
+fix error
+
+```kubernetes
+ConfigMap in version "v1" cannot be handled as a ConfigMap: json: cannot unmarshal object into Go struct field ConfigMap.data of type string
+```
+
+## 8.0.0
+
+Corrected the logic for handling Helm-managed ScaledObject resources during the uninstall step.
+This change resolves an issue where Helm-managed ScaledObject resources were not being handled correctly during uninstallation, ensuring proper cleanup.
+
 ## v7.6.0
 
 Added `deployment.topologySpreadConstraints` to the deployment template. This allows you to specify how pods should be distributed across different failure domains, such as zones or nodes.
