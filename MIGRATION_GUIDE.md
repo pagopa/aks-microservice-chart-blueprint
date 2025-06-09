@@ -1,6 +1,43 @@
 <!-- markdownlint-disable MD029  -->
 # Migration guide
 
+## Migrating from v5.x/v7.x to v8.x
+
+> This version fixes KEDA helm managing, regarding the helm manifest to support delete.
+
+To migrate to this version, it is crucial to label and annotate our ScaledObject (if it exists) as follows:
+
+```bash
+kubectl label scaledobject <name> app.kubernetes.io/instance=<release-name> --overwrite
+kubectl label scaledobject <name> app.kubernetes.io/managed-by=Helm --overwrite
+kubectl annotate scaledobject <name> meta.helm.sh/release-name=<release-name> --overwrite
+kubectl annotate scaledobject <name> meta.helm.sh/release-namespace=<namespace> --overwrite
+```
+
+Where **name** is the name of the existing ScaledObject and **release-name** the name of helm release name.
+
+### Example of migration
+
+Here is an example.
+
+```bash
+kubectl label scaledobject v7-java-helm-complete-test-foo-microservice-chart app.kubernetes.io/instance=v7-java-helm-complete-test-foo --overwrite -n testit
+kubectl label scaledobject v7-java-helm-complete-test-foo-microservice-chart app.kubernetes.io/managed-by=Helm --overwrite -n testit
+kubectl annotate scaledobject v7-java-helm-complete-test-foo-microservice-chart meta.helm.sh/release-name=v7-java-helm-complete-test-foo --overwrite -n testit
+kubectl annotate scaledobject v7-java-helm-complete-test-foo-microservice-chart meta.helm.sh/release-namespace=testit --overwrite -n testit
+```
+
+After labeling and annotating the ScaledObject run again the deployment and check with this useful command.
+
+```bash
+helm get manifest <release-name> -n <namespace> | grep ScaledObject -A 10
+```
+
+**They must return the rows with the ScaledObject definition, otherwise 
+the import was not done, and you have to redo the annotations and labeling.** 
+
+> There is a script in [migrate_from_v7_to_v8.sh](./scripts/migrate_from_v7_to_v8.sh) that can be used to perform this migration.
+
 ## (Breaking) from v5.x to v7.x
 
 > This version drop the support for the POD IDENTITY

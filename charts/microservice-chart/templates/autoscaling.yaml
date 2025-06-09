@@ -15,8 +15,6 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 3 }}
-  annotations:
-    helm.sh/hook: post-install ,post-upgrade # fix updates on ScaledObject resource
 spec:
   scaleTargetRef:
     name: {{ include "microservice-chart.fullname" . }}
