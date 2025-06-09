@@ -256,6 +256,8 @@ the default file path is `/mnt/file-config/<file name>`
 - `ENV VARIABLE NAME`: how the variable must be named inside pod, very usefull for example for spring that have some problems with variables that have hippen in the name
 - `key inside config maps`: which key to load inside the env variable name
 
+**NOTE** External config file template use [range flow control](https://helm.sh/docs/chart_template_guide/control_structures/)
+
 ```yaml
 
   externalConfigMapValues:
