@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 7.4.0](https://img.shields.io/badge/Version-7.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 7.6.0](https://img.shields.io/badge/Version-7.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -39,6 +39,7 @@ A Helm chart for PagoPA microservice
 | deployment.forceRedeploy | bool | `false` | Force redeploy container |
 | deployment.replicas | int | `1` | Number of replicas (will be replaced by autoscaling if enabled) |
 | deployment.revisionHistoryLimit | int | `3` | Number of revision/replicaSet to have has history + 1 current revision |
+| deployment.topologySpreadConstraints | object | `{"config":[],"create":false,"useDefaultConfiguration":false}` | Topology Spread Constraints configuration create: abilita/disabilita la feature useDefaultConfiguration: se true usa la configurazione di default (vedi _helpers.tpl), se false usa config config: array di oggetti topologySpreadConstraints custom |
 | envConfig | object | `{}` | Environment config to use for the container |
 | envFieldRef | object | `{}` | Environment config from k8s metadata |
 | envSecret | object | `{}` | Load secrets as environment variables from kv |

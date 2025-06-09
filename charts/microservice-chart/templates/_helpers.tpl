@@ -72,3 +72,21 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Default topologySpreadConstraints configuration
+*/}}
+{{- define "microservice-chart.defaultTopologySpreadConstraints" -}}
+- labelSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  maxSkew: 1
+  topologyKey: topology.kubernetes.io/zone
+  whenUnsatisfiable: DoNotSchedule
+- labelSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  maxSkew: 1
+  topologyKey: kubernetes.io/hostname
+  whenUnsatisfiable: DoNotSchedule
+{{- end }}
