@@ -16,7 +16,7 @@ deployment:
   # -- (bool) Create or not the deployment manifest
   create: true
   # -- (int) Number of replicas (will be replaced by autoscaling if enabled)
-  replicas: 1
+#  replicas: 1
   # -- (bool) Force redeploy container
   forceRedeploy: false
   # -- (int) Number of revision/replicaSet to have has history + 1 current revision
