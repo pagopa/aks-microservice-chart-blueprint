@@ -45,7 +45,6 @@ namespace="$3"
 
 label_and_annotate_scaledobject() {
   kubectl label scaledobject "$name" -n "$namespace" app.kubernetes.io/instance="$release_name" --overwrite
-  kubectl label scaledobject "$name" -n "$namespace" app.kubernetes.io/instance="$release_name" --overwrite
   kubectl label scaledobject "$name" -n "$namespace" app.kubernetes.io/managed-by=Helm --overwrite
   kubectl annotate scaledobject "$name" -n "$namespace" meta.helm.sh/release-name="$release_name" --overwrite
   kubectl annotate scaledobject "$name" -n "$namespace" meta.helm.sh/release-namespace="$namespace" --overwrite
