@@ -1,0 +1,100 @@
+microservice-chart:
+  namespace: "diego"
+  nameOverride: ""
+  fullnameOverride: ""
+
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: 0.10.0
+    volumeMounts:
+      - mountPath: /mnt/truststore/
+        name: truststore
+  initContainers:
+    - name: test
+      image:
+        repository: busybox
+        tag: "1.36"
+        pullPolicy: Always
+      command: ['sh', '-c', "mkdir -p /mnt/truststore/ && cp /mnt/share/* /mnt/truststore/"]
+      tmpVolumeMount:
+        create: true
+        mounts:
+          - name: share-volume
+            mountPath: /mnt/share
+          - name: truststore
+            mountPath: "/mnt/truststore/"
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: truststore
+        mountPath: "/mnt/truststore/"
+  azureFile:
+    create: true
+    mounts:
+      - shareName: test-umberto
+        name: share-volume
+        readOnly: true
+
+  providedVolumeMount:
+    create: false
+
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  deployment:
+    create: true
+  secretProviderClass:
+    create: false
+
+  podAnnotations: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    readOnlyRootFilesystem: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - all
+        -
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "0.40"
+    limits:
+      memory: "512Mi"
+      cpu: "0.5"
+  autoscaling:
+    enable: true
+    minReplica: 1
+    maxReplica: 2
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 60 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          # Required
+          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+          value: "75"
+  azure:
+    workloadIdentityClientId: '1669c3db-c4f4-46fb-9324-0b7868dd59c1'
+  serviceAccount:
+    name: "diego-workload-identity"
+
+  keyvault:
+    name: "dvopla-d-itn-diego-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  envSecret:
+    STORAGE_ACCOUNT_KEY: "azurestorageaccountkey"

@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.0.2](https://img.shields.io/badge/Version-8.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.0.3](https://img.shields.io/badge/Version-8.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -20,6 +20,7 @@ A Helm chart for PagoPA microservice
 | azure | object | `{"workloadIdentityClientId":"","workloadIdentityEnabled":true}` | Azure configuration (e.g. Workload identities) |
 | azure.workloadIdentityClientId | string | `""` | Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123) |
 | azure.workloadIdentityEnabled | bool | `true` | Enable workload identity |
+| azureFile | object | `{"create":false}` | Azure File |
 | canaryDelivery | object | - | This section allow to configure canary deployment |
 | canaryDelivery.create | bool | `false` | Beta/Enable Canary/BlueGreen Deployment |
 | canaryDelivery.ingress | object | `{"bluegreen":false,"envConfig":{},"envSecret":{},"header":true,"headerName":"X-Canary","headerValue":"pagopa","image":{"repository":"","tag":""},"weightPercent":10}` | Configure how ingress canary should be |
@@ -62,6 +63,7 @@ A Helm chart for PagoPA microservice
 | ingress.proxyBodySize | string | `"1m"` | the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body |
 | ingress.rewriteTarget | string | `"/$1"` | the rewrite target for ingress |
 | ingress.servicePort | int | `8080` | service port to reach |
+| initContainers | list | `[]` | Init Containers |
 | keyvault | object | `{"name":"","tenantId":""}` | Configure keyvault to use inside secret prover to load secret directly |
 | keyvault.name | string | `""` | Key vault name |
 | keyvault.tenantId | string | `""` | Tenant ID |
