@@ -1,0 +1,10 @@
+apiVersion: v2
+name: delete-me
+description: test test
+type: application
+version: 2.0.0
+appVersion: 2.3.6-13-transactional
+dependencies:
+  - name: microservice-chart
+    version: 8.0.4
+    repository: "file://../../charts/microservice-chart"

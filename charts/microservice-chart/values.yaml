@@ -412,3 +412,10 @@ postman-test:
   collectionName: ""
   # -- env variable name path (e.g `dev.postman_environment.json``)
   envVariablesFile: ""
+
+# -- Init Containers
+initContainers: []
+
+# -- Azure File
+azureFile:
+  create: false

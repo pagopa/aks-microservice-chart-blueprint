@@ -261,6 +261,30 @@ spec:
         {{- with .Values.sidecars }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- if .Values.initContainers }}
+      initContainers:
+        {{- range .Values.initContainers }}
+        - name: {{ .name }}
+          imagePullPolicy: {{ .image.pullPolicy }}
+          image: "{{ .image.repository }}:{{ .image.tag }}"
+          {{- if not (empty .command) }}
+          command:
+            {{- toYaml .command | nindent 12 }}
+          {{- end }}
+          {{- if not (empty .args) }}
+          args:
+            {{- toYaml .args | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            #<tmp folders>
+            {{- if .tmpVolumeMount.create }}
+            {{- range $i, $val := .tmpVolumeMount.mounts }}
+            - name: {{ $val.name }}
+              mountPath: {{ $val.mountPath }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
       volumes:
         #<tmp volume>
         {{- if .Values.tmpVolumeMount.create }}
@@ -322,6 +346,17 @@ spec:
                 path: {{ $v.key }}
         {{- end }}
         {{- end }}
+          #<azureFile volume>
+        {{- if .Values.azureFile.create }}
+        {{- range $i, $val := .Values.azureFile.mounts }}
+        - name: {{ $val.name }}
+          azureFile:
+            secretName: {{ include "microservice-chart.fullname" $ }}
+            shareName: {{ $val.shareName }}
+            readOnly: {{ $val.readOnly }}
+            {{- end }}
+            {{- end }}
+          #</azureFile volume>
       restartPolicy: {{ .Values.restartPolicy }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- with .Values.nodeSelector }}
