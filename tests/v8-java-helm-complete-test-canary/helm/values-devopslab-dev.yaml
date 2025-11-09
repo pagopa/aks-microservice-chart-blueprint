@@ -83,7 +83,7 @@ microservice-chart:
   ingress:
     create: true
     host: testit.itn.internal.devopslab.pagopa.it
-    path: /testit/v7-java-helm-complete-test-canary(/|$)(.*)
+    path: /testit/v8-java-helm-complete-test-canary(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 
