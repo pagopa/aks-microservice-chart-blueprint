@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 8.1.0
+
+add Init Container support 
+
+## 8.0.2
+
+fix: [PAYMCLOUD-544] Adjust Deployment replica handling to preserve state during upgrades (#146)
+
 ## 8.0.1
 
 fix error
