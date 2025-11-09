@@ -11,7 +11,7 @@ microservice-chart:
       # config:
       #   - labelSelector:
       #     matchLabels:
-      #       app.kubernetes.io/instance: v7-java-helm-basic-test
+      #       app.kubernetes.io/instance: v8-java-helm-basic-test
       #     maxSkew: 1
       #     topologyKey: kubernetes.io/hostname
       #     whenUnsatisfiable: DoNotSchedule
@@ -34,15 +34,15 @@ microservice-chart:
   resources:
     requests:
       memory: "256Mi"
-      cpu: "100m"
+      cpu: "150m"
     limits:
       memory: "512Mi"
       cpu: "300m"
 
   autoscaling:
     enable: true
-    minReplica: 5
-    maxReplica: 5
+    minReplica: 3
+    maxReplica: 3
     pollingInterval: 30 # seconds
     cooldownPeriod: 10 # seconds
     triggers:
@@ -102,7 +102,7 @@ microservice-chart:
   ingress:
     create: true
     host: testit.itn.internal.devopslab.pagopa.it
-    path: /testit/v7-java-helm-basic-test(/|$)(.*)
+    path: /testit/v8-java-helm-basic-test(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
 

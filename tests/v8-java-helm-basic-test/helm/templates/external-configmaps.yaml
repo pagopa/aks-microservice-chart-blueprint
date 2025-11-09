@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: v7-basic-external-configmap
+  name: v8-basic-external-configmap
   namespace: "testit"
 data:
   # property-like keys; each key maps to a simple value
@@ -23,7 +23,7 @@ data:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: v7-basic-external-configmap-values
+  name: v8-basic-external-configmap-values
   namespace: "testit"
 data:
   # Configuration values can be set as key-value properties

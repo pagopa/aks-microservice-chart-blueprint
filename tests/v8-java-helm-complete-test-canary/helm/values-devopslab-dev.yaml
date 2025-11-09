@@ -3,30 +3,29 @@ microservice-chart:
 
   deployment:
     create: true
-
-  serviceAccount:
-    name: testit-workload-identity
+    replicas: 1
 
   envConfig:
-    APP: bar
-    MY_APP_COLOR: "green"
+    TO_OVERWRITE: "original-value"
+    COMMON: "same"
 
   envSecret:
+    SEC_TO_OVERWRITE: dvopla-d-itn-dev-aks-apiserver-url
     MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
 
   externalConfigMapFiles:
     create: true
     configMaps:
-      - name: v7-complete-bar-configmap-files
+      - name: v8-complete-canary-configmap-files
         key: game.properties
-      - name: v7-complete-bar-configmap-files
+      - name: v8-complete-canary-configmap-files
         key: user-interface.xml
 
   externalConfigMapValues:
-    v7-complete-bar-external-configmap-values-1:
+    v8-complete-canary-external-configmap-values-1:
       DATABASE_DB_NANE: database-db-name
 
-    v7-complete-bar-external-configmap-values-2:
+    v8-complete-canary-external-configmap-values-2:
       PLAYER-INITIAL-LIVES: player-initial-lives
       UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 
@@ -41,35 +40,8 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
-    tag: latest
+    tag: develop-1.8.0
     pullPolicy: Always
-
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
-      memory: "512Mi"
-      cpu: "300m"
-
-  autoscaling:
-    enable: true
-    minReplica: 0
-    maxReplica: 1
-    pollingInterval: 30 # seconds
-    cooldownPeriod: 10 # seconds
-    triggers:
-      - type: cron
-        metadata:
-          # Required
-          timezone: Europe/Rome  # The acceptable values would be a value from the IANA Time Zone Database.
-          start: 0 7 * * *
-          end: 0 21 * * *
-          desiredReplicas: "1"
-      - type: cpu
-        metadata:
-          type: Utilization
-          value: "60"
 
   tmpVolumeMount:
     create: true
@@ -86,20 +58,13 @@ microservice-chart:
         mountPath: /csv
         pvcName: testit-file-share-zrs
 
-  # container:
-  #   command: ["printenv"]
-  #   args: ["HOSTNAME", "KUBERNETES_PORT"]
-
   livenessProbe:
     httpGet:
       path: /status/live
       port: 8080
-    initialDelaySeconds: 10
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
-    timeoutSeconds: 1
-    successThreshold: 1
-    terminationGracePeriodSeconds: 30
 
   readinessProbe:
     httpGet:
@@ -108,23 +73,6 @@ microservice-chart:
     initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
-    timeoutSeconds: 1
-    successThreshold: 1
-
-  startupProbe:
-    create: true
-    handlerType: "exec"
-    exec:
-      command: ["/bin/sh", "-c", '[ -d "/csv" ]']
-    httpGet:
-      path: /status/ready
-      port: 8080
-    initialDelaySeconds: 1
-    failureThreshold: 6
-    periodSeconds: 10
-    timeoutSeconds: 10
-    successThreshold: 1
-    terminationGracePeriodSeconds: 30
 
   service:
     create: true
@@ -135,9 +83,14 @@ microservice-chart:
   ingress:
     create: true
     host: testit.itn.internal.devopslab.pagopa.it
-    path: /testit/v7-java-helm-complete-test-bar(/|$)(.*)
+    path: /testit/v8-java-helm-complete-test-canary(/|$)(.*)
     rewriteTarget: /$2
     servicePort: 8080
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
 
   podAnnotations: {}
 
@@ -147,6 +100,26 @@ microservice-chart:
 
   securityContext:
     allowPrivilegeEscalation: false
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "150m"
+    limits:
+      memory: "256Mi"
+      cpu: "300m"
+
+  autoscaling:
+    enable: true
+    minReplica: 1
+    maxReplica: 1
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 300 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
 
   podDisruptionBudget:
     create: false
@@ -158,11 +131,7 @@ microservice-chart:
 
   # nodeSelector: {}
 
-  tolerations:
-    - effect: "NoSchedule"
-      key: "paymentWalletOnly"
-      operator: "Equal"
-      value: "true"
+  # tolerations: []
 
   affinity:
     nodeAffinity:
@@ -173,6 +142,11 @@ microservice-chart:
             operator: In
             values:
             - user
+        - matchExpressions:
+          - key: elastic
+            operator: In
+            values:
+            - eck
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 100
@@ -182,3 +156,21 @@ microservice-chart:
               aadpodidbinding: testit-pod-identity
           namespaces: ["testit"]
           topologyKey: topology.kubernetes.io/zone
+
+  canaryDelivery:
+    create: true
+    ingress:
+        headerName: X-Canary
+        headerValue: canary
+        weightPercent: 50
+    image:
+      repository: ghcr.io/pagopa/devops-java-springboot-color
+      tag: 0.9.0
+    envConfig:
+      TO_OVERWRITE: "over-witten"
+      NEW_ITEM: "new item"
+      MY_MANDATORY_VALUE: "mandatory"
+    envSecret:
+      SEC_NEW_ITEM: 'canary-new-item'
+      SEC_TO_OVERWRITE: 'canary'
+      MY_MANDATORY_SECRET: 'canary'
