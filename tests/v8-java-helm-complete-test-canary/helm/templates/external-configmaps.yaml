@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: v7-complete-canary-configmap-files
+  name: v8-complete-canary-configmap-files
   namespace: "testit"
 data:
   # file-like keys
@@ -19,7 +19,7 @@ data:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: v7-complete-canary-external-configmap-values-1
+  name: v8-complete-canary-external-configmap-values-1
   namespace: "testit"
 data:
   # Configuration values can be set as key-value properties
@@ -30,7 +30,7 @@ data:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: v7-complete-canary-external-configmap-values-2
+  name: v8-complete-canary-external-configmap-values-2
   namespace: "testit"
 data:
   # property-like keys; each key maps to a simple value

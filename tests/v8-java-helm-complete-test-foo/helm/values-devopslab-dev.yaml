@@ -17,17 +17,17 @@ microservice-chart:
   externalConfigMapFiles:
     create: true
     configMaps:
-      - name: v7-complete-foo-configmap-files
+      - name: v8-complete-foo-configmap-files
         key: game.properties
         mountPath: "/config/game.properties"
-      - name: v7-complete-foo-configmap-files
+      - name: v8-complete-foo-configmap-files
         key: user-interface.xml
 
   externalConfigMapValues:
-    v7-complete-foo-external-configmap-values-1:
+    v8-complete-foo-external-configmap-values-1:
       DATABASE_DB_NANE: database-db-name
 
-    v7-complete-foo-external-configmap-values-2:
+    v8-complete-foo-external-configmap-values-2:
       PLAYER-INITIAL-LIVES: player-initial-lives
       UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 
