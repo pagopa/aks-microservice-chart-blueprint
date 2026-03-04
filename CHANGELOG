@@ -1,8 +1,12 @@
 # CHANGELOG
 
+## 8.1.1
+
+add imagePullSecrets support
+
 ## 8.1.0
 
-add Init Container support 
+add Init Container support
 
 ## 8.0.2
 
