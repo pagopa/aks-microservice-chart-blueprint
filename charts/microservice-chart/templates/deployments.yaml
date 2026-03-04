@@ -263,7 +263,7 @@ spec:
         {{- end }}
       {{- if not (empty .Values.imagePullSerets) }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSerets.name }}
+        - name: {{ .Values.imagePullSecrets.name }}
       {{- end }}
       {{- if .Values.initContainers }}
       initContainers:
