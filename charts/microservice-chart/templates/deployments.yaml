@@ -261,9 +261,11 @@ spec:
         {{- with .Values.sidecars }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- if not (empty .Values.imagePullSerets) }}
+      {{- if and .Values.imagePullSecrets (kindIs "map" .Values.imagePullSecrets) -}}
+      {{- if .Values.imagePullSecrets.name }}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecrets.name }}
+      {{- end }}
       {{- end }}
       {{- if .Values.initContainers }}
       initContainers:
