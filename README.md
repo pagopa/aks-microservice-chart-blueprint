@@ -229,6 +229,15 @@ Is possible to load env variables inside the pod, with the creation of a configm
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 ```
 
+### `imagePullSecret`: use a Secret to pull an image from a private container image registry or repository.
+
+Specify a name of the secret to pull the image from a private registry.
+
+```yaml
+  imagePullSecret:
+    - name: NAME_OF_IMAGE_PULL_SECRET
+```
+
 ### `configMapFromFile`: load file defined inside internal value configMap and mount in a pod as file
 
 this property allows to load from a configMap (denfined inside the values) a file, and mount into pod as file.

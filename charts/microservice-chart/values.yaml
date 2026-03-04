@@ -53,6 +53,9 @@ image:
   # -- Pull policy to use
   pullPolicy: Always
 
+# -- imagePullSecrets: use a Secret to pull an image from a private container image registry or repository
+imagePullSerets: []
+
 # -- Sidecars, each object has exactly the same schema as a Pod, except it does not have an apiVersion or kind
 sidecars: []
 

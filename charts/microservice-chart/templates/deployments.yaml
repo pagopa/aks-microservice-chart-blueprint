@@ -261,6 +261,10 @@ spec:
         {{- with .Values.sidecars }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- if not (empty .Values.imagePullSerets) }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSerets.name }}
+      {{- end }}
       {{- if .Values.initContainers }}
       initContainers:
         {{- range .Values.initContainers }}
