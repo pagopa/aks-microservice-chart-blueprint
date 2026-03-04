@@ -235,7 +235,7 @@ Specify a name of the secret to pull the image from a private registry.
 
 ```yaml
   imagePullSecret:
-    - name: NAME_OF_IMAGE_PULL_SECRET
+    name: NAME_OF_IMAGE_PULL_SECRET
 ```
 
 ### `configMapFromFile`: load file defined inside internal value configMap and mount in a pod as file
