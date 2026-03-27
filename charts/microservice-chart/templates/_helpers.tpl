@@ -74,6 +74,36 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Tolerations block: merges user-defined tolerations with the nonCritical toleration when critical=false.
+*/}}
+{{- define "microservice-chart.tolerationsBlock" -}}
+{{- $tolerations := .Values.tolerations | default list }}
+{{- if not .Values.critical }}
+{{- $nonCriticalToleration := list (dict "key" "nonCritical" "operator" "Equal" "value" "true" "effect" "NoSchedule") }}
+{{- $tolerations = concat $nonCriticalToleration $tolerations }}
+{{- end }}
+{{- if $tolerations }}
+tolerations:
+  {{- toYaml $tolerations | nindent 2 }}
+{{- end }}
+{{- end }}
+
+{{/*
+Affinity block: merges user-defined affinity with podAntiAffinity against critical=true pods when critical=false.
+*/}}
+{{- define "microservice-chart.affinityBlock" -}}
+{{- $affinity := .Values.affinity | default dict }}
+{{- if not .Values.critical }}
+{{- $nonCriticalAffinity := dict "podAntiAffinity" (dict "requiredDuringSchedulingIgnoredDuringExecution" (list (dict "labelSelector" (dict "matchExpressions" (list (dict "key" "critical" "operator" "In" "values" (list "true")))) "topologyKey" "kubernetes.io/hostname"))) }}
+{{- $affinity = mergeOverwrite $nonCriticalAffinity $affinity }}
+{{- end }}
+{{- if $affinity }}
+affinity:
+  {{- toYaml $affinity | nindent 2 }}
+{{- end }}
+{{- end }}
+
+{{/*
 Default topologySpreadConstraints configuration
 */}}
 {{- define "microservice-chart.defaultTopologySpreadConstraints" -}}

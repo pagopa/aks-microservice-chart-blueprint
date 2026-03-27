@@ -63,6 +63,11 @@ microservice-chart:
     name: ""
     tenantId: ""
 
+  # Production workloads are critical by default. Pods will be labeled critical=true
+  # so that non-critical workloads (critical=false) can use antiAffinity to avoid
+  # being co-located with them.
+  critical: true
+
   nodeSelector: {}
 
   tolerations: []

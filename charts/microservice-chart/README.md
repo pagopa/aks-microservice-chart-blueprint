@@ -35,6 +35,7 @@ A Helm chart for PagoPA microservice
 | configMapFromFileCustomPath | string | `"/mnt/file-config"` | CustomPath to allow to choose where to put your files |
 | container.args | list | `[]` |  |
 | container.command | list | `[]` |  |
+| critical | bool | `true` | Mark this workload as critical. When `false`, the pod receives a toleration for the `nonCritical=true:NoSchedule` taint and a `podAntiAffinity` rule to avoid nodes running pods labeled `critical=true`. Use `false` for background or batch workloads that should be isolated from latency-sensitive services. |
 | deployment | object | - | Configure deployment |
 | deployment.create | bool | `true` | Create or not the deployment manifest |
 | deployment.forceRedeploy | bool | `false` | Force redeploy container |
