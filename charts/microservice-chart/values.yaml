@@ -160,6 +160,12 @@ startupProbe:
   # -- terminationGracePeriodSeconds
   terminationGracePeriodSeconds: 30
 
+# -- startupProbe
+lifecycle:
+  preStop:
+    create: false
+    command: []
+
 # -- Environment config to use for the container
 envConfig: {}
 

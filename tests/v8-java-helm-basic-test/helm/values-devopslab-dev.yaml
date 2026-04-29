@@ -39,6 +39,13 @@ microservice-chart:
       memory: "512Mi"
       cpu: "300m"
 
+  lifecycle:
+    preStop:
+      create: true
+      command:
+        - sleep
+        - "10"
+
   autoscaling:
     enable: true
     minReplica: 3

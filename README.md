@@ -387,6 +387,21 @@ This code snippet in AKS forces the pods not to be all in the same node but to d
           topologyKey: topology.kubernetes.io/zone
 ```
 
+### LifeCycle PreStop
+
+#### PreStop is a lifecycle hook executed before the pod is terminated.
+
+Example of a pod that will be stopped after 10 seconds.
+
+```yaml
+  lifecycle:
+    preStop:
+      create: true
+      command:
+        - sleep
+        - "10"
+```
+
 ### Tolerations
 
 ```yaml
