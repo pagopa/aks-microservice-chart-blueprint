@@ -142,6 +142,16 @@ spec:
             terminationGracePeriodSeconds: {{ .Values.startupProbe.terminationGracePeriodSeconds }}
           {{- end}}
           #
+          # LIFECYCLE
+          #
+          {{ if .Values.lifecycle.preStop.create }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  {{ toYaml .Values.lifecycle.preStop.command | nindent 18 }}
+          {{ end }}
+          #
           # RESOURCE
           #
           resources:
