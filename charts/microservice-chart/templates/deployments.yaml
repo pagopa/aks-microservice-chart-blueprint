@@ -374,8 +374,8 @@ spec:
             {{- end }}
             {{- end }}
           #</azureFile volume>
-       restartPolicy: {{ .Values.restartPolicy }}
-       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+          restartPolicy: {{ .Values.restartPolicy }}
+          terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
        {{- include "microservice-chart.nodeSelectorBlock" . | nindent 6 }}
        {{- include "microservice-chart.affinityBlock" . | nindent 6 }}
       {{- include "microservice-chart.tolerationsBlock" . | nindent 6 }}
