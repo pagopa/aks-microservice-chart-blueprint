@@ -33,6 +33,8 @@ Original name (critical: true):        my-app
 Name with non-core (critical: false):  my-app-non-core
 ```
 
+**NB:** When migrating a deployment from critical to non-critical, you will need to remove the old resource, since the name change will not allow you to update _in-place_ the old deployment
+
 ### Pod Scheduling Effects When `critical: false`
 
 When deploying a workload with `critical: false`, the chart automatically applies three cascading scheduling mechanisms:
