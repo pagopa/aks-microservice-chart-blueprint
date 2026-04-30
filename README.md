@@ -133,7 +133,7 @@ see [README/Microservice Chart configuration](charts/microservice-chart/README.m
 
 ### critical
 
-The `critical` flag is a fundamental parameter that determines the **priority level** of the workload in the Kubernetes cluster and automatically influences the **naming convention** and **scheduling policy** of all resources created by the chart.
+The `critical` flag determines the **priority level** of the workload in the Kubernetes cluster and automatically influences the **naming convention** and **scheduling policy** of all resources created by the chart.
 
 #### General Behavior
 
@@ -159,8 +159,11 @@ All the following Kubernetes resources automatically receive the **`-non-core`**
 Original name (critical: true):        my-app
 Name with non-core (critical: false):  my-app-non-core
 ```
-
-**NB:** When migrating a deployment from critical to non-critical, you will need to remove the old resource, since the name change will not allow you to update _in-place_ the old deployment
+> ### ⚠️ WARNING
+> 
+> When migrating a deployment from critical to non-critical, you will need to uninstall the old chart, since the name change will not allow you to update it _in-place_, and some resources may conflict or not be found.
+> 
+> Same action has to be done when promoting a non-critical deployment to critical.
 
 #### Pod Scheduling Effects When `critical: false`
 
