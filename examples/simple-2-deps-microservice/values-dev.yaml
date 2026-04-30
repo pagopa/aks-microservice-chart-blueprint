@@ -45,6 +45,11 @@ basecache: &basecache
                 operator: In
                 values:
                   - user
+  # This is a dev workload: it is not latency-sensitive and can run on non-critical nodes.
+  # Setting critical=false adds:
+  #   - toleration for the taint nonCritical=true:NoSchedule
+  #   - podAntiAffinity to avoid nodes running pods labeled critical=true
+  critical: false
 # Configuration used to update image tag
 microservice-chart:
   !!merge <<: *basecache

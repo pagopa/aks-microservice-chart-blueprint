@@ -88,6 +88,12 @@ microservice-chart:
           # Required
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "75"
+  # This is a dev workload: it is not latency-sensitive and can run on non-critical nodes.
+  # Setting critical=false adds:
+  #   - toleration for the taint nonCritical=true:NoSchedule
+  #   - podAntiAffinity to avoid nodes running pods labeled critical=true
+  critical: false
+
   azure:
     workloadIdentityClientId: '1669c3db-c4f4-46fb-9324-0b7868dd59c1'
   serviceAccount:

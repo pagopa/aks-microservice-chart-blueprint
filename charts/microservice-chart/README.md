@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.1.3](https://img.shields.io/badge/Version-8.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.2.0](https://img.shields.io/badge/Version-8.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -35,6 +35,7 @@ A Helm chart for PagoPA microservice
 | configMapFromFileCustomPath | string | `"/mnt/file-config"` | CustomPath to allow to choose where to put your files |
 | container.args | list | `[]` |  |
 | container.command | list | `[]` |  |
+| critical | bool | `true` | Mark this workload as critical (default: true). When set to false, the pod will receive:   - a toleration for the taint nonCritical=true:NoSchedule   - a nodeSelector to use nodes critical=false |
 | deployment | object | - | Configure deployment |
 | deployment.create | bool | `true` | Create or not the deployment manifest |
 | deployment.forceRedeploy | bool | `false` | Force redeploy container |

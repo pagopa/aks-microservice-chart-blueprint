@@ -277,6 +277,12 @@ securityContext:
 # -- K8s node selectors
 nodeSelector: {}
 
+# -- (bool) Mark this workload as critical (default: true).
+# When set to false, the pod will receive:
+#   - a toleration for the taint nonCritical=true:NoSchedule
+#   - a nodeSelector to use nodes critical=false
+critical: true
+
 # -- Pod taints toleration
 tolerations: []
 

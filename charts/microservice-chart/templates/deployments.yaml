@@ -33,6 +33,7 @@ spec:
         {{- end }}
         {{- include "microservice-chart.selectorLabels" . | nindent 8 }}
         {{- include "microservice-chart.extraLabels" . | nindent 8 }}
+        critical: {{ .Values.critical | quote }}
     spec:
       {{- with .Values.deployment.topologySpreadConstraints }}
       {{- if and .create (or .useDefaultConfiguration (gt (len .config) 0)) }}
@@ -375,18 +376,9 @@ spec:
           #</azureFile volume>
       restartPolicy: {{ .Values.restartPolicy }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+       {{- include "microservice-chart.nodeSelectorBlock" . | nindent 6 }}
+       {{- include "microservice-chart.affinityBlock" . | nindent 6 }}
+      {{- include "microservice-chart.tolerationsBlock" . | nindent 6 }}
   {{- with .Values.strategy }}
   strategy:
     {{- toYaml . | nindent 4 }}

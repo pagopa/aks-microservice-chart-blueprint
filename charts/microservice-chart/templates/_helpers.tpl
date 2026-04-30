@@ -9,18 +9,24 @@ Expand the name of the chart.
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
+When critical is false, appends "-non-core" suffix to resource names.
 */}}
 {{- define "microservice-chart.fullname" -}}
+{{- $fullname := "" }}
 {{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- $fullname = .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- $fullname = .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- $fullname = printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
+{{- if not .Values.critical }}
+{{- $fullname = printf "%s-non-core" $fullname | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- $fullname }}
 {{- end }}
 
 {{/*
@@ -70,6 +76,47 @@ Create the name of the service account to use
 {{- default (include "microservice-chart.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+Tolerations block: merges user-defined tolerations with the nonCritical toleration when critical=false.
+*/}}
+{{- define "microservice-chart.tolerationsBlock" -}}
+{{- $tolerations := .Values.tolerations | default list }}
+{{- if not .Values.critical }}
+{{- $nonCriticalToleration := list (dict "key" "dedicated" "operator" "Equal" "value" "nonCritical" "effect" "NoSchedule") }}
+{{- $tolerations = concat $nonCriticalToleration $tolerations }}
+{{- end }}
+{{- if $tolerations }}
+tolerations:
+  {{- toYaml $tolerations | nindent 2 }}
+{{- end }}
+{{- end }}
+
+{{/*
+NodeSelector block: adds nodeSelector for critical=false when critical=false.
+*/}}
+{{- define "microservice-chart.nodeSelectorBlock" -}}
+{{- $nodeSelector := .Values.nodeSelector | default dict }}
+{{- if not .Values.critical }}
+{{- $nonCriticalNodeSelector := dict "critical" "false" }}
+{{- $nodeSelector = merge $nodeSelector $nonCriticalNodeSelector }}
+{{- end }}
+{{- if $nodeSelector }}
+nodeSelector:
+  {{- toYaml $nodeSelector | nindent 2 }}
+{{- end }}
+{{- end }}
+
+{{/*
+Affinity block: renders user-defined affinity if provided.
+*/}}
+{{- define "microservice-chart.affinityBlock" -}}
+{{- $affinity := .Values.affinity | default dict }}
+{{- if $affinity }}
+affinity:
+  {{- toYaml $affinity | nindent 2 }}
 {{- end }}
 {{- end }}
 
