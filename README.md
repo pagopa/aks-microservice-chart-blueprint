@@ -131,6 +131,100 @@ K8s:
 
 see [README/Microservice Chart configuration](charts/microservice-chart/README.md) to understand how to use the values.
 
+### critical
+
+The `critical` flag is a fundamental parameter that determines the **priority level** of the workload in the Kubernetes cluster and automatically influences the **naming convention** and **scheduling policy** of all resources created by the chart.
+
+#### General Behavior
+
+| State | Value | Behavior |
+|:---:|:---:|---|
+| **Critical** | `critical: true` (default) | The workload is considered **essential** for the cluster. Resources maintain their standard names without additional suffixes. |
+| **Non-Critical** | `critical: false` | The workload is **optional/complementary**. A series of scheduling restrictions are automatically applied to isolate it from critical workloads. |
+
+#### Resource Effects When `critical: false`
+
+All the following Kubernetes resources automatically receive the **`-non-core`** suffix appended to their names:
+
+- Deployment
+- Service
+- Ingress
+- ConfigMap
+- Secret
+- ServiceAccount
+- All other resources created by the chart
+
+**Naming example:**
+```
+Original name (critical: true):        my-app
+Name with non-core (critical: false):  my-app-non-core
+```
+
+**NB:** When migrating a deployment from critical to non-critical, you will need to remove the old resource, since the name change will not allow you to update _in-place_ the old deployment
+
+#### Pod Scheduling Effects When `critical: false`
+
+When deploying a workload with `critical: false`, the chart automatically applies three cascading scheduling mechanisms:
+
+##### 1. Toleration (Taint Tolerance)
+The pod receives a **toleration** that allows it to be placed on nodes with the taint `dedicated=nonCritical:NoSchedule`:
+```yaml
+tolerations:
+  - key: dedicated
+    operator: Equal
+    value: nonCritical
+    effect: NoSchedule
+```
+
+**Effect:** The non-critical pod can be placed on "non-core" nodes
+
+##### 2. NodeSelector (Node Selection)
+The pod explicitly requires nodes labeled with `critical: "false"`:
+```yaml
+nodeSelector:
+  critical: "false"
+```
+
+**Effect:** The pod will be scheduled ONLY on nodes marked as non-critical
+
+##### 3. Affinity (Custom Affinity Rules)
+Users can provide custom affinity rules via `values.affinity`. These are preserved and applied:
+```yaml
+affinity:
+  # ... user-defined affinity rules ...
+```
+
+**Effect:** User-defined affinity rules are applied if present
+
+#### Segregation Architecture
+
+With `critical: false`, the chart implements a **multi-layer segregation** that guarantees complete isolation:
+
+```
++-------------------------------------------------------+
+|               KUBERNETES CLUSTER                      |
++-------------------------------------------------------+
+|                                                       |
+| +-------------------------+  +----------------------+ |
+| |   CRITICAL NODE POOL    |  | NON-CRITICAL NODE    | |
+| |                         |  | POOL                 | |
+| |                         |  | (Taint: dedicated=   | |
+| |                         |  |  nonCritical:        | |
+| |                         |  |  NoSchedule)         | |
+| |                         |  | Label: critical:     | |
+| | [Critical Pods]         |  | false                | |
+| | [Non-Critical Pods      |  |                      | |
+| |  blocked by taint]      |  | [Non-Critical Pods]  | |
+| |                         |  | [Critical Pods       | |
+| |                         |  |  no toleration]      | |
+| +-------------------------+  +----------------------+ |
+|                                                       |
++-------------------------------------------------------+
+```
+
+---
+
+
 ### topologySpreadConstraints
 
 topologySpreadConstraints in Kubernetes is used to control how Pods are distributed across a cluster to improve high availability and fault tolerance.
@@ -554,6 +648,12 @@ git clone git@github.com:pagopa/aks-microservice-chart-blueprint.git
 cd aks-microservice-chart-blueprint.git
 sh /bin/setup
 ```
+
+Pre-commit requirements:
+
+- `brew isntall yamllint`
+- `brew isntall chart-testing`
+- `brew install norwoodj/tap/helm-docs`
 
 ### Warning
 
