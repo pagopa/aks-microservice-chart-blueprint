@@ -110,14 +110,10 @@ nodeSelector:
 {{- end }}
 
 {{/*
-Affinity block: merges user-defined affinity with podAntiAffinity against critical=true pods when critical=false.
+Affinity block: renders user-defined affinity if provided.
 */}}
 {{- define "microservice-chart.affinityBlock" -}}
 {{- $affinity := .Values.affinity | default dict }}
-{{- if not .Values.critical }}
-{{- $nonCriticalAffinity := dict "podAntiAffinity" (dict "requiredDuringSchedulingIgnoredDuringExecution" (list (dict "labelSelector" (dict "matchExpressions" (list (dict "key" "critical" "operator" "In" "values" (list "true")))) "topologyKey" "kubernetes.io/hostname"))) }}
-{{- $affinity = mergeOverwrite $nonCriticalAffinity $affinity }}
-{{- end }}
 {{- if $affinity }}
 affinity:
   {{- toYaml $affinity | nindent 2 }}
