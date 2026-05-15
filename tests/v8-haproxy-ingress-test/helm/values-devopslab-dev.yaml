@@ -1,0 +1,101 @@
+microservice-chart:
+  namespace: "testit"
+
+  deployment:
+    create: true
+    replicas: 3
+    topologySpreadConstraints:
+      create: true
+      useDefaultConfiguration: true
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.azure.com/mode
+            operator: In
+            values:
+            - user
+
+  envSecret:
+    MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
+    TEST: test
+    MY_MANDATORY_SECRET: dvopla-d-itn-dev-aks-apiserver-url
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 8080
+    initialDelaySeconds: 5
+    failureThreshold: 6
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 8080
+    initialDelaySeconds: 5
+    failureThreshold: 6
+    periodSeconds: 10
+
+  envConfig:
+    APP: basic
+    MY_APP_COLOR: "green"
+    MY_MANDATORY_VALUE: "mandatory"
+    BASE_PATH: "/test-haproxy"
+
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: logs
+        mountPath: /app/logs
+
+  image:
+    repository: ghcr.io/mendhak/http-https-echo
+    tag: "31"
+    pullPolicy: Always
+
+  keyvault:
+    name: "dvopla-d-itn-testit-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  serviceAccount:
+    name: testit-workload-identity
+
+  service:
+    create: true
+    ports:
+      - 8080
+
+  ingress:
+    create: true
+    host: testit.itn.internal.devopslab.pagopa.it
+    servicePort: 8080
+    forceSslRedirect: true
+    path: "/testit/test-haproxy(/|$)(.*)"
+
+    haproxy:
+      create: true
+      host: haproxy.itn.internal.devopslab.pagopa.it
+      path: "/test-haproxy"
+      rewriteTarget: "/"
+
+  canaryDelivery:
+    create: true
+    ingress:
+      header: true
+      headerName: X-Canary-Test
+      headerValue: enabled
+      weightPercent: 20
+    image:
+      repository: ghcr.io/mendhak/http-https-echo
+      tag: "32"
+    envConfig:
+      FOO: "bar"
+      MY_MANDATORY_VALUE: "mandatory"
+    envSecret:
+      MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
+      TEST: test
+      MY_MANDATORY_SECRET: dvopla-d-itn-dev-aks-apiserver-url

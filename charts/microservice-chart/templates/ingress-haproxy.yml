@@ -1,0 +1,62 @@
+{{- if .Values.ingress.haproxy.create -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}-haproxy
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: haproxy
+    haproxy.org/ssl-redirect: {{ .Values.ingress.forceSslRedirect | quote }}
+    {{- if and .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget (ne .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget) }}
+    haproxy.org/request-set-header: |
+      X-Forwarded-Prefix {{ trimSuffix "/" .Values.ingress.haproxy.path }}
+      X-Forwarded-Host {{ .Values.ingress.haproxy.host }}
+      X-Forwarded-Proto https
+      X-Forwarded-Port 443
+    {{- end }}
+    {{- with .Values.ingress.haproxy.annotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: haproxy
+  rules:
+    - host: {{ .Values.ingress.haproxy.host }}
+      http:
+        paths:
+          {{- if .Values.canaryDelivery.create }}
+          {{- if and .Values.canaryDelivery.ingress.header .Values.canaryDelivery.ingress.weightPercent }}
+          - backend:
+              service:
+                name: {{ include "microservice-chart.fullname" . }}-canary-hdr
+                port:
+                  number: {{ .Values.ingress.servicePort }}
+            path: {{ .Values.ingress.haproxy.path }}
+            pathType: ImplementationSpecific
+          - backend:
+              service:
+                name: {{ include "microservice-chart.fullname" . }}-canary-wt
+                port:
+                  number: {{ .Values.ingress.servicePort }}
+            path: {{ .Values.ingress.haproxy.path }}
+            pathType: ImplementationSpecific
+          {{- else }}
+          - backend:
+              service:
+                name: {{ include "microservice-chart.fullname" . }}-canary
+                port:
+                  number: {{ .Values.ingress.servicePort }}
+            path: {{ .Values.ingress.haproxy.path }}
+            pathType: ImplementationSpecific
+          {{- end }}
+          {{- end }}
+          - backend:
+              service:
+                name: {{ include "microservice-chart.fullname" . }}
+                port:
+                  number: {{ .Values.ingress.servicePort }}
+            path: {{ .Values.ingress.haproxy.path }}
+            pathType: {{ .Values.ingress.pathType }}
+  tls:
+    - hosts: [{{ .Values.ingress.haproxy.host }}]
+      secretName: {{ .Values.ingress.haproxy.host | replace "." "-" }}
+{{- end }}

@@ -1,0 +1,218 @@
+{{- if and .Values.ingress.haproxy.create .Values.canaryDelivery.create -}}
+{{- if and .Values.canaryDelivery.ingress.header .Values.canaryDelivery.ingress.weightPercent }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}-canary-hdr
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+  annotations:
+    haproxy.org/route-acl: {{ printf "hdr(%s) -m str %s" .Values.canaryDelivery.ingress.headerName .Values.canaryDelivery.ingress.headerValue | quote }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- range .Values.service.ports }}
+    - name: app-port-{{ . }}-svc
+      port: {{ . }}
+      targetPort: {{ . }}
+      protocol: TCP
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    canaryDelivery: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}-canary-wt
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+  annotations:
+    haproxy.org/route-acl: {{ printf "rand(100) lt %d" (int .Values.canaryDelivery.ingress.weightPercent) | quote }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- range .Values.service.ports }}
+    - name: app-port-{{ . }}-svc
+      port: {{ . }}
+      targetPort: {{ . }}
+      protocol: TCP
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    canaryDelivery: "true"
+{{- else if .Values.canaryDelivery.ingress.header }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}-canary
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+  annotations:
+    haproxy.org/route-acl: {{ printf "hdr(%s) -m str %s" .Values.canaryDelivery.ingress.headerName .Values.canaryDelivery.ingress.headerValue | quote }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- range .Values.service.ports }}
+    - name: app-port-{{ . }}-svc
+      port: {{ . }}
+      targetPort: {{ . }}
+      protocol: TCP
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    canaryDelivery: "true"
+{{- else if .Values.canaryDelivery.ingress.weightPercent }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}-canary
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+  annotations:
+    haproxy.org/route-acl: {{ printf "rand(100) lt %d" (int .Values.canaryDelivery.ingress.weightPercent) | quote }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- range .Values.service.ports }}
+    - name: app-port-{{ . }}-svc
+      port: {{ . }}
+      targetPort: {{ . }}
+      protocol: TCP
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    canaryDelivery: "true"
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}-canary
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: {{ default 1 .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      canaryDelivery: "true"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        canaryDelivery: "true"
+    spec:
+      automountServiceAccountToken: false
+      serviceAccountName: {{ include "microservice-chart.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-canary
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.canaryDelivery.image.repository }}:{{ .Values.canaryDelivery.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            {{- range .Values.service.ports }}
+            - name: app-port-{{ . }}
+              containerPort: {{ . }}
+              protocol: TCP
+            {{- end }}
+          {{- if .Values.livenessProbe.create }}
+          livenessProbe:
+            {{- if eq .Values.livenessProbe.handlerType "tcpSocket" }}
+            tcpSocket:
+              port: {{ .Values.livenessProbe.tcpSocket.port }}
+            {{- else if eq .Values.livenessProbe.handlerType "exec" }}
+            exec:
+              command:
+                {{- toYaml .Values.livenessProbe.exec.command | nindent 16 }}
+            {{- else }}
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            terminationGracePeriodSeconds: {{ .Values.livenessProbe.terminationGracePeriodSeconds }}
+          {{- end }}
+          {{- if .Values.readinessProbe.create }}
+          readinessProbe:
+            {{- if eq .Values.readinessProbe.handlerType "tcpSocket" }}
+            tcpSocket:
+              port: {{ .Values.readinessProbe.tcpSocket.port }}
+            {{- else if eq .Values.readinessProbe.handlerType "exec" }}
+            exec:
+              command:
+                {{- toYaml .Values.readinessProbe.exec.command | nindent 16 }}
+            {{- else }}
+            httpGet:
+              path: {{ .Values.readinessProbe.httpGet.path }}
+              port: {{ .Values.readinessProbe.httpGet.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            {{- range $key, $val := (mergeOverwrite .Values.envConfig .Values.canaryDelivery.envConfig) }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            - name: CANARY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" . }}
+                  key: CANARY
+            {{- if .Values.secretProviderClass.create }}
+            {{- range $name, $value := (mergeOverwrite .Values.envSecret .Values.canaryDelivery.envSecret) }}
+            - name: {{ $name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $value }}
+            {{- end }}
+            {{- end }}
+          {{- if .Values.secretProviderClass.create }}
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+          {{- end }}
+      {{- if .Values.secretProviderClass.create }}
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "microservice-chart.fullname" . }}
+      {{- end }}
+      {{- include "microservice-chart.tolerationsBlock" . | nindent 6 }}
+      {{- include "microservice-chart.nodeSelectorBlock" . | nindent 6 }}
+      {{- include "microservice-chart.affinityBlock" . | nindent 6 }}
+{{- end }}

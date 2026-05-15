@@ -53,7 +53,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          {{- if .Values.canaryDelivery.create }}
+          {{- if and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create) }}
           image: "{{ .Values.canaryDelivery.image.repository }}:{{ .Values.canaryDelivery.image.tag | default .Chart.AppVersion }}"
           {{- else }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -207,7 +207,7 @@ spec:
             {{- end }}
           env:
             #envConfig
-            {{- if .Values.canaryDelivery.create }}
+            {{- if and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create) }}
             {{- range $key, $val := (mergeOverwrite .Values.envConfig .Values.canaryDelivery.envConfig) }}
             - name: {{ $key }}
               valueFrom:
@@ -226,7 +226,7 @@ spec:
             {{- end }}
             # Secret provider class
             {{- if or .Values.secretProviderClass.create }}
-            {{- if .Values.canaryDelivery.create }}
+            {{- if and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create) }}
             {{- range $name, $value := (mergeOverwrite .Values.envSecret .Values.canaryDelivery.envSecret) }}
             - name: {{ $name }}
               valueFrom:
@@ -245,7 +245,7 @@ spec:
             {{- end }}
             {{- end }}
             #envConfig CANARY
-            {{- if .Values.canaryDelivery.create }}
+            {{- if and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create) }}
             - name: CANARY
               valueFrom:
                 configMapKeyRef:
