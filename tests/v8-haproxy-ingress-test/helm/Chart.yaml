@@ -1,6 +1,6 @@
 apiVersion: v2
-name: v8-java-helm-complete-test-bar
-description: An example application with Java spring boot
+name: v8-haproxy-ingress-test
+description: Test for HAProxy Ingress configuration
 type: application
 version: 1.0.0
 appVersion: 1.0.0

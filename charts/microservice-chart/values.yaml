@@ -366,6 +366,19 @@ ingress:
   # -- (map) custom annotations for ingress
   annotations: {}
 
+  # -- HAProxy Ingress configuration
+  haproxy:
+    # -- (bool) Create or not the HAProxy ingress manifest
+    create: false
+    # -- Hostname for the ingress like <https://idpay.pagopa.it>
+    host: ""
+    # -- Path where the application can response like: `/app(/|$)(.*)`
+    path: "/please-put-a-path"
+    # -- the rewrite target for ingress
+    rewriteTarget: /
+    # -- (map) custom annotations for HAProxy ingress
+    annotations: {}
+
 
 # -- This section allow to configure canary deployment
 # @default -- -
@@ -384,7 +397,7 @@ canaryDelivery:
     headerValue: pagopa
 
       # -- the weight percent used into canary deployment. Can be used toghether with header
-    weightPercent: 10
+    weightPercent: 0
 
     image:
       # -- Docker reposity for the container canary
