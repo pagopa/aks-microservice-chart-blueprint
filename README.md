@@ -559,6 +559,42 @@ Example of a pod that will be stopped after 10 seconds.
     terminationGracePeriodSeconds: 30
 ```
 
+### `ingress.haproxy`: HAProxy Ingress configuration
+
+Starting with version 8.x, it's possible to use HAProxy as an Ingress Controller. 
+This configuration allows you to create an Ingress resource with `haproxy` as the ingress class.
+
+```yaml
+  ingress:
+    create: true
+    # ... other standard ingress values ...
+    haproxy:
+      create: true
+      host: "my-app.itn.internal.devopslab.pagopa.it"
+      path: "/my-app-path"
+      rewriteTarget: "/"
+      annotations:
+        haproxy.org/check: "true"
+```
+
+#### HAProxy Canary Deployment
+
+When both HAProxy Ingress and Canary Deployment are enabled, the chart automatically configures HAProxy `route-acl` for traffic splitting based on headers or weight.
+
+```yaml
+  ingress:
+    haproxy:
+      create: true
+      # ...
+  canaryDelivery:
+    create: true
+    ingress:
+      header: true
+      headerName: X-Canary
+      headerValue: enabled
+      weightPercent: 20
+```
+
 ### `canary`: example with canary
 
 ```yaml
