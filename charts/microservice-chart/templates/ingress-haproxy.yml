@@ -8,11 +8,7 @@ metadata:
     kubernetes.io/ingress.class: haproxy
     haproxy.org/ssl-redirect: {{ .Values.ingress.forceSslRedirect | quote }}
     {{- if and .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget (ne .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget) }}
-    haproxy.org/request-set-header: |
-      X-Forwarded-Prefix {{ trimSuffix "/" .Values.ingress.haproxy.path }}
-      X-Forwarded-Host {{ .Values.ingress.haproxy.host }}
-      X-Forwarded-Proto https
-      X-Forwarded-Port 443
+    haproxy.org/path-rewrite: {{ printf "^%s/(.*) %s" .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget }}
     {{- end }}
     {{- with .Values.ingress.haproxy.annotations }}
 {{ toYaml . | indent 4 }}
@@ -31,14 +27,14 @@ spec:
                 port:
                   number: {{ .Values.ingress.servicePort }}
             path: {{ .Values.ingress.haproxy.path }}
-            pathType: ImplementationSpecific
+            pathType: {{ .Values.ingress.pathType }}
           - backend:
               service:
                 name: {{ include "microservice-chart.fullname" . }}-canary-wt
                 port:
                   number: {{ .Values.ingress.servicePort }}
             path: {{ .Values.ingress.haproxy.path }}
-            pathType: ImplementationSpecific
+            pathType: {{ .Values.ingress.pathType }}
           {{- else }}
           - backend:
               service:
@@ -46,7 +42,7 @@ spec:
                 port:
                   number: {{ .Values.ingress.servicePort }}
             path: {{ .Values.ingress.haproxy.path }}
-            pathType: ImplementationSpecific
+            pathType: {{ .Values.ingress.pathType }}
           {{- end }}
           {{- end }}
           - backend:

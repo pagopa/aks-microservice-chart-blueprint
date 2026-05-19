@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.3.0](https://img.shields.io/badge/Version-8.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.4.0](https://img.shields.io/badge/Version-8.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -59,12 +59,12 @@ A Helm chart for PagoPA microservice
 | ingress.annotations | map | `{}` | custom annotations for ingress |
 | ingress.create | bool | `false` | Create or not the ingress manifest |
 | ingress.forceSslRedirect | bool | `true` | if force ssl redirect is enabled |
-| ingress.haproxy | object | `{"annotations":{},"create":false,"host":"","path":"/please-put-a-path","rewriteTarget":"/"}` | HAProxy Ingress configuration |
+| ingress.haproxy | object | `{"annotations":{},"create":false,"host":"","path":"/please-put-a-path","rewriteTarget":""}` | HAProxy Ingress configuration |
 | ingress.haproxy.annotations | map | `{}` | custom annotations for HAProxy ingress |
 | ingress.haproxy.create | bool | `false` | Create or not the HAProxy ingress manifest |
 | ingress.haproxy.host | string | `""` | Hostname for the ingress like <https://idpay.pagopa.it> |
 | ingress.haproxy.path | string | `"/please-put-a-path"` | Path where the application can response like: `/app(/|$)(.*)` |
-| ingress.haproxy.rewriteTarget | string | `"/"` | the rewrite target for ingress |
+| ingress.haproxy.rewriteTarget | string | `""` | the rewrite target for ingress |
 | ingress.host | string | `""` | Hostname for the ingress like <https://idpay.pagopa.it> |
 | ingress.path | string | `"/please-put-a-path"` | Path where the application can response like: `/app(/|$)(.*)` |
 | ingress.pathType | string | `"ImplementationSpecific"` | pathType |
