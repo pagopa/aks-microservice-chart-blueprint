@@ -70,8 +70,7 @@ microservice-chart:
       - 8080
 
   ingress:
-    create: true
-    host: testit.itn.internal.devopslab.pagopa.it
+    create: false
     servicePort: 8080
     forceSslRedirect: true
     path: "/testit/test-haproxy(/|$)(.*)"
@@ -79,8 +78,9 @@ microservice-chart:
     haproxy:
       create: true
       host: haproxy.itn.internal.devopslab.pagopa.it
-      path: "/test-haproxy"
-      rewriteTarget: "/"
+      path: "/test-haproxy/"
+      rewriteTarget: "/1"
+      pathType: Prefix
 
   canaryDelivery:
     create: true

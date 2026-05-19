@@ -375,7 +375,7 @@ ingress:
     # -- Path where the application can response like: `/app(/|$)(.*)`
     path: "/please-put-a-path"
     # -- the rewrite target for ingress
-    rewriteTarget: /
+    rewriteTarget: ""
     # -- (map) custom annotations for HAProxy ingress
     annotations: {}
 
