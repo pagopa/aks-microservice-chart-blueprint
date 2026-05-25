@@ -3,7 +3,7 @@ microservice-chart:
 
   deployment:
     create: true
-    replicas: 3
+    replicas: 1
     topologySpreadConstraints:
       create: true
       useDefaultConfiguration: true
@@ -24,17 +24,17 @@ microservice-chart:
 
   livenessProbe:
     httpGet:
-      path: /
+      path: /status/live
       port: 8080
-    initialDelaySeconds: 5
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
 
   readinessProbe:
     httpGet:
-      path: /
+      path: /status/ready
       port: 8080
-    initialDelaySeconds: 5
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
 
@@ -43,6 +43,8 @@ microservice-chart:
     MY_APP_COLOR: "green"
     MY_MANDATORY_VALUE: "mandatory"
     BASE_PATH: "/test-haproxy"
+    TMPDIR: "/tmp"
+    JAVA_TOOL_OPTIONS: "-Djava.io.tmpdir=/tmp"
 
   tmpVolumeMount:
     create: true
@@ -53,9 +55,17 @@ microservice-chart:
         mountPath: /app/logs
 
   image:
-    repository: ghcr.io/mendhak/http-https-echo
-    tag: "31"
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: "latest"
     pullPolicy: Always
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "300m"
+    limits:
+      memory: "1Gi"
+      cpu: "600m"
 
   keyvault:
     name: "dvopla-d-itn-testit-kv"
@@ -78,9 +88,8 @@ microservice-chart:
     haproxy:
       create: true
       host: haproxy.itn.internal.devopslab.pagopa.it
-      path: "/test-haproxy/"
-      rewriteTarget: "/1"
-      pathType: Prefix
+      path: "/test-haproxy"
+      rewriteTarget: "/\\1"
 
   canaryDelivery:
     create: true
@@ -90,11 +99,15 @@ microservice-chart:
       headerValue: enabled
       weightPercent: 20
     image:
-      repository: ghcr.io/mendhak/http-https-echo
-      tag: "32"
+      repository: ghcr.io/pagopa/devops-java-springboot-color
+      tag: "latest"
     envConfig:
+      APP: canary
       FOO: "bar"
+      MY_APP_COLOR: "blue"
       MY_MANDATORY_VALUE: "mandatory"
+      TMPDIR: "/tmp"
+      JAVA_TOOL_OPTIONS: "-Djava.io.tmpdir=/tmp"
     envSecret:
       MY_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
       TEST: test

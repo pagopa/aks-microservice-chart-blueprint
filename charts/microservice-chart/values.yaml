@@ -378,6 +378,8 @@ ingress:
     rewriteTarget: ""
     # -- (map) custom annotations for HAProxy ingress
     annotations: {}
+    # -- (map) annotations applied to backend Services (e.g. haproxy.org/backend-config-snippet for path-rewrite after canary ACL evaluation)
+    backendAnnotations: {}
 
 
 # -- This section allow to configure canary deployment

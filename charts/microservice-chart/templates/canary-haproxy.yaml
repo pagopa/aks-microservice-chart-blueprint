@@ -1,4 +1,9 @@
 {{- if and .Values.ingress.haproxy.create .Values.canaryDelivery.create -}}
+{{- $backendSnippet := "" -}}
+{{- if .Values.ingress.haproxy.backendAnnotations -}}
+{{- else if and .Values.ingress.haproxy.rewriteTarget .Values.ingress.haproxy.path -}}
+{{- $backendSnippet = printf "http-request replace-path ^%s/?(.*) %s" .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget -}}
+{{- end -}}
 {{- if and .Values.canaryDelivery.ingress.header .Values.canaryDelivery.ingress.weightPercent }}
 apiVersion: v1
 kind: Service
@@ -9,6 +14,11 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     haproxy.org/route-acl: {{ printf "hdr(%s) -m str %s" .Values.canaryDelivery.ingress.headerName .Values.canaryDelivery.ingress.headerValue | quote }}
+    {{- if .Values.ingress.haproxy.backendAnnotations }}
+    {{- toYaml .Values.ingress.haproxy.backendAnnotations | nindent 4 }}
+    {{- else if $backendSnippet }}
+    haproxy.org/backend-config-snippet: {{ $backendSnippet | quote }}
+    {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -32,6 +42,11 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     haproxy.org/route-acl: {{ printf "rand(100) lt %d" (int .Values.canaryDelivery.ingress.weightPercent) | quote }}
+    {{- if .Values.ingress.haproxy.backendAnnotations }}
+    {{- toYaml .Values.ingress.haproxy.backendAnnotations | nindent 4 }}
+    {{- else if $backendSnippet }}
+    haproxy.org/backend-config-snippet: {{ $backendSnippet | quote }}
+    {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -55,6 +70,11 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     haproxy.org/route-acl: {{ printf "hdr(%s) -m str %s" .Values.canaryDelivery.ingress.headerName .Values.canaryDelivery.ingress.headerValue | quote }}
+    {{- if .Values.ingress.haproxy.backendAnnotations }}
+    {{- toYaml .Values.ingress.haproxy.backendAnnotations | nindent 4 }}
+    {{- else if $backendSnippet }}
+    haproxy.org/backend-config-snippet: {{ $backendSnippet | quote }}
+    {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -78,6 +98,11 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     haproxy.org/route-acl: {{ printf "rand(100) lt %d" (int .Values.canaryDelivery.ingress.weightPercent) | quote }}
+    {{- if .Values.ingress.haproxy.backendAnnotations }}
+    {{- toYaml .Values.ingress.haproxy.backendAnnotations | nindent 4 }}
+    {{- else if $backendSnippet }}
+    haproxy.org/backend-config-snippet: {{ $backendSnippet | quote }}
+    {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -178,16 +203,10 @@ spec:
           env:
             {{- range $key, $val := (mergeOverwrite .Values.envConfig .Values.canaryDelivery.envConfig) }}
             - name: {{ $key }}
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "microservice-chart.fullname" $ }}
-                  key: {{ $key }}
+              value: {{ $val | quote }}
             {{- end }}
             - name: CANARY
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "microservice-chart.fullname" . }}
-                  key: CANARY
+              value: "true"
             {{- if .Values.secretProviderClass.create }}
             {{- range $name, $value := (mergeOverwrite .Values.envSecret .Values.canaryDelivery.envSecret) }}
             - name: {{ $name }}
@@ -197,20 +216,49 @@ spec:
                   key: {{ $value }}
             {{- end }}
             {{- end }}
-          {{- if .Values.secretProviderClass.create }}
+          {{- if or .Values.tmpVolumeMount.create .Values.persistentVolumeClaimsMounts.create .Values.secretProviderClass.create }}
           volumeMounts:
+            {{- if .Values.tmpVolumeMount.create }}
+            {{- range $i, $val := .Values.tmpVolumeMount.mounts }}
+            - name: {{ $val.name }}
+              mountPath: {{ $val.mountPath }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.persistentVolumeClaimsMounts.create }}
+            {{- range $i, $val := .Values.persistentVolumeClaimsMounts.mounts }}
+            - name: {{ $val.name }}
+              mountPath: {{ $val.mountPath }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.secretProviderClass.create }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
+            {{- end }}
           {{- end }}
-      {{- if .Values.secretProviderClass.create }}
+      {{- if or .Values.tmpVolumeMount.create .Values.persistentVolumeClaimsMounts.create .Values.secretProviderClass.create }}
       volumes:
+        {{- if .Values.tmpVolumeMount.create }}
+        {{- range $i, $val := .Values.tmpVolumeMount.mounts }}
+        - name: {{ $val.name }}
+          emptyDir: {}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.persistentVolumeClaimsMounts.create }}
+        {{- range $i, $val := .Values.persistentVolumeClaimsMounts.mounts }}
+        - name: {{ $val.name }}
+          persistentVolumeClaim:
+            claimName: {{ $val.pvcName }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.secretProviderClass.create }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ include "microservice-chart.fullname" . }}
+        {{- end }}
       {{- end }}
       {{- include "microservice-chart.tolerationsBlock" . | nindent 6 }}
       {{- include "microservice-chart.nodeSelectorBlock" . | nindent 6 }}

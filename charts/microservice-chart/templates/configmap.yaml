@@ -1,4 +1,4 @@
-{{- if or .Values.envConfig .Values.configMapFromFile .Values.canaryDelivery.create -}}
+{{- if or .Values.envConfig .Values.configMapFromFile (and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create)) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,7 +7,7 @@ metadata:
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
 data:
-  {{- if .Values.canaryDelivery.create }}
+  {{- if and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create) }}
   CANARY: "true"
   {{- if .Values.envConfig -}}
   {{- toYaml (mergeOverwrite .Values.envConfig .Values.canaryDelivery.envConfig) | nindent 2 }}

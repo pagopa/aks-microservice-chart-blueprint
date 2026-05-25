@@ -7,9 +7,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: haproxy
     haproxy.org/ssl-redirect: {{ .Values.ingress.forceSslRedirect | quote }}
-    {{- if and .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget (ne .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget) }}
-    haproxy.org/path-rewrite: {{ printf "^%s/(.*) %s" .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget }}
-    {{- end }}
     {{- with .Values.ingress.haproxy.annotations }}
 {{ toYaml . | indent 4 }}
     {{- end }}
