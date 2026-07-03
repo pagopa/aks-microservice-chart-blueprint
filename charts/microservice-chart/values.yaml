@@ -283,6 +283,10 @@ nodeSelector: {}
 #   - a nodeSelector to use nodes critical=false
 critical: true
 
+# -- (int) DNS ndots configuration - threshold for number of dots in a name to trigger an initial absolute query.
+# Lower values can reduce DNS lookup latency in Kubernetes environments.
+ndots: 5
+
 # -- Pod taints toleration
 tolerations: []
 
