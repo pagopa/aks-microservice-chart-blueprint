@@ -35,7 +35,7 @@ spec:
         {{- include "microservice-chart.extraLabels" . | nindent 8 }}
         critical: {{ .Values.critical | quote }}
     spec:
-      {{- if .Values.ndots }}
+      {{- if hasKey .Values "ndots" }}
       dnsConfig:
         options:
           - name: ndots
