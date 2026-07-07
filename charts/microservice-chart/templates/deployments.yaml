@@ -39,12 +39,12 @@ spec:
       dnsConfig:
         options:
           - name: ndots
-            value: {{ .Values.ndots | quote }}
+            value: {{ .Values.deployment.ndots | quote }}
       {{- end }}
-      {{- with .Values.deployment.hostAliases }}
+      {{- if (gt (len .Values.deployment.hostAliases) 0) }}
       hostAliases:
-          {{- toYaml . | nindent 8 }}
-      { { - end } }
+        {{- toYaml .Values.deployment.hostAliases | nindent 8 }}
+      {{- end }}
       {{- with .Values.deployment.topologySpreadConstraints }}
       {{- if and .create (or .useDefaultConfiguration (gt (len .config) 0)) }}
       topologySpreadConstraints:
