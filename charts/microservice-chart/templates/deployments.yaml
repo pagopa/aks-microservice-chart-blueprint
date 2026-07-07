@@ -35,12 +35,16 @@ spec:
         {{- include "microservice-chart.extraLabels" . | nindent 8 }}
         critical: {{ .Values.critical | quote }}
     spec:
-      {{- if hasKey .Values "ndots" }}
+      {{- if hasKey .Values.deployment "ndots" }}
       dnsConfig:
         options:
           - name: ndots
             value: {{ .Values.ndots | quote }}
       {{- end }}
+      {{- with .Values.deployment.hostAliases }}
+      hostAliases:
+          {{- toYaml . | nindent 8 }}
+      { { - end } }
       {{- with .Values.deployment.topologySpreadConstraints }}
       {{- if and .create (or .useDefaultConfiguration (gt (len .config) 0)) }}
       topologySpreadConstraints:

@@ -484,15 +484,28 @@ This code snippet in AKS forces the pods not to be all in the same node but to d
           topologyKey: topology.kubernetes.io/zone
 ```
 
-### `ndots` DNS lookup configuration
+### `deployment.ndots` DNS lookup configuration
 
 If defined, the parameter `ndots` is added to the DNS configuration of the pod. This parameter defines the number of dots that must appear in a name before an initial absolute query is made. If the number of dots in the name is less than `ndots`, the search list is used to resolve the name.
 
 ```yaml
-ndots: 1
+deployment:
+  ndots: 1
 ```
 If a pod invokes only services with absolute names, that must be looked up outside of k8s dns (not k8s services), it is recommended to set `ndots` to 1. This will reduce the number of DNS queries and improve performance.
 
+### `deployment.hostAliases` DNS lookup configuration
+
+If defined, the parameter `hostAliases` is added to the DNS configuration of the pod. This parameter defines a list of hostnames and IP addresses that will be added to the `/etc/hosts` file of the pod.
+
+```yaml
+deployment:
+  hostAliases:
+  - ip: "127.0.0.1"
+    hostnames:
+    - "foo.local"
+    - "bar.local"
+```
 
 ### LifeCycle PreStop
 

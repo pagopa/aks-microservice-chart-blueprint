@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.4.2](https://img.shields.io/badge/Version-8.4.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.5.0](https://img.shields.io/badge/Version-8.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -39,6 +39,7 @@ A Helm chart for PagoPA microservice
 | deployment | object | - | Configure deployment |
 | deployment.create | bool | `true` | Create or not the deployment manifest |
 | deployment.forceRedeploy | bool | `false` | Force redeploy container |
+| deployment.hostAliases | list | `[]` | Host aliases to add to the pod. Example format: - ip: "127.0.0.1"   hostnames:   - "foo.local"   - "bar.local" |
 | deployment.replicas | int | `1` | Number of replicas (will be replaced by autoscaling if enabled) |
 | deployment.revisionHistoryLimit | int | `3` | Number of revision/replicaSet to have has history + 1 current revision |
 | deployment.topologySpreadConstraints | object | `{"config":[],"create":false,"useDefaultConfiguration":false}` | Topology Spread Constraints configuration create: abilita/disabilita la feature useDefaultConfiguration: se true usa la configurazione di default (vedi _helpers.tpl), se false usa config config: array di oggetti topologySpreadConstraints custom |
