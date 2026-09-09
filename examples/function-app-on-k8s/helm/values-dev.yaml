@@ -32,6 +32,10 @@ microservice-chart:
     annotations: {}
     name: ""
 
+  azure:
+    workloadIdentityEnabled: true
+    workloadIdentityClientId: "11111111-1111-1111-1111-111111111111"
+
   podAnnotations: {}
 
   podSecurityContext:
@@ -62,8 +66,9 @@ microservice-chart:
     cooldownPeriod: 300 # seconds
     triggerAuthentications:
       - name: azure-monitor-auth
-        podIdentity:
-          provider: none
+        workloadIdentity:
+          provider: azure-workload
+          identityId: "11111111-1111-1111-1111-111111111111"
     triggers:
       - type: cpu
         metadata:

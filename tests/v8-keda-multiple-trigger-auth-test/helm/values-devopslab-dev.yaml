@@ -7,6 +7,10 @@ microservice-chart:
   serviceAccount:
     name: testit-workload-identity
 
+  azure:
+    workloadIdentityEnabled: true
+    workloadIdentityClientId: "11111111-1111-1111-1111-111111111111"
+
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
     tag: latest
@@ -66,8 +70,9 @@ microservice-chart:
     cooldownPeriod: 10 # seconds
     triggerAuthentications:
       - name: azure-monitor-auth
-        podIdentity:
-          provider: azure
+        workloadIdentity:
+          provider: azure-workload
+          identityId: "11111111-1111-1111-1111-111111111111"
       - name: queue-auth
         secretTargetRef:
           - parameter: connection

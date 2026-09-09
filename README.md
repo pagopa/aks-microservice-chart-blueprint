@@ -274,10 +274,11 @@ This configuration create automatically this snippet of code
           whenUnsatisfiable: DoNotSchedule
 ```
 
-### `Keda TriggerAuthentication provider=none`
+### `Keda TriggerAuthentication with Workload Identity`
 
-Starting with version 2.15, Keda deprecated the azure TriggerAuthentication `provider=azure`.
-You now need to use azure-workload or one of the other providers listed in the documentation.
+Starting with version 2.15, Keda deprecated the Azure pod identity based configuration (`provider=azure`).
+When using Azure authentication with this chart, prefer Azure Workload Identity via `provider: azure-workload`.
+For convenience, the chart accepts `workloadIdentity` inside `autoscaling.triggerAuthentications` and renders it as Keda `podIdentity` in the final manifest.
 <https://keda.sh/docs/2.17/authentication-providers/>
 
 ### `Keda multiple TriggerAuthentication`
@@ -289,7 +290,7 @@ This change is backward compatible and works as follows:
 1. **No `triggerAuthentications` configured**
    - the chart keeps the legacy behavior;
    - it creates a single `TriggerAuthentication` named after the release/chart fullname;
-   - that authentication is automatically attached to all triggers.
+   - for Azure-based scalers, that authentication uses Azure Workload Identity and is automatically attached to all triggers.
 
 2. **Exactly one `triggerAuthentications` item configured**
    - the chart creates that `TriggerAuthentication` resource;
@@ -304,12 +305,16 @@ This change is backward compatible and works as follows:
 
 ```yaml
 microservice-chart:
+  azure:
+    workloadIdentityEnabled: true
+    workloadIdentityClientId: "11111111-1111-1111-1111-111111111111"
   autoscaling:
     enable: true
     triggerAuthentications:
       - name: azure-monitor-auth
-        podIdentity:
-          provider: none
+        workloadIdentity:
+          provider: azure-workload
+          identityId: "11111111-1111-1111-1111-111111111111"
     triggers:
       - type: azure-monitor
         metadata:
@@ -328,12 +333,16 @@ In this case, `azure-monitor-auth` is automatically used as the default `authent
 
 ```yaml
 microservice-chart:
+  azure:
+    workloadIdentityEnabled: true
+    workloadIdentityClientId: "11111111-1111-1111-1111-111111111111"
   autoscaling:
     enable: true
     triggerAuthentications:
       - name: azure-monitor-auth
-        podIdentity:
-          provider: none
+        workloadIdentity:
+          provider: azure-workload
+          identityId: "11111111-1111-1111-1111-111111111111"
       - name: queue-auth
         secretTargetRef:
           - parameter: connection

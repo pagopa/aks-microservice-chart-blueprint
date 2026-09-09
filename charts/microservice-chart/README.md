@@ -16,7 +16,7 @@ A Helm chart for PagoPA microservice
 | autoscaling.maxReplica | int | `1` | Autoscaling maximum replicas |
 | autoscaling.minReplica | int | `1` | Autoscaling minimum replicas |
 | autoscaling.pollingInterval | int | `10` | Autoscaling event polling intervall |
-| autoscaling.triggerAuthentications | list | `[]` | TriggerAuthentication resources to create for KEDA. If exactly one item is configured, it is used as default authenticationRef for all triggers; if more than one is configured, set authenticationRef on each trigger that needs it. |
+| autoscaling.triggerAuthentications | list | `[]` | TriggerAuthentication resources to create for KEDA. Each item maps to the TriggerAuthentication spec; use workloadIdentity as the preferred alias for KEDA podIdentity. If exactly one item is configured, it is used as default authenticationRef for all triggers; if more than one is configured, set authenticationRef on each trigger that needs it. |
 | autoscaling.triggers | list | `[]` | Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/) |
 | azure | object | `{"workloadIdentityClientId":"","workloadIdentityEnabled":true}` | Azure configuration (e.g. Workload identities) |
 | azure.workloadIdentityClientId | string | `""` | Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123) |

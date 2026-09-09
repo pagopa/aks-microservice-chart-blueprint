@@ -8,6 +8,10 @@
     {{- $defaultAuthenticationRefName = required "autoscaling.triggerAuthentications[0].name is required" (index $triggerAuthentications 0).name -}}
   {{- end -}}
   {{- range $triggerAuthentications }}
+{{- $triggerAuthenticationSpec := omit . "name" "workloadIdentity" }}
+{{- with .workloadIdentity }}
+{{- $_ := set $triggerAuthenticationSpec "podIdentity" . }}
+{{- end }}
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
@@ -16,7 +20,7 @@ metadata:
   labels:
 {{ include "microservice-chart.labels" $ | indent 4 }}
 spec:
-{{ omit . "name" | toYaml | indent 2 }}
+{{ $triggerAuthenticationSpec | toYaml | indent 2 }}
 ---
   {{- end }}
 {{- else }}
@@ -27,7 +31,10 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   podIdentity:
-    provider: none
+    provider: azure-workload
+    {{- with .Values.azure.workloadIdentityClientId }}
+    identityId: {{ . }}
+    {{- end }}
 ---
 {{- end }}
 apiVersion: keda.sh/v1alpha1
