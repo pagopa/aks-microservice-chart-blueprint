@@ -1,37 +1,66 @@
 {{- if .Values.autoscaling.enable -}}
+{{- $fullName := include "microservice-chart.fullname" . -}}
+{{- $triggerAuthentications := .Values.autoscaling.triggerAuthentications | default (list) -}}
+{{- $defaultAuthenticationRefName := $fullName -}}
+{{- if gt (len $triggerAuthentications) 0 -}}
+  {{- $defaultAuthenticationRefName = "" -}}
+  {{- if eq (len $triggerAuthentications) 1 -}}
+    {{- $defaultAuthenticationRefName = required "autoscaling.triggerAuthentications[0].name is required" (index $triggerAuthentications 0).name -}}
+  {{- end -}}
+  {{- range $triggerAuthentications }}
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
-  name: {{ include "microservice-chart.fullname" . }}
+  name: {{ required "autoscaling.triggerAuthentications[].name is required" .name }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+{{ include "microservice-chart.labels" $ | indent 4 }}
+spec:
+{{ omit . "name" | toYaml | indent 2 }}
+---
+  {{- end }}
+{{- else }}
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ $fullName }}
   namespace: {{ .Values.namespace }}
 spec:
   podIdentity:
     provider: none
 ---
+{{- end }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: {{ include "microservice-chart.fullname" . }}
+  name: {{ $fullName }}
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 3 }}
 spec:
   scaleTargetRef:
-    name: {{ include "microservice-chart.fullname" . }}
+    name: {{ $fullName }}
   minReplicaCount: {{ .Values.autoscaling.minReplica }}
   maxReplicaCount: {{ .Values.autoscaling.maxReplica }}
   pollingInterval: {{ .Values.autoscaling.pollingInterval }}
   cooldownPeriod: {{ .Values.autoscaling.cooldownPeriod }}
   triggers:
     {{- range .Values.autoscaling.triggers }}
+    {{- $authenticationRef := .authenticationRef }}
     - type: {{ .type }}
-      {{- if .metricType }}
-      metricType: {{ .metricType }}
+      {{- with .metricType }}
+      metricType: {{ . }}
       {{- end }}
+      {{- if or $authenticationRef $defaultAuthenticationRefName }}
       authenticationRef:
-        name: {{ include "microservice-chart.fullname" $ }}
+        {{- if $authenticationRef }}
+{{ toYaml $authenticationRef | indent 8 }}
+        {{- else }}
+        name: {{ $defaultAuthenticationRefName }}
+        {{- end }}
+      {{- end }}
       metadata:
-        {{- .metadata | toYaml | nindent 8 }}
+{{ toYaml .metadata | indent 8 }}
     {{- end }}
   {{- if .Values.autoscaling.advanced }}
   advanced:

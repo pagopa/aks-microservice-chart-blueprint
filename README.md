@@ -280,6 +280,91 @@ Starting with version 2.15, Keda deprecated the azure TriggerAuthentication `pro
 You now need to use azure-workload or one of the other providers listed in the documentation.
 <https://keda.sh/docs/2.17/authentication-providers/>
 
+### `Keda multiple TriggerAuthentication`
+
+The chart now supports the creation of multiple Keda `TriggerAuthentication` resources through `autoscaling.triggerAuthentications`.
+
+This change is backward compatible and works as follows:
+
+1. **No `triggerAuthentications` configured**
+   - the chart keeps the legacy behavior;
+   - it creates a single `TriggerAuthentication` named after the release/chart fullname;
+   - that authentication is automatically attached to all triggers.
+
+2. **Exactly one `triggerAuthentications` item configured**
+   - the chart creates that `TriggerAuthentication` resource;
+   - it is automatically used as the default `authenticationRef` for all triggers, unless a trigger overrides it explicitly.
+
+3. **More than one `triggerAuthentications` item configured**
+   - the chart creates all declared `TriggerAuthentication` resources;
+   - each trigger that requires authentication should declare its own `authenticationRef`;
+   - triggers that do not require authentication can omit `authenticationRef`.
+
+#### Single TriggerAuthentication example
+
+```yaml
+microservice-chart:
+  autoscaling:
+    enable: true
+    triggerAuthentications:
+      - name: azure-monitor-auth
+        podIdentity:
+          provider: none
+    triggers:
+      - type: azure-monitor
+        metadata:
+          tenantId: <tenant-id>
+          subscriptionId: <subscription-id>
+          resourceGroupName: <resource-group>
+          resourceURI: <resource-uri>
+          metricName: <metric-name>
+          metricAggregationType: Count
+          targetValue: "30"
+```
+
+In this case, `azure-monitor-auth` is automatically used as the default `authenticationRef` for the trigger.
+
+#### Multiple TriggerAuthentication example
+
+```yaml
+microservice-chart:
+  autoscaling:
+    enable: true
+    triggerAuthentications:
+      - name: azure-monitor-auth
+        podIdentity:
+          provider: none
+      - name: queue-auth
+        secretTargetRef:
+          - parameter: connection
+            name: workload-secrets
+            key: queueConnectionString
+    triggers:
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
+      - type: azure-monitor
+        authenticationRef:
+          name: azure-monitor-auth
+        metadata:
+          tenantId: <tenant-id>
+          subscriptionId: <subscription-id>
+          resourceGroupName: <resource-group>
+          resourceURI: <resource-uri>
+          metricName: <metric-name>
+          metricAggregationType: Count
+          targetValue: "30"
+      - type: azure-queue
+        authenticationRef:
+          name: queue-auth
+        metadata:
+          queueName: my-queue
+          queueLength: "5"
+```
+
+This approach is useful when the same `ScaledObject` needs different authentication strategies for different Keda scalers.
+
 ### `Workload Identity`
 
 To use the workload identity and be able to load secrets directly from kv, follow the [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md).

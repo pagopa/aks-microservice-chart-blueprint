@@ -60,12 +60,18 @@ microservice-chart:
     maxReplica: 2
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
+    triggerAuthentications:
+      - name: azure-monitor-auth
+        podIdentity:
+          provider: none
     triggers:
       - type: cpu
         metadata:
           type: Utilization
           value: "60"
       - type: azure-monitor
+        authenticationRef:
+          name: azure-monitor-auth
         metadata:
           tenantId: 7788edaf-0346-4068-9d79-c868aed15b3d
           subscriptionId: ac17914c-79bf-48fa-831e-1359ef74c1d5
