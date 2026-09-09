@@ -274,11 +274,105 @@ This configuration create automatically this snippet of code
           whenUnsatisfiable: DoNotSchedule
 ```
 
-### `Keda TriggerAuthentication provider=none`
+### `Keda TriggerAuthentication with Workload Identity`
 
-Starting with version 2.15, Keda deprecated the azure TriggerAuthentication `provider=azure`.
-You now need to use azure-workload or one of the other providers listed in the documentation.
+Starting with version 2.15, Keda deprecated the Azure pod identity based configuration (`provider=azure`).
+When using Azure authentication with this chart, prefer Azure Workload Identity via `provider: azure-workload`.
+For convenience, the chart accepts `workloadIdentity` inside `autoscaling.triggerAuthentications` and renders it as Keda `podIdentity` in the final manifest.
 <https://keda.sh/docs/2.17/authentication-providers/>
+
+### `Keda multiple TriggerAuthentication`
+
+The chart now supports the creation of multiple Keda `TriggerAuthentication` resources through `autoscaling.triggerAuthentications`.
+
+This change is backward compatible and works as follows:
+
+1. **No `triggerAuthentications` configured**
+   - the chart keeps the legacy behavior;
+   - it creates a single `TriggerAuthentication` named after the release/chart fullname;
+   - for Azure-based scalers, that authentication uses Azure Workload Identity and is automatically attached to all triggers.
+
+2. **Exactly one `triggerAuthentications` item configured**
+   - the chart creates that `TriggerAuthentication` resource;
+   - it is automatically used as the default `authenticationRef` for all triggers, unless a trigger overrides it explicitly.
+
+3. **More than one `triggerAuthentications` item configured**
+   - the chart creates all declared `TriggerAuthentication` resources;
+   - each trigger that requires authentication should declare its own `authenticationRef`;
+   - triggers that do not require authentication can omit `authenticationRef`.
+
+#### Single TriggerAuthentication example
+
+```yaml
+microservice-chart:
+  azure:
+    workloadIdentityEnabled: true
+    workloadIdentityClientId: "11111111-1111-1111-1111-111111111111"
+  autoscaling:
+    enable: true
+    triggerAuthentications:
+      - name: azure-monitor-auth
+        workloadIdentity:
+          provider: azure-workload
+          identityId: "11111111-1111-1111-1111-111111111111"
+    triggers:
+      - type: azure-monitor
+        metadata:
+          tenantId: <tenant-id>
+          subscriptionId: <subscription-id>
+          resourceGroupName: <resource-group>
+          resourceURI: <resource-uri>
+          metricName: <metric-name>
+          metricAggregationType: Count
+          targetValue: "30"
+```
+
+In this case, `azure-monitor-auth` is automatically used as the default `authenticationRef` for the trigger.
+
+#### Multiple TriggerAuthentication example
+
+```yaml
+microservice-chart:
+  azure:
+    workloadIdentityEnabled: true
+    workloadIdentityClientId: "11111111-1111-1111-1111-111111111111"
+  autoscaling:
+    enable: true
+    triggerAuthentications:
+      - name: azure-monitor-auth
+        workloadIdentity:
+          provider: azure-workload
+          identityId: "11111111-1111-1111-1111-111111111111"
+      - name: queue-auth
+        secretTargetRef:
+          - parameter: connection
+            name: workload-secrets
+            key: queueConnectionString
+    triggers:
+      - type: cpu
+        metadata:
+          type: Utilization
+          value: "60"
+      - type: azure-monitor
+        authenticationRef:
+          name: azure-monitor-auth
+        metadata:
+          tenantId: <tenant-id>
+          subscriptionId: <subscription-id>
+          resourceGroupName: <resource-group>
+          resourceURI: <resource-uri>
+          metricName: <metric-name>
+          metricAggregationType: Count
+          targetValue: "30"
+      - type: azure-queue
+        authenticationRef:
+          name: queue-auth
+        metadata:
+          queueName: my-queue
+          queueLength: "5"
+```
+
+This approach is useful when the same `ScaledObject` needs different authentication strategies for different Keda scalers.
 
 ### `Workload Identity`
 

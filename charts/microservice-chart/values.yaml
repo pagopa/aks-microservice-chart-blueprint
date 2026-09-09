@@ -314,6 +314,8 @@ autoscaling:
   pollingInterval: 10 # seconds
   # -- Autoscaling cooldown period
   cooldownPeriod: 300 # seconds
+  # -- TriggerAuthentication resources to create for KEDA. Each item maps to the TriggerAuthentication spec; use workloadIdentity as the preferred alias for KEDA podIdentity. If exactly one item is configured, it is used as default authenticationRef for all triggers; if more than one is configured, set authenticationRef on each trigger that needs it.
+  triggerAuthentications: []
   # -- Autoscaling triggers as per [Keda scalers](https://keda.sh/docs/2.6/scalers/)
   triggers: []
   # -- Autoscaling advanced <https://keda.sh/docs/2.9/concepts/scaling-deployments/#advanced>
