@@ -302,37 +302,19 @@ spec:
           args:
             {{- toYaml .args | nindent 12 }}
           {{- end }}
+          {{- if or $.Values.initContainerEnvConfig (and $.Values.secretProviderClass.create $.Values.initContainerEnvSecret) }}
           env:
-            #envConfig
-            {{- if and $.Values.canaryDelivery.create (not $.Values.ingress.haproxy.create) }}
-            {{- range $key, $val := (mergeOverwrite $.Values.envConfig $.Values.canaryDelivery.envConfig) }}
+            #initContainerEnvConfig
+            {{- range $key, $val := $.Values.initContainerEnvConfig }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "microservice-chart.fullname" $ }}
+                  name: {{ include "microservice-chart.fullname" $ }}-init
                   key: {{ $key }}
             {{- end }}
-            {{- else }}
-            {{- range $key, $val := $.Values.envConfig }}
-            - name: {{ $key }}
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "microservice-chart.fullname" $ }}
-                  key: {{ $key }}
-            {{- end }}
-            {{- end }}
-            # Secret provider class
+            #initContainerEnvSecret
             {{- if $.Values.secretProviderClass.create }}
-            {{- if and $.Values.canaryDelivery.create (not $.Values.ingress.haproxy.create) }}
-            {{- range $name, $value := (mergeOverwrite $.Values.envSecret $.Values.canaryDelivery.envSecret) }}
-            - name: {{ $name }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "microservice-chart.fullname" $ }}
-                  key: {{ $value }}
-            {{- end }}
-            {{- else }}
-            {{- range $name, $value := $.Values.envSecret }}
+            {{- range $name, $value := $.Values.initContainerEnvSecret }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
@@ -340,7 +322,7 @@ spec:
                   key: {{ $value }}
             {{- end }}
             {{- end }}
-            {{- end }}
+          {{- end }}
           volumeMounts:
             #<tmp folders>
             {{- if .tmpVolumeMount.create }}
