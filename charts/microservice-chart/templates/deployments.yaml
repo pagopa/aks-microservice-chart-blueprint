@@ -302,6 +302,45 @@ spec:
           args:
             {{- toYaml .args | nindent 12 }}
           {{- end }}
+          env:
+            #envConfig
+            {{- if and $.Values.canaryDelivery.create (not $.Values.ingress.haproxy.create) }}
+            {{- range $key, $val := (mergeOverwrite $.Values.envConfig $.Values.canaryDelivery.envConfig) }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- else }}
+            {{- range $key, $val := $.Values.envConfig }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+            # Secret provider class
+            {{- if $.Values.secretProviderClass.create }}
+            {{- if and $.Values.canaryDelivery.create (not $.Values.ingress.haproxy.create) }}
+            {{- range $name, $value := (mergeOverwrite $.Values.envSecret $.Values.canaryDelivery.envSecret) }}
+            - name: {{ $name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $value }}
+            {{- end }}
+            {{- else }}
+            {{- range $name, $value := $.Values.envSecret }}
+            - name: {{ $name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $value }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
           volumeMounts:
             #<tmp folders>
             {{- if .tmpVolumeMount.create }}

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "🚀 init-containers-env-test"
+bash init-containers-env-test/run.sh
+echo "✅ init-containers-env-test"
+
 echo "🚀 v2-java-helm-complete-test"
 pushd v2-java-helm-complete-test/helm || exit
 sh run.sh

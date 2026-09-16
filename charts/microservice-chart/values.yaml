@@ -452,7 +452,7 @@ postman-test:
   # -- env variable name path (e.g `dev.postman_environment.json``)
   envVariablesFile: ""
 
-# -- Init Containers
+# -- Init Containers. Each container receives envConfig and envSecret entries
 initContainers: []
 
 # -- Azure File

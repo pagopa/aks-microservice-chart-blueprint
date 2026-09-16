@@ -74,7 +74,7 @@ A Helm chart for PagoPA microservice
 | ingress.proxyBodySize | string | `"1m"` | the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body |
 | ingress.rewriteTarget | string | `"/$1"` | the rewrite target for ingress |
 | ingress.servicePort | int | `8080` | service port to reach |
-| initContainers | list | `[]` | Init Containers |
+| initContainers | list | `[]` | Init Containers. Each container receives envConfig and envSecret entries |
 | keyvault | object | `{"name":"","tenantId":""}` | Configure keyvault to use inside secret prover to load secret directly |
 | keyvault.name | string | `""` | Key vault name |
 | keyvault.tenantId | string | `""` | Tenant ID |
