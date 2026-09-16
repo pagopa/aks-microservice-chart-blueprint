@@ -302,6 +302,27 @@ spec:
           args:
             {{- toYaml .args | nindent 12 }}
           {{- end }}
+          {{- if or $.Values.initContainerEnvConfig (and $.Values.secretProviderClass.create $.Values.initContainerEnvSecret) }}
+          env:
+            #initContainerEnvConfig
+            {{- range $key, $val := $.Values.initContainerEnvConfig }}
+            - name: {{ $key }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}-init
+                  key: {{ $key }}
+            {{- end }}
+            #initContainerEnvSecret
+            {{- if $.Values.secretProviderClass.create }}
+            {{- range $name, $value := $.Values.initContainerEnvSecret }}
+            - name: {{ $name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "microservice-chart.fullname" $ }}
+                  key: {{ $value }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
           volumeMounts:
             #<tmp folders>
             {{- if .tmpVolumeMount.create }}

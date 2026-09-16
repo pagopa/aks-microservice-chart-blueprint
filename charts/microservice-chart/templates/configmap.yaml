@@ -30,3 +30,15 @@ data:
 {{- end }}
 
 ---
+
+{{- if .Values.initContainerEnvConfig }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "microservice-chart.fullname" . }}-init
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
+data:
+  {{- toYaml .Values.initContainerEnvConfig | nindent 2 }}
+{{- end }}

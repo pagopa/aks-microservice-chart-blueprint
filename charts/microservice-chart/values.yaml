@@ -452,6 +452,12 @@ postman-test:
   # -- env variable name path (e.g `dev.postman_environment.json``)
   envVariablesFile: ""
 
+# -- Environment config to use for init containers
+initContainerEnvConfig: {}
+
+# -- Load secrets as environment variables for init containers
+initContainerEnvSecret: {}
+
 # -- Init Containers
 initContainers: []
 
