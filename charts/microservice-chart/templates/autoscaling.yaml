@@ -42,7 +42,7 @@ spec:
     {{- end }}
     {{- if .Values.autoscaling.advanced.horizontalPodAutoscalerConfig }}
     horizontalPodAutoscalerConfig:
-      name: {{ printf "keda-hpa-%s" (include "microservice-chart.fullname" $ | trunc 54 | trimSuffix "-") }}
+      name: {{ printf "keda-hpa-%s" (include "microservice-chart.fullname" $ | trunc 54 | trimSuffix "-") }} #name max length is 63 characters
       behavior:
         {{- .Values.autoscaling.advanced.horizontalPodAutoscalerConfig.behavior | toYaml | nindent 8 }}
     {{- end }}
