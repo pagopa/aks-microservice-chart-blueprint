@@ -807,8 +807,8 @@ sh /bin/setup
 
 Pre-commit requirements:
 
-- `brew isntall yamllint`
-- `brew isntall chart-testing`
+- `brew install yamllint`
+- `brew install chart-testing`
 - `brew install norwoodj/tap/helm-docs`
 
 ### Warning
