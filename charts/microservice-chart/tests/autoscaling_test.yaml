@@ -1,0 +1,166 @@
+suite: autoscaling (KEDA)
+templates:
+  - templates/autoscaling.yaml
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+set:
+  autoscaling.enable: true
+  autoscaling.minReplica: 1
+  autoscaling.maxReplica: 5
+  autoscaling.triggers:
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "60"
+tests:
+  - it: is not rendered when autoscaling is disabled
+    set:
+      autoscaling.enable: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: creates a default workload identity TriggerAuthentication used by all triggers
+    set:
+      azure.workloadIdentityClientId: 11111111-1111-1111-1111-111111111111
+    asserts:
+      - hasDocuments:
+          count: 2
+      - isKind:
+          of: TriggerAuthentication
+        documentIndex: 0
+      - equal:
+          path: spec.podIdentity
+          value:
+            provider: azure-workload
+            identityId: 11111111-1111-1111-1111-111111111111
+        documentIndex: 0
+      - isKind:
+          of: ScaledObject
+        documentIndex: 1
+      - equal:
+          path: spec.triggers[0].authenticationRef.name
+          value: myapp-microservice-chart
+        documentIndex: 1
+
+  - it: renders the ScaledObject spec
+    set:
+      autoscaling.advanced:
+        restoreToOriginalReplicaCount: true
+        horizontalPodAutoscalerConfig:
+          behavior:
+            scaleDown:
+              stabilizationWindowSeconds: 300
+    documentSelector:
+      path: kind
+      value: ScaledObject
+    asserts:
+      - equal:
+          path: spec.scaleTargetRef.name
+          value: myapp-microservice-chart
+      - equal:
+          path: spec.minReplicaCount
+          value: 1
+      - equal:
+          path: spec.maxReplicaCount
+          value: 5
+      - equal:
+          path: spec.triggers[0].type
+          value: cpu
+      - equal:
+          path: spec.triggers[0].metricType
+          value: Utilization
+      - equal:
+          path: spec.advanced.restoreToOriginalReplicaCount
+          value: true
+      - equal:
+          path: spec.advanced.horizontalPodAutoscalerConfig
+          value:
+            name: hpa-myapp-microservice-chart
+            behavior:
+              scaleDown:
+                stabilizationWindowSeconds: 300
+
+  - it: truncates the HPA name to 63 characters
+    set:
+      fullnameOverride: a-very-long-microservice-name-that-is-exactly-sixty-three-chars
+    documentSelector:
+      path: kind
+      value: ScaledObject
+    asserts:
+      - equal:
+          path: spec.advanced.horizontalPodAutoscalerConfig.name
+          value: hpa-a-very-long-microservice-name-that-is-exactly-sixty-three-c
+      - matchRegex:
+          path: spec.advanced.horizontalPodAutoscalerConfig.name
+          pattern: ^.{1,63}$
+
+  - it: uses a single custom TriggerAuthentication as default reference and maps workloadIdentity to podIdentity
+    set:
+      autoscaling.triggerAuthentications:
+        - name: my-auth
+          workloadIdentity:
+            provider: azure-workload
+            identityId: 11111111-1111-1111-1111-111111111111
+    asserts:
+      - hasDocuments:
+          count: 2
+      - equal:
+          path: metadata.name
+          value: my-auth
+        documentIndex: 0
+      - equal:
+          path: spec
+          value:
+            podIdentity:
+              provider: azure-workload
+              identityId: 11111111-1111-1111-1111-111111111111
+        documentIndex: 0
+      - equal:
+          path: spec.triggers[0].authenticationRef.name
+          value: my-auth
+        documentIndex: 1
+
+  - it: requires explicit references with multiple TriggerAuthentications
+    set:
+      autoscaling.triggerAuthentications:
+        - name: auth-a
+          workloadIdentity:
+            provider: azure-workload
+        - name: auth-b
+          secretTargetRef:
+            - parameter: connection
+              name: workload-secrets
+              key: connectionString
+      autoscaling.triggers:
+        - type: cpu
+          metricType: Utilization
+          metadata:
+            value: "60"
+        - type: azure-queue
+          authenticationRef:
+            name: auth-b
+          metadata:
+            queueName: my-queue
+    asserts:
+      - hasDocuments:
+          count: 3
+      - notExists:
+          path: spec.triggers[0].authenticationRef
+        documentIndex: 2
+      - equal:
+          path: spec.triggers[1].authenticationRef.name
+          value: auth-b
+        documentIndex: 2
+
+  - it: fails when a TriggerAuthentication has no name
+    set:
+      autoscaling.triggerAuthentications:
+        - workloadIdentity:
+            provider: azure-workload
+    asserts:
+      - failedTemplate:
+          errorPattern: autoscaling.triggerAuthentications\[0\].name is required

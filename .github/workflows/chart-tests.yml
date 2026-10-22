@@ -1,0 +1,82 @@
+name: 🧪 Chart Tests
+
+on:
+  pull_request:
+    paths:
+      - 'charts/**'
+      - '.github/workflows/chart-tests.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**'
+      - '.github/workflows/chart-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CHART_DIR: charts/microservice-chart
+  HELM_UNITTEST_VERSION: v1.0.3
+  KUBECONFORM_VERSION: v0.7.0
+  KUBECONFORM_SHA256: c31518ddd122663b3f3aa874cfe8178cb0988de944f29c74a0b9260920d115d3
+  KUBERNETES_VERSION: 1.35.8
+
+jobs:
+  unit-tests:
+    name: Unit tests (helm-unittest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Helm
+        # v4.2.0 - https://github.com/Azure/setup-helm/releases/tag/v4.2.0
+        uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814
+        with:
+          version: 'v3.16.3'
+
+      - name: Install helm-unittest
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest.git --version "${HELM_UNITTEST_VERSION}"
+
+      - name: Run unit tests
+        run: helm unittest "${CHART_DIR}"
+
+  manifest-validation:
+    name: Manifest validation (kubeconform)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up Helm
+        # v4.2.0 - https://github.com/Azure/setup-helm/releases/tag/v4.2.0
+        uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814
+        with:
+          version: 'v3.16.3'
+
+      - name: Install kubeconform
+        run: |
+          curl -sSLo kubeconform.tar.gz "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz"
+          echo "${KUBECONFORM_SHA256}  kubeconform.tar.gz" | sha256sum --check
+          tar xzf kubeconform.tar.gz kubeconform
+          sudo mv kubeconform /usr/local/bin/kubeconform
+          kubeconform -v
+
+      - name: Validate rendered manifests of every ci/ scenario
+        # CRD schemas (KEDA, SecretProviderClass, ServiceMonitor) come from the datreeio CRDs catalog.
+        shell: bash
+        run: |
+          status=0
+          for values in "${CHART_DIR}"/ci/*-values.yaml; do
+            echo "::group::${values}"
+            if ! helm template myapp "${CHART_DIR}" --namespace testit -f "${values}" \
+              | kubeconform -strict -summary \
+                  -kubernetes-version "${KUBERNETES_VERSION}" \
+                  -schema-location default \
+                  -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'; then
+              echo "::error file=${values}::kubeconform validation failed"
+              status=1
+            fi
+            echo "::endgroup::"
+          done
+          exit "${status}"

@@ -1,0 +1,132 @@
+suite: service, pdb, service account and service monitor
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+tests:
+  - it: renders a ClusterIP service for each port
+    template: templates/services.yaml
+    set:
+      service.ports: [8080, 9090]
+    asserts:
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports
+          value:
+            - name: app-port-8080-svc
+              port: 8080
+              targetPort: 8080
+              protocol: TCP
+            - name: app-port-9090-svc
+              port: 9090
+              targetPort: 9090
+              protocol: TCP
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/instance: myapp
+            canaryDelivery: "false"
+
+  - it: does not render the service when service.create is false
+    template: templates/services.yaml
+    set:
+      service.create: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders the PodDisruptionBudget with minAvailable
+    template: templates/pdb.yaml
+    set:
+      podDisruptionBudget.create: true
+      podDisruptionBudget.minAvailable: 1
+    asserts:
+      - isKind:
+          of: PodDisruptionBudget
+      - equal:
+          path: spec.minAvailable
+          value: 1
+      - notExists:
+          path: spec.maxUnavailable
+
+  - it: renders the PodDisruptionBudget with maxUnavailable
+    template: templates/pdb.yaml
+    set:
+      podDisruptionBudget.create: true
+      podDisruptionBudget.maxUnavailable: 50%
+    asserts:
+      - equal:
+          path: spec.maxUnavailable
+          value: 50%
+      - notExists:
+          path: spec.minAvailable
+
+  - it: does not render the service account by default
+    template: templates/serviceaccount.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders the service account and uses it in the deployment
+    templates:
+      - templates/serviceaccount.yaml
+      - templates/deployments.yaml
+    set:
+      serviceAccount.create: true
+      serviceAccount.name: myapp-sa
+      serviceAccount.annotations:
+        azure.workload.identity/client-id: 11111111-1111-1111-1111-111111111111
+    asserts:
+      - equal:
+          path: metadata.name
+          value: myapp-sa
+        template: templates/serviceaccount.yaml
+      - equal:
+          path: automountServiceAccountToken
+          value: false
+        template: templates/serviceaccount.yaml
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: myapp-sa
+        template: templates/deployments.yaml
+
+  - it: uses the default service account when none is configured
+    template: templates/deployments.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: default
+
+  - it: renders a prometheus-operator ServiceMonitor
+    template: templates/service-monitor.yaml
+    set:
+      serviceMonitor.create: true
+      serviceMonitor.endpoints:
+        - interval: 10s
+          targetPort: 9090
+          path: /metrics
+    asserts:
+      - isAPIVersion:
+          of: monitoring.coreos.com/v1
+      - equal:
+          path: metadata.labels.release
+          value: prometheus
+      - equal:
+          path: spec.endpoints
+          value:
+            - interval: 10s
+              targetPort: 9090
+              path: /metrics
+
+  - it: renders an Azure managed Prometheus ServiceMonitor
+    template: templates/service-monitor.yaml
+    set:
+      serviceMonitor.create: true
+      serviceMonitor.prometheusManaged: true
+    asserts:
+      - isAPIVersion:
+          of: azmonitoring.coreos.com/v1

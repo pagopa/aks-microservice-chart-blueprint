@@ -1,0 +1,1494 @@
+complete scenario:
+  1: |
+    raw: |
+      1. Get the application URL by running these commands:
+        export POD_NAME=$(kubectl get pods --namespace testit -l "app.kubernetes.io/name=microservice-chart,app.kubernetes.io/instance=myapp" -o jsonpath="{.items[0].metadata.name}")
+        export CONTAINER_PORT=$(kubectl get pod --namespace testit $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+        echo "Visit http://127.0.0.1:8080 to use your application"
+        kubectl --namespace testit port-forward $POD_NAME 8080:$CONTAINER_PORT
+  2: |
+    apiVersion: keda.sh/v1alpha1
+    kind: TriggerAuthentication
+    metadata:
+      name: myapp-microservice-chart-non-core
+      namespace: testit
+    spec:
+      podIdentity:
+        identityId: 11111111-1111-1111-1111-111111111111
+        provider: azure-workload
+  3: |
+    apiVersion: keda.sh/v1alpha1
+    kind: ScaledObject
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart-non-core
+      namespace: testit
+    spec:
+      advanced:
+        horizontalPodAutoscalerConfig:
+          behavior:
+            scaleDown:
+              stabilizationWindowSeconds: 300
+          name: hpa-myapp-microservice-chart-non-core
+        restoreToOriginalReplicaCount: true
+      cooldownPeriod: 300
+      maxReplicaCount: 3
+      minReplicaCount: 1
+      pollingInterval: 10
+      scaleTargetRef:
+        name: myapp-microservice-chart-non-core
+      triggers:
+        - authenticationRef:
+            name: myapp-microservice-chart-non-core
+          metadata:
+            value: "60"
+          metricType: Utilization
+          type: cpu
+        - authenticationRef:
+            name: myapp-microservice-chart-non-core
+          metadata:
+            desiredReplicas: "1"
+            end: 0 21 * * *
+            start: 0 7 * * *
+            timezone: Europe/Rome
+          type: cron
+  4: |
+    apiVersion: v1
+    data:
+      APP: foo
+      MY_APP_COLOR: green
+      logback.xml: |-
+        <configuration>
+          <root level="INFO" />
+        </configuration>
+    kind: ConfigMap
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart-non-core
+      namespace: testit
+  5: |
+    apiVersion: v1
+    data:
+      INIT_MODE: migrate
+    kind: ConfigMap
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart-non-core-init
+      namespace: testit
+  6: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart-non-core
+      namespace: testit
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 5
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: myapp
+          app.kubernetes.io/name: microservice-chart
+          canaryDelivery: "false"
+      strategy:
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+        type: RollingUpdate
+      template:
+        metadata:
+          annotations:
+            example.com/annotation: "true"
+          labels:
+            app.kubernetes.io/instance: myapp
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/version: 1.0.0
+            azure.workload.identity/use: "true"
+            canaryDelivery: "false"
+            critical: "false"
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: node_type
+                        operator: In
+                        values:
+                          - user
+          automountServiceAccountToken: false
+          containers:
+            - args:
+                - -jar
+                - /app/app.jar
+              command:
+                - java
+              env:
+                - name: APP
+                  valueFrom:
+                    configMapKeyRef:
+                      key: APP
+                      name: myapp-microservice-chart-non-core
+                - name: MY_APP_COLOR
+                  valueFrom:
+                    configMapKeyRef:
+                      key: MY_APP_COLOR
+                      name: myapp-microservice-chart-non-core
+                - name: MY_KV_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: my-kv-secret
+                      name: myapp-microservice-chart-non-core
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: DATABASE_DB_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      key: database-db-name
+                      name: shared-values
+              image: ghcr.io/pagopa/devops-java-springboot-color:1.0.0
+              imagePullPolicy: IfNotPresent
+              lifecycle:
+                preStop:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - sleep 10
+              livenessProbe:
+                failureThreshold: 6
+                httpGet:
+                  path: /status/live
+                  port: 8080
+                initialDelaySeconds: 1
+                periodSeconds: 10
+                successThreshold: 1
+                terminationGracePeriodSeconds: 30
+                timeoutSeconds: 1
+              name: microservice-chart
+              ports:
+                - containerPort: 8080
+                  name: app-port-8080
+                  protocol: TCP
+                - containerPort: 9090
+                  name: app-port-9090
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 1
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                tcpSocket:
+                  port: 8080
+                timeoutSeconds: 1
+              resources:
+                limits:
+                  cpu: 150m
+                  memory: 128Mi
+                requests:
+                  cpu: 40m
+                  memory: 96Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - all
+                readOnlyRootFilesystem: true
+              startupProbe:
+                exec:
+                  command:
+                    - /bin/sh
+                    - -c
+                    - test -f /tmp/ready
+                failureThreshold: 1
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                terminationGracePeriodSeconds: 30
+                timeoutSeconds: 1
+              volumeMounts:
+                - mountPath: /tmp
+                  name: tmp
+                - mountPath: /app/logs
+                  name: logs
+                - mountPath: /csv
+                  name: csv
+                - mountPath: /mnt/secrets-store
+                  name: secrets-store-inline
+                  readOnly: true
+                - mountPath: /mnt/file-config/logback.xml
+                  name: file-config
+                  readOnly: true
+                  subPath: logback.xml
+                - mountPath: /config/game.properties
+                  name: shared-files-0
+                  readOnly: true
+                  subPath: game.properties
+                - mountPath: /mnt/file-config-external/shared-files/user-interface.xml
+                  name: shared-files-1
+                  readOnly: true
+                  subPath: user-interface.xml
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "2"
+          hostAliases:
+            - hostnames:
+                - foo.local
+              ip: 127.0.0.1
+          imagePullSecrets:
+            - name: registry-credentials
+          initContainers:
+            - args:
+                - ./migrate.sh
+              command:
+                - /bin/sh
+                - -c
+              env:
+                - name: INIT_MODE
+                  valueFrom:
+                    configMapKeyRef:
+                      key: INIT_MODE
+                      name: myapp-microservice-chart-non-core-init
+                - name: INIT_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: init-db-password
+                      name: myapp-microservice-chart-non-core
+              image: ghcr.io/pagopa/migrations:1.0.0
+              imagePullPolicy: IfNotPresent
+              name: migrations
+              volumeMounts:
+                - mountPath: /tmp
+                  name: tmp
+          nodeSelector:
+            critical: "false"
+          restartPolicy: Always
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          serviceAccountName: testit-workload-identity
+          terminationGracePeriodSeconds: 30
+          tolerations:
+            - effect: NoSchedule
+              key: dedicated
+              operator: Equal
+              value: nonCritical
+            - effect: NoSchedule
+              key: example
+              operator: Exists
+          topologySpreadConstraints:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: myapp
+              maxSkew: 1
+              topologyKey: topology.kubernetes.io/zone
+              whenUnsatisfiable: DoNotSchedule
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: myapp
+              maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+          volumes:
+            - emptyDir: {}
+              name: tmp
+            - emptyDir: {}
+              name: logs
+            - name: csv
+              persistentVolumeClaim:
+                claimName: testit-file-share
+            - csi:
+                driver: secrets-store.csi.k8s.io
+                readOnly: true
+                volumeAttributes:
+                  secretProviderClass: myapp-microservice-chart-non-core
+              name: secrets-store-inline
+            - configMap:
+                defaultMode: 420
+                items:
+                  - key: logback.xml
+                    path: logback.xml
+                name: myapp-microservice-chart-non-core
+              name: file-config
+            - configMap:
+                defaultMode: 420
+                items:
+                  - key: game.properties
+                    path: game.properties
+                name: shared-files
+              name: shared-files-0
+            - configMap:
+                defaultMode: 420
+                items:
+                  - key: user-interface.xml
+                    path: user-interface.xml
+                name: shared-files
+              name: shared-files-1
+  7: |
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: 1m
+        nginx.ingress.kubernetes.io/rewrite-target: /$2
+        nginx.ingress.kubernetes.io/use-regex: "true"
+      name: myapp-microservice-chart-non-core
+      namespace: testit
+    spec:
+      ingressClassName: nginx
+      rules:
+        - host: testit.itn.internal.devopslab.pagopa.it
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: myapp-microservice-chart-non-core
+                    port:
+                      number: 8080
+                path: /testit/foo(/|$)(.*)
+                pathType: ImplementationSpecific
+      tls:
+        - hosts:
+            - testit.itn.internal.devopslab.pagopa.it
+          secretName: testit-itn-internal-devopslab-pagopa-it
+  8: |
+    apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+      name: myapp-microservice-chart-non-core
+      namespace: testit
+    spec:
+      minAvailable: 1
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: myapp
+          app.kubernetes.io/name: microservice-chart
+          canaryDelivery: "false"
+  9: |
+    apiVersion: secrets-store.csi.x-k8s.io/v1
+    kind: SecretProviderClass
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart-non-core
+      namespace: testit
+    spec:
+      parameters:
+        clientID: 11111111-1111-1111-1111-111111111111
+        cloudName: ""
+        keyvaultName: testit-kv
+        objects: |
+          array:
+            - |
+              objectName: my-kv-secret
+              objectType: secret
+              objectVersion: ""
+            - |
+              objectName: init-db-password
+              objectType: secret
+              objectVersion: ""
+        tenantId: 22222222-2222-2222-2222-222222222222
+        usePodIdentity: "false"
+      provider: azure
+      secretObjects:
+        - data:
+            - key: my-kv-secret
+              objectName: my-kv-secret
+            - key: init-db-password
+              objectName: init-db-password
+          secretName: myapp-microservice-chart-non-core
+          type: Opaque
+  10: |
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+        release: prometheus
+      name: myapp-microservice-chart-non-core
+      namespace: testit
+    spec:
+      endpoints:
+        - interval: 10s
+          path: /metrics
+          targetPort: 9090
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: myapp
+          app.kubernetes.io/name: microservice-chart
+          canaryDelivery: "false"
+  11: |
+    apiVersion: v1
+    automountServiceAccountToken: false
+    kind: ServiceAccount
+    metadata:
+      annotations:
+        azure.workload.identity/client-id: 11111111-1111-1111-1111-111111111111
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: testit-workload-identity
+      namespace: testit
+  12: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart-non-core
+      namespace: testit
+    spec:
+      ports:
+        - name: app-port-8080-svc
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+        - name: app-port-9090-svc
+          port: 9090
+          protocol: TCP
+          targetPort: 9090
+      selector:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/name: microservice-chart
+        canaryDelivery: "false"
+      type: ClusterIP
+haproxy canary scenario:
+  1: |
+    raw: |
+      1. Get the application URL by running these commands:
+        export POD_NAME=$(kubectl get pods --namespace testit -l "app.kubernetes.io/name=microservice-chart,app.kubernetes.io/instance=myapp" -o jsonpath="{.items[0].metadata.name}")
+        export CONTAINER_PORT=$(kubectl get pod --namespace testit $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+        echo "Visit http://127.0.0.1:8080 to use your application"
+        kubectl --namespace testit port-forward $POD_NAME 8080:$CONTAINER_PORT
+  2: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        haproxy.org/backend-config-snippet: http-request replace-path ^/testit/foo/?(.*) /
+        haproxy.org/route-acl: hdr(X-Canary) -m str enabled
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart-canary-hdr
+      namespace: null
+    spec:
+      ports:
+        - name: app-port-8080-svc
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/name: microservice-chart
+        canaryDelivery: "true"
+      type: ClusterIP
+  3: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        haproxy.org/backend-config-snippet: http-request replace-path ^/testit/foo/?(.*) /
+        haproxy.org/route-acl: rand(100) lt 20
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart-canary-wt
+      namespace: null
+    spec:
+      ports:
+        - name: app-port-8080-svc
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/name: microservice-chart
+        canaryDelivery: "true"
+      type: ClusterIP
+  4: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart-canary
+      namespace: null
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: myapp
+          app.kubernetes.io/name: microservice-chart
+          canaryDelivery: "true"
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: myapp
+            app.kubernetes.io/name: microservice-chart
+            canaryDelivery: "true"
+        spec:
+          automountServiceAccountToken: false
+          containers:
+            - env:
+                - name: COLOR
+                  value: blue
+                - name: CANARY
+                  value: "true"
+                - name: MY_KV_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: my-kv-secret
+                      name: myapp-microservice-chart
+              image: ghcr.io/pagopa/devops-java-springboot-color:1.1.0
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                terminationGracePeriodSeconds: 30
+                timeoutSeconds: 1
+              name: microservice-chart-canary
+              ports:
+                - containerPort: 8080
+                  name: app-port-8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                limits:
+                  cpu: 150m
+                  memory: 128Mi
+                requests:
+                  cpu: 40m
+                  memory: 96Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - all
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - mountPath: /tmp
+                  name: tmp
+                - mountPath: /mnt/secrets-store
+                  name: secrets-store-inline
+                  readOnly: true
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          serviceAccountName: default
+          volumes:
+            - emptyDir: {}
+              name: tmp
+            - csi:
+                driver: secrets-store.csi.k8s.io
+                readOnly: true
+                volumeAttributes:
+                  secretProviderClass: myapp-microservice-chart
+              name: secrets-store-inline
+  5: |
+    apiVersion: v1
+    data:
+      COLOR: green
+    kind: ConfigMap
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+  6: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 3
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: myapp
+          app.kubernetes.io/name: microservice-chart
+          canaryDelivery: "false"
+      strategy:
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: myapp
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/version: 1.0.0
+            azure.workload.identity/use: "true"
+            canaryDelivery: "false"
+            critical: "true"
+        spec:
+          automountServiceAccountToken: false
+          containers:
+            - env:
+                - name: COLOR
+                  valueFrom:
+                    configMapKeyRef:
+                      key: COLOR
+                      name: myapp-microservice-chart
+                - name: MY_KV_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: my-kv-secret
+                      name: myapp-microservice-chart
+              image: ghcr.io/pagopa/devops-java-springboot-color:1.0.0
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                terminationGracePeriodSeconds: 30
+                timeoutSeconds: 1
+              name: microservice-chart
+              ports:
+                - containerPort: 8080
+                  name: app-port-8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                limits:
+                  cpu: 150m
+                  memory: 128Mi
+                requests:
+                  cpu: 40m
+                  memory: 96Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - all
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - mountPath: /tmp
+                  name: tmp
+                - mountPath: /mnt/secrets-store
+                  name: secrets-store-inline
+                  readOnly: true
+          restartPolicy: Always
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          serviceAccountName: default
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - emptyDir: {}
+              name: tmp
+            - csi:
+                driver: secrets-store.csi.k8s.io
+                readOnly: true
+                volumeAttributes:
+                  secretProviderClass: myapp-microservice-chart
+              name: secrets-store-inline
+  7: |
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        haproxy.org/ssl-redirect: "true"
+        kubernetes.io/ingress.class: haproxy
+      name: myapp-microservice-chart-haproxy
+      namespace: null
+    spec:
+      ingressClassName: haproxy
+      rules:
+        - host: testit.itn.internal.devopslab.pagopa.it
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: myapp-microservice-chart-canary-hdr
+                    port:
+                      number: 8080
+                path: /testit/foo
+                pathType: ImplementationSpecific
+              - backend:
+                  service:
+                    name: myapp-microservice-chart-canary-wt
+                    port:
+                      number: 8080
+                path: /testit/foo
+                pathType: ImplementationSpecific
+              - backend:
+                  service:
+                    name: myapp-microservice-chart
+                    port:
+                      number: 8080
+                path: /testit/foo
+                pathType: ImplementationSpecific
+      tls:
+        - hosts:
+            - testit.itn.internal.devopslab.pagopa.it
+          secretName: testit-itn-internal-devopslab-pagopa-it
+  8: |
+    apiVersion: secrets-store.csi.x-k8s.io/v1
+    kind: SecretProviderClass
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      parameters:
+        clientID: 11111111-1111-1111-1111-111111111111
+        cloudName: ""
+        keyvaultName: testit-kv
+        objects: |
+          array:
+            - |
+              objectName: my-kv-secret
+              objectType: secret
+              objectVersion: ""
+        tenantId: 22222222-2222-2222-2222-222222222222
+        usePodIdentity: "false"
+      provider: azure
+      secretObjects:
+        - data:
+            - key: my-kv-secret
+              objectName: my-kv-secret
+          secretName: myapp-microservice-chart
+          type: Opaque
+  9: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        haproxy.org/backend-config-snippet: http-request replace-path ^/testit/foo/?(.*) /
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      ports:
+        - name: app-port-8080-svc
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/name: microservice-chart
+        canaryDelivery: "false"
+      type: ClusterIP
+keda multiple trigger authentication scenario:
+  1: |
+    raw: |
+      1. Get the application URL by running these commands:
+        export POD_NAME=$(kubectl get pods --namespace testit -l "app.kubernetes.io/name=microservice-chart,app.kubernetes.io/instance=myapp" -o jsonpath="{.items[0].metadata.name}")
+        export CONTAINER_PORT=$(kubectl get pod --namespace testit $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+        echo "Visit http://127.0.0.1:8080 to use your application"
+        kubectl --namespace testit port-forward $POD_NAME 8080:$CONTAINER_PORT
+  2: |
+    apiVersion: keda.sh/v1alpha1
+    kind: TriggerAuthentication
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: azure-monitor-auth
+      namespace: null
+    spec:
+      podIdentity:
+        identityId: 11111111-1111-1111-1111-111111111111
+        provider: azure-workload
+  3: |
+    apiVersion: keda.sh/v1alpha1
+    kind: TriggerAuthentication
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: queue-auth
+      namespace: null
+    spec:
+      secretTargetRef:
+        - key: queueConnectionString
+          name: workload-secrets
+          parameter: connection
+  4: |
+    apiVersion: keda.sh/v1alpha1
+    kind: ScaledObject
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      advanced:
+        horizontalPodAutoscalerConfig:
+          name: hpa-myapp-microservice-chart
+      cooldownPeriod: 300
+      maxReplicaCount: 3
+      minReplicaCount: 0
+      pollingInterval: 10
+      scaleTargetRef:
+        name: myapp-microservice-chart
+      triggers:
+        - authenticationRef:
+            name: azure-monitor-auth
+          metadata:
+            metricAggregationType: Count
+            metricName: ServiceApiHit
+            resourceGroupName: my-rg
+            resourceURI: Microsoft.KeyVault/vaults/my-kv
+            subscriptionId: 33333333-3333-3333-3333-333333333333
+            targetValue: "30"
+            tenantId: 22222222-2222-2222-2222-222222222222
+          type: azure-monitor
+        - authenticationRef:
+            name: queue-auth
+          metadata:
+            queueLength: "5"
+            queueName: my-queue
+          type: azure-queue
+  5: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 3
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: myapp
+          app.kubernetes.io/name: microservice-chart
+          canaryDelivery: "false"
+      strategy:
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: myapp
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/version: 1.0.0
+            azure.workload.identity/use: "true"
+            canaryDelivery: "false"
+            critical: "true"
+        spec:
+          automountServiceAccountToken: false
+          containers:
+            - env: null
+              image: ghcr.io/pagopa/devops-java-springboot-color:1.0.0
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                terminationGracePeriodSeconds: 30
+                timeoutSeconds: 1
+              name: microservice-chart
+              ports:
+                - containerPort: 8080
+                  name: app-port-8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                limits:
+                  cpu: 150m
+                  memory: 128Mi
+                requests:
+                  cpu: 40m
+                  memory: 96Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - all
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - mountPath: /tmp
+                  name: tmp
+          restartPolicy: Always
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          serviceAccountName: default
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - emptyDir: {}
+              name: tmp
+  6: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      ports:
+        - name: app-port-8080-svc
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/name: microservice-chart
+        canaryDelivery: "false"
+      type: ClusterIP
+minimal scenario:
+  1: |
+    raw: |
+      1. Get the application URL by running these commands:
+        export POD_NAME=$(kubectl get pods --namespace testit -l "app.kubernetes.io/name=microservice-chart,app.kubernetes.io/instance=myapp" -o jsonpath="{.items[0].metadata.name}")
+        export CONTAINER_PORT=$(kubectl get pod --namespace testit $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+        echo "Visit http://127.0.0.1:8080 to use your application"
+        kubectl --namespace testit port-forward $POD_NAME 8080:$CONTAINER_PORT
+  2: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 3
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: myapp
+          app.kubernetes.io/name: microservice-chart
+          canaryDelivery: "false"
+      strategy:
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: myapp
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/version: 1.0.0
+            azure.workload.identity/use: "true"
+            canaryDelivery: "false"
+            critical: "true"
+        spec:
+          automountServiceAccountToken: false
+          containers:
+            - env: null
+              image: ghcr.io/pagopa/devops-java-springboot-color:1.0.0
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                terminationGracePeriodSeconds: 30
+                timeoutSeconds: 1
+              name: microservice-chart
+              ports:
+                - containerPort: 8080
+                  name: app-port-8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                limits:
+                  cpu: 150m
+                  memory: 128Mi
+                requests:
+                  cpu: 40m
+                  memory: 96Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - all
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - mountPath: /tmp
+                  name: tmp
+          restartPolicy: Always
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          serviceAccountName: default
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - emptyDir: {}
+              name: tmp
+  3: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      ports:
+        - name: app-port-8080-svc
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/name: microservice-chart
+        canaryDelivery: "false"
+      type: ClusterIP
+nginx canary scenario:
+  1: |
+    raw: |
+      1. Get the application URL by running these commands:
+        export POD_NAME=$(kubectl get pods --namespace testit -l "app.kubernetes.io/name=microservice-chart,app.kubernetes.io/instance=myapp" -o jsonpath="{.items[0].metadata.name}")
+        export CONTAINER_PORT=$(kubectl get pod --namespace testit $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+        echo "Visit http://127.0.0.1:8080 to use your application"
+        kubectl --namespace testit port-forward $POD_NAME 8080:$CONTAINER_PORT
+  2: |
+    apiVersion: v1
+    data:
+      CANARY: "true"
+      COLOR: blue
+    kind: ConfigMap
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+  3: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 3
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: myapp
+          app.kubernetes.io/name: microservice-chart
+          canaryDelivery: "false"
+      strategy:
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: myapp
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/version: 1.0.0
+            azure.workload.identity/use: "true"
+            canaryDelivery: "false"
+            critical: "true"
+        spec:
+          automountServiceAccountToken: false
+          containers:
+            - env:
+                - name: COLOR
+                  valueFrom:
+                    configMapKeyRef:
+                      key: COLOR
+                      name: myapp-microservice-chart
+                - name: MY_KV_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: my-kv-secret
+                      name: myapp-microservice-chart
+                - name: CANARY
+                  valueFrom:
+                    configMapKeyRef:
+                      key: CANARY
+                      name: myapp-microservice-chart
+              image: ghcr.io/pagopa/devops-java-springboot-color:1.1.0
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                terminationGracePeriodSeconds: 30
+                timeoutSeconds: 1
+              name: microservice-chart
+              ports:
+                - containerPort: 8080
+                  name: app-port-8080
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 1
+                httpGet:
+                  path: /alive
+                  port: 9999
+                initialDelaySeconds: 1
+                periodSeconds: 1
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                limits:
+                  cpu: 150m
+                  memory: 128Mi
+                requests:
+                  cpu: 40m
+                  memory: 96Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - all
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - mountPath: /tmp
+                  name: tmp
+                - mountPath: /mnt/secrets-store
+                  name: secrets-store-inline
+                  readOnly: true
+          restartPolicy: Always
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          serviceAccountName: default
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - emptyDir: {}
+              name: tmp
+            - csi:
+                driver: secrets-store.csi.k8s.io
+                readOnly: true
+                volumeAttributes:
+                  secretProviderClass: myapp-microservice-chart
+              name: secrets-store-inline
+  4: |
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      annotations:
+        nginx.ingress.kubernetes.io/canary: "true"
+        nginx.ingress.kubernetes.io/canary-by-header: X-Canary
+        nginx.ingress.kubernetes.io/canary-by-header-value: enabled
+        nginx.ingress.kubernetes.io/canary-weight: "10"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: 1m
+        nginx.ingress.kubernetes.io/rewrite-target: /$2
+        nginx.ingress.kubernetes.io/use-regex: "true"
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      ingressClassName: nginx
+      rules:
+        - host: testit.itn.internal.devopslab.pagopa.it
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: myapp-microservice-chart
+                    port:
+                      number: 8080
+                path: /testit/foo(/|$)(.*)
+                pathType: ImplementationSpecific
+      tls:
+        - hosts:
+            - testit.itn.internal.devopslab.pagopa.it
+          secretName: testit-itn-internal-devopslab-pagopa-it
+  5: |
+    apiVersion: secrets-store.csi.x-k8s.io/v1
+    kind: SecretProviderClass
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      parameters:
+        clientID: 11111111-1111-1111-1111-111111111111
+        cloudName: ""
+        keyvaultName: testit-kv
+        objects: |
+          array:
+            - |
+              objectName: my-kv-secret
+              objectType: secret
+              objectVersion: ""
+        tenantId: 22222222-2222-2222-2222-222222222222
+        usePodIdentity: "false"
+      provider: azure
+      secretObjects:
+        - data:
+            - key: my-kv-secret
+              objectName: my-kv-secret
+          secretName: myapp-microservice-chart
+          type: Opaque
+  6: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
+      name: myapp-microservice-chart
+      namespace: null
+    spec:
+      ports:
+        - name: app-port-8080-svc
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/name: microservice-chart
+        canaryDelivery: "false"
+      type: ClusterIP

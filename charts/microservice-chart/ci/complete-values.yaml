@@ -1,0 +1,191 @@
+# Most features enabled together (nginx ingress, KEDA with default TriggerAuthentication, Key Vault secrets,
+# config maps, volumes, init containers, scheduling for non critical workloads).
+namespace: testit
+
+image:
+  repository: ghcr.io/pagopa/devops-java-springboot-color
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  name: registry-credentials
+
+critical: false
+
+deployment:
+  revisionHistoryLimit: 5
+  ndots: 2
+  hostAliases:
+    - ip: "127.0.0.1"
+      hostnames:
+        - foo.local
+  topologySpreadConstraints:
+    create: true
+    useDefaultConfiguration: true
+
+serviceAccount:
+  create: true
+  name: testit-workload-identity
+  annotations:
+    azure.workload.identity/client-id: "11111111-1111-1111-1111-111111111111"
+
+azure:
+  workloadIdentityClientId: "11111111-1111-1111-1111-111111111111"
+
+keyvault:
+  name: testit-kv
+  tenantId: "22222222-2222-2222-2222-222222222222"
+
+envConfig:
+  APP: foo
+  MY_APP_COLOR: "green"
+
+envSecret:
+  MY_KV_SECRET: my-kv-secret
+
+envFieldRef:
+  POD_NAME: metadata.name
+
+initContainerEnvConfig:
+  INIT_MODE: "migrate"
+
+initContainerEnvSecret:
+  INIT_DB_PASSWORD: init-db-password
+
+initContainers:
+  - name: migrations
+    image:
+      repository: ghcr.io/pagopa/migrations
+      tag: "1.0.0"
+      pullPolicy: IfNotPresent
+    command: ["/bin/sh", "-c"]
+    args: ["./migrate.sh"]
+    tmpVolumeMount:
+      create: true
+      mounts:
+        - name: tmp
+          mountPath: /tmp
+
+configMapFromFile:
+  logback.xml: |-
+    <configuration>
+      <root level="INFO" />
+    </configuration>
+
+externalConfigMapFiles:
+  create: true
+  configMaps:
+    - name: shared-files
+      key: game.properties
+      mountPath: /config/game.properties
+    - name: shared-files
+      key: user-interface.xml
+
+externalConfigMapValues:
+  shared-values:
+    DATABASE_DB_NAME: database-db-name
+
+tmpVolumeMount:
+  create: true
+  mounts:
+    - name: tmp
+      mountPath: /tmp
+    - name: logs
+      mountPath: /app/logs
+
+persistentVolumeClaimsMounts:
+  create: true
+  mounts:
+    - name: csv
+      mountPath: /csv
+      pvcName: testit-file-share
+
+container:
+  command: ["java"]
+  args: ["-jar", "/app/app.jar"]
+
+livenessProbe:
+  httpGet:
+    path: /status/live
+    port: 8080
+  periodSeconds: 10
+  failureThreshold: 6
+
+readinessProbe:
+  handlerType: tcpSocket
+  tcpSocket:
+    port: 8080
+
+startupProbe:
+  create: true
+  handlerType: exec
+  exec:
+    command: ["/bin/sh", "-c", "test -f /tmp/ready"]
+
+lifecycle:
+  preStop:
+    create: true
+    command: ["/bin/sh", "-c", "sleep 10"]
+
+podAnnotations:
+  example.com/annotation: "true"
+
+tolerations:
+  - key: example
+    operator: Exists
+    effect: NoSchedule
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node_type
+              operator: In
+              values:
+                - user
+
+service:
+  ports:
+    - 8080
+    - 9090
+
+ingress:
+  create: true
+  host: testit.itn.internal.devopslab.pagopa.it
+  path: /testit/foo(/|$)(.*)
+  rewriteTarget: /$2
+  servicePort: 8080
+
+serviceMonitor:
+  create: true
+  endpoints:
+    - interval: 10s
+      targetPort: 9090
+      path: /metrics
+
+podDisruptionBudget:
+  create: true
+  minAvailable: 1
+
+autoscaling:
+  enable: true
+  minReplica: 1
+  maxReplica: 3
+  triggers:
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "60"
+    - type: cron
+      metadata:
+        timezone: Europe/Rome
+        start: 0 7 * * *
+        end: 0 21 * * *
+        desiredReplicas: "1"
+  advanced:
+    restoreToOriginalReplicaCount: true
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 300

@@ -1,0 +1,410 @@
+suite: deployment
+templates:
+  - templates/deployments.yaml
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+set:
+  image.repository: ghcr.io/pagopa/app
+  image.tag: "1.0.0"
+tests:
+  - it: is not rendered when deployment.create is false
+    set:
+      deployment.create: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders the container with image, pull policy and ports
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: myapp-microservice-chart
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/pagopa/app:1.0.0
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Always
+      - equal:
+          path: spec.template.spec.containers[0].ports
+          value:
+            - name: app-port-8080
+              containerPort: 8080
+              protocol: TCP
+
+  - it: applies the default pod and container security context
+    asserts:
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+      - equal:
+          path: spec.template.spec.securityContext.seccompProfile.type
+          value: RuntimeDefault
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem
+          value: true
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation
+          value: false
+
+  - it: uses the selector labels on both selector and pod template
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/instance: myapp
+            canaryDelivery: "false"
+      - isSubset:
+          path: spec.template.metadata.labels
+          content:
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/instance: myapp
+            canaryDelivery: "false"
+            azure.workload.identity/use: "true"
+            critical: "true"
+
+  - it: sets replicas and revision history from deployment values
+    set:
+      deployment.replicas: 3
+      deployment.revisionHistoryLimit: 5
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+      - equal:
+          path: spec.revisionHistoryLimit
+          value: 5
+
+  - it: renders the default httpGet liveness and readiness probes
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet
+          value:
+            path: /alive
+            port: 9999
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet
+          value:
+            path: /alive
+            port: 9999
+      - notExists:
+          path: spec.template.spec.containers[0].startupProbe
+
+  - it: renders tcpSocket and exec probe handlers
+    set:
+      livenessProbe.handlerType: tcpSocket
+      readinessProbe.handlerType: exec
+      readinessProbe.exec.command: ["/bin/sh", "-c", "true"]
+      startupProbe.create: true
+      startupProbe.handlerType: tcpSocket
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.tcpSocket.port
+          value: 9999
+      - notExists:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.exec.command
+          value: ["/bin/sh", "-c", "true"]
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.tcpSocket.port
+          value: 9999
+
+  - it: disables the probes when create is false
+    set:
+      livenessProbe.create: false
+      readinessProbe.create: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].livenessProbe
+      - notExists:
+          path: spec.template.spec.containers[0].readinessProbe
+
+  - it: renders the preStop lifecycle hook
+    set:
+      lifecycle.preStop.create: true
+      lifecycle.preStop.command: ["/bin/sh", "-c", "sleep 10"]
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].lifecycle.preStop.exec.command
+          value: ["/bin/sh", "-c", "sleep 10"]
+
+  - it: maps envConfig, envSecret and envFieldRef to env vars
+    set:
+      envConfig:
+        APP_COLOR: green
+      envSecret:
+        DB_PASSWORD: db-password
+      envFieldRef:
+        POD_NAME: metadata.name
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: APP_COLOR
+            valueFrom:
+              configMapKeyRef:
+                name: myapp-microservice-chart
+                key: APP_COLOR
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myapp-microservice-chart
+                key: db-password
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+
+  - it: ignores envSecret when the SecretProviderClass is disabled
+    set:
+      secretProviderClass.create: false
+      envSecret:
+        DB_PASSWORD: db-password
+    asserts:
+      - isNullOrEmpty:
+          path: spec.template.spec.containers[0].env
+      - notContains:
+          path: spec.template.spec.volumes
+          any: true
+          content:
+            name: secrets-store-inline
+
+  - it: maps externalConfigMapValues to configMapKeyRef env vars
+    set:
+      externalConfigMapValues:
+        shared-values:
+          DATABASE_DB_NAME: database-db-name
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: shared-values
+                key: database-db-name
+
+  - it: mounts the secrets store CSI volume by default
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: secrets-store-inline
+            mountPath: /mnt/secrets-store
+            readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: secrets-store-inline
+            csi:
+              driver: secrets-store.csi.k8s.io
+              readOnly: true
+              volumeAttributes:
+                secretProviderClass: myapp-microservice-chart
+
+  - it: mounts tmp, pvc, configMapFromFile and external config map volumes
+    set:
+      persistentVolumeClaimsMounts:
+        create: true
+        mounts:
+          - name: csv
+            mountPath: /csv
+            pvcName: my-pvc
+      configMapFromFile:
+        logback.xml: "<configuration />"
+      externalConfigMapFiles:
+        create: true
+        configMaps:
+          - name: shared-files
+            key: game.properties
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: tmp
+            mountPath: /tmp
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: tmp
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: csv
+            persistentVolumeClaim:
+              claimName: my-pvc
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: file-config
+            mountPath: /mnt/file-config/logback.xml
+            subPath: logback.xml
+            readOnly: true
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: shared-files-0
+            mountPath: /mnt/file-config-external/shared-files/game.properties
+            subPath: game.properties
+            readOnly: true
+
+  - it: adds suffix, toleration and nodeSelector for non critical workloads
+    set:
+      critical: false
+      tolerations:
+        - key: example
+          operator: Exists
+          effect: NoSchedule
+    asserts:
+      - equal:
+          path: metadata.name
+          value: myapp-microservice-chart-non-core
+      - equal:
+          path: spec.template.metadata.labels.critical
+          value: "false"
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            critical: "false"
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - key: dedicated
+              operator: Equal
+              value: nonCritical
+              effect: NoSchedule
+            - key: example
+              operator: Exists
+              effect: NoSchedule
+
+  - it: renders the default topology spread constraints
+    set:
+      deployment.topologySpreadConstraints.create: true
+      deployment.topologySpreadConstraints.useDefaultConfiguration: true
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.topologySpreadConstraints
+          count: 2
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints[0].topologyKey
+          value: topology.kubernetes.io/zone
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints[1].topologyKey
+          value: kubernetes.io/hostname
+
+  - it: renders custom topology spread constraints
+    set:
+      deployment.topologySpreadConstraints.create: true
+      deployment.topologySpreadConstraints.config:
+        - maxSkew: 2
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+    asserts:
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints
+          value:
+            - maxSkew: 2
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+
+  - it: renders ndots, hostAliases and imagePullSecrets
+    set:
+      deployment.ndots: 2
+      deployment.hostAliases:
+        - ip: 127.0.0.1
+          hostnames: [foo.local]
+      imagePullSecrets.name: registry-credentials
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig.options
+          value:
+            - name: ndots
+              value: "2"
+      - equal:
+          path: spec.template.spec.hostAliases
+          value:
+            - ip: 127.0.0.1
+              hostnames: [foo.local]
+      - equal:
+          path: spec.template.spec.imagePullSecrets
+          value:
+            - name: registry-credentials
+
+  - it: adds a redeploy label when forceRedeploy is enabled
+    set:
+      deployment.forceRedeploy: true
+    asserts:
+      - exists:
+          path: spec.template.metadata.labels.redeploy
+
+  - it: renders init containers with their env vars
+    set:
+      initContainerEnvConfig:
+        INIT_MODE: migrate
+      initContainerEnvSecret:
+        INIT_DB_PASSWORD: init-db-password
+      initContainers:
+        - name: migrations
+          image:
+            repository: ghcr.io/pagopa/migrations
+            tag: "1.0.0"
+            pullPolicy: IfNotPresent
+          tmpVolumeMount:
+            create: true
+            mounts:
+              - name: tmp
+                mountPath: /tmp
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: ghcr.io/pagopa/migrations:1.0.0
+      - contains:
+          path: spec.template.spec.initContainers[0].env
+          content:
+            name: INIT_MODE
+            valueFrom:
+              configMapKeyRef:
+                name: myapp-microservice-chart-init
+                key: INIT_MODE
+      - contains:
+          path: spec.template.spec.initContainers[0].env
+          content:
+            name: INIT_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myapp-microservice-chart
+                key: init-db-password
+
+  - it: uses the canary image in the legacy nginx canary mode
+    set:
+      canaryDelivery.create: true
+      canaryDelivery.image.repository: ghcr.io/pagopa/app
+      canaryDelivery.image.tag: "1.1.0"
+      canaryDelivery.envConfig: {}
+      canaryDelivery.envSecret: {}
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/pagopa/app:1.1.0
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: CANARY
+            valueFrom:
+              configMapKeyRef:
+                name: myapp-microservice-chart
+                key: CANARY

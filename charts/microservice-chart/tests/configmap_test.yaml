@@ -1,0 +1,61 @@
+suite: configmap
+templates:
+  - templates/configmap.yaml
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+tests:
+  - it: is not rendered without envConfig, configMapFromFile and initContainerEnvConfig
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: stores envConfig and configMapFromFile in the same ConfigMap
+    set:
+      envConfig:
+        APP_COLOR: green
+      configMapFromFile:
+        logback.xml: "<configuration />"
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: myapp-microservice-chart
+      - equal:
+          path: data
+          value:
+            APP_COLOR: green
+            logback.xml: "<configuration />"
+
+  - it: renders a dedicated ConfigMap for init containers
+    set:
+      initContainerEnvConfig:
+        INIT_MODE: migrate
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: myapp-microservice-chart-init
+      - equal:
+          path: data.INIT_MODE
+          value: migrate
+
+  - it: merges canary envConfig and adds CANARY in the legacy nginx canary mode
+    set:
+      envConfig:
+        COLOR: green
+        COMMON: same
+      canaryDelivery.create: true
+      canaryDelivery.envConfig:
+        COLOR: blue
+    asserts:
+      - equal:
+          path: data
+          value:
+            CANARY: "true"
+            COLOR: blue
+            COMMON: same
