@@ -59,3 +59,12 @@ tests:
             CANARY: "true"
             COLOR: blue
             COMMON: same
+
+  - it: envConfig booleans are converted to strings
+    set:
+      envConfig:
+        enabled: true
+    asserts:
+      - equal:
+          path: data.enabled
+          value: "true"

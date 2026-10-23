@@ -276,7 +276,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: {{ $key }}
-                  key: {{ $internVal }}
+                  key: {{ $internVal | toString | quote }}
             {{- end }}
             {{- end }}
         {{- with .Values.sidecars }}
