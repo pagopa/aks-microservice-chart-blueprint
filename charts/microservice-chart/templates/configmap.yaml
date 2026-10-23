@@ -18,8 +18,8 @@ data:
   {{- end }}
   {{- end }}
   {{- else }}
-  {{- if .Values.envConfig -}}
-  {{- toYaml .Values.envConfig | nindent 2 }}
+  {{- range $k, $v := .Values.envConfig }}
+  {{ $k }}: {{ $v | toString | quote }}
   {{- end }}
   {{- if .Values.configMapFromFile -}}
   {{- range $key, $value := .Values.configMapFromFile }}
@@ -40,5 +40,7 @@ metadata:
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
 data:
-  {{- toYaml .Values.initContainerEnvConfig | nindent 2 }}
+  {{- range $k, $v := .Values.initContainerEnvConfig }}
+  {{ $k }}: {{ $v | toString | quote }}
+  {{- end }}
 {{- end }}

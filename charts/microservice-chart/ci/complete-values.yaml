@@ -39,6 +39,8 @@ keyvault:
 envConfig:
   APP: foo
   MY_APP_COLOR: "green"
+  TEST_CM: true
+  TEST_CM_PORT: 8090
 
 envSecret:
   MY_KV_SECRET: my-kv-secret
@@ -84,6 +86,9 @@ externalConfigMapFiles:
 externalConfigMapValues:
   shared-values:
     DATABASE_DB_NAME: database-db-name
+  test-values:
+    DEBUG: true
+    DEBUG_PORT: 8088
 
 tmpVolumeMount:
   create: true

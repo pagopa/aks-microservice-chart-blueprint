@@ -203,7 +203,7 @@ spec:
           env:
             {{- range $key, $val := (mergeOverwrite .Values.envConfig .Values.canaryDelivery.envConfig) }}
             - name: {{ $key }}
-              value: {{ $val | quote }}
+              value: {{ $val | toString | quote }}
             {{- end }}
             - name: CANARY
               value: "true"

@@ -65,6 +65,8 @@ complete scenario:
     data:
       APP: foo
       MY_APP_COLOR: green
+      TEST_CM: "true"
+      TEST_CM_PORT: "8090"
       logback.xml: |-
         <configuration>
           <root level="INFO" />
@@ -168,6 +170,16 @@ complete scenario:
                     configMapKeyRef:
                       key: MY_APP_COLOR
                       name: myapp-microservice-chart-non-core
+                - name: TEST_CM
+                  valueFrom:
+                    configMapKeyRef:
+                      key: TEST_CM
+                      name: myapp-microservice-chart-non-core
+                - name: TEST_CM_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      key: TEST_CM_PORT
+                      name: myapp-microservice-chart-non-core
                 - name: MY_KV_SECRET
                   valueFrom:
                     secretKeyRef:
@@ -182,6 +194,16 @@ complete scenario:
                     configMapKeyRef:
                       key: database-db-name
                       name: shared-values
+                - name: DEBUG
+                  valueFrom:
+                    configMapKeyRef:
+                      key: "true"
+                      name: test-values
+                - name: DEBUG_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      key: "8088"
+                      name: test-values
               image: ghcr.io/pagopa/devops-java-springboot-color:1.0.0
               imagePullPolicy: IfNotPresent
               lifecycle:
