@@ -88,9 +88,7 @@ microservice-chart:
     servicePort: 8080
 
   serviceAccount:
-    create: false
-    annotations: {}
-    name: ""
+    name: testit-workload-identity
 
   podAnnotations: {}
 

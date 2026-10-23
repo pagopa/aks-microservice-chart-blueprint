@@ -409,17 +409,17 @@ canaryDelivery:
       # -- the weight percent used into canary deployment. Can be used toghether with header
     weightPercent: 0
 
-    image:
-      # -- Docker reposity for the container canary
-      repository: ""
-      # -- Container TAG
-      tag: ""
+  image:
+    # -- Docker reposity for the container canary
+    repository: ""
+    # -- Container TAG
+    tag: ""
 
-    # -- Environment config to use for the canary container
-    envConfig: { }
+  # -- Environment config to use for the canary container
+  envConfig: { }
 
-    # -- Load secrets as environment variables from kv for the canary container
-    envSecret: { }
+  # -- Load secrets as environment variables from kv for the canary container
+  envSecret: { }
 
 
 # -- generate PodDisruptionBudget

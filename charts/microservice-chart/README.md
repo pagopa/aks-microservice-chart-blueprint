@@ -24,13 +24,13 @@ A Helm chart for PagoPA microservice
 | azureFile | object | `{"create":false}` | Azure File |
 | canaryDelivery | object | - | This section allow to configure canary deployment |
 | canaryDelivery.create | bool | `false` | Beta/Enable Canary/BlueGreen Deployment |
-| canaryDelivery.ingress | object | `{"bluegreen":false,"envConfig":{},"envSecret":{},"header":true,"headerName":"X-Canary","headerValue":"pagopa","image":{"repository":"","tag":""},"weightPercent":0}` | Configure how ingress canary should be |
-| canaryDelivery.ingress.envConfig | object | `{}` | Environment config to use for the canary container |
-| canaryDelivery.ingress.envSecret | object | `{}` | Load secrets as environment variables from kv for the canary container |
+| canaryDelivery.envConfig | object | `{}` | Environment config to use for the canary container |
+| canaryDelivery.envSecret | object | `{}` | Load secrets as environment variables from kv for the canary container |
+| canaryDelivery.image.repository | string | `""` | Docker reposity for the container canary |
+| canaryDelivery.image.tag | string | `""` | Container TAG |
+| canaryDelivery.ingress | object | `{"bluegreen":false,"header":true,"headerName":"X-Canary","headerValue":"pagopa","weightPercent":0}` | Configure how ingress canary should be |
 | canaryDelivery.ingress.headerName | string | `"X-Canary"` | the header name used to call the canary deployment |
 | canaryDelivery.ingress.headerValue | string | `"pagopa"` | the header values used to call the canary deployment |
-| canaryDelivery.ingress.image.repository | string | `""` | Docker reposity for the container canary |
-| canaryDelivery.ingress.image.tag | string | `""` | Container TAG |
 | canaryDelivery.ingress.weightPercent | int | `0` | the weight percent used into canary deployment. Can be used toghether with header |
 | configMapFromFile | object | `{}` | Configure files to mount as config map. This files definition are inside the values*.yaml file |
 | configMapFromFileCustomPath | string | `"/mnt/file-config"` | CustomPath to allow to choose where to put your files |
