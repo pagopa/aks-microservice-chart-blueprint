@@ -1,6 +1,34 @@
 <!-- markdownlint-disable MD029  -->
 # Migration guide
 
+## Migrating from v8.?.? to v8.8.0
+In the autoscaling object, the type field in the triggers must be modified like the following example:
+
+**before**
+```yaml
+autoscaling:
+  ...
+  triggers:
+    - type: cpu
+      metadata:
+        # Required
+        type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+        value: "75"
+...
+```
+**after**
+```yaml
+autoscaling:
+  ...
+  triggers:
+    - type: cpu
+      # Required
+      metricType: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+      metadata:
+        value: "75"
+...
+```
+
 ## Migrating from v5.x/v7.x to v8.x
 
 > This version fixes KEDA helm managing, regarding the helm manifest to support delete.
