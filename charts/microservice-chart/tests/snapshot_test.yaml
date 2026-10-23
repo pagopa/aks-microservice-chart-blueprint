@@ -1,0 +1,34 @@
+# Full-render snapshots of the ci/ scenarios: any change in the rendered manifests shows up as a snapshot diff.
+# Update them on purpose with: helm unittest -u charts/microservice-chart
+suite: snapshot of the ci scenarios
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+tests:
+  - it: minimal scenario
+    values:
+      - ../ci/minimal-values.yaml
+    asserts:
+      - matchSnapshot: {}
+  - it: complete scenario
+    values:
+      - ../ci/complete-values.yaml
+    asserts:
+      - matchSnapshot: {}
+  - it: keda multiple trigger authentication scenario
+    values:
+      - ../ci/keda-multiple-trigger-auth-values.yaml
+    asserts:
+      - matchSnapshot: {}
+  - it: haproxy canary scenario
+    values:
+      - ../ci/haproxy-canary-values.yaml
+    asserts:
+      - matchSnapshot: {}
+  - it: nginx canary scenario
+    values:
+      - ../ci/nginx-canary-values.yaml
+    asserts:
+      - matchSnapshot: {}

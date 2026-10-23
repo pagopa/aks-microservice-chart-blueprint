@@ -811,6 +811,41 @@ Pre-commit requirements:
 - `brew install chart-testing`
 - `brew install norwoodj/tap/helm-docs`
 
+### Tests
+
+Every pull request that touches `charts/**` runs the [Chart Tests](.github/workflows/chart-tests.yml) workflow:
+
+- **Unit tests** with [helm-unittest](https://github.com/helm-unittest/helm-unittest): the suites live in
+  `charts/microservice-chart/tests/`. `snapshot_test.yaml` renders every `ci/` scenario and compares it with
+  `tests/__snapshot__/`, so any change in the generated manifests shows up as a diff in the PR.
+- **Manifest validation** with [kubeconform](https://github.com/yannh/kubeconform): every
+  `charts/microservice-chart/ci/*-values.yaml` scenario is rendered and validated against the Kubernetes and CRD
+  (KEDA, SecretProviderClass, ServiceMonitor) schemas.
+
+The `ci/*-values.yaml` scenarios are also used by `ct lint` in pre-commit.
+
+Run them locally:
+
+```shell
+helm plugin install https://github.com/helm-unittest/helm-unittest.git --version v1.0.3  # Helm 4: add --verify=false
+brew install kubeconform
+
+# unit tests
+helm unittest charts/microservice-chart
+
+# update the snapshots after an intended change to the templates, then review the diff
+helm unittest -u charts/microservice-chart
+
+# manifest validation of a scenario
+helm template myapp charts/microservice-chart -f charts/microservice-chart/ci/complete-values.yaml \
+  | kubeconform -strict -summary -kubernetes-version 1.35.8 \
+      -schema-location default \
+      -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+```
+
+When you add a feature, add a test case to the matching suite and, if it is a new combination of values, a new
+`ci/<name>-values.yaml` scenario plus its entry in `tests/snapshot_test.yaml`.
+
 ### Warning
 
 Setup script installs a version manager tool that may introduce

@@ -1,0 +1,40 @@
+# KEDA with multiple TriggerAuthentication resources referenced explicitly by the triggers.
+image:
+  repository: ghcr.io/pagopa/devops-java-springboot-color
+  tag: "1.0.0"
+
+secretProviderClass:
+  create: false
+
+autoscaling:
+  enable: true
+  minReplica: 0
+  maxReplica: 3
+  triggerAuthentications:
+    - name: azure-monitor-auth
+      workloadIdentity:
+        provider: azure-workload
+        identityId: "11111111-1111-1111-1111-111111111111"
+    - name: queue-auth
+      secretTargetRef:
+        - parameter: connection
+          name: workload-secrets
+          key: queueConnectionString
+  triggers:
+    - type: azure-monitor
+      authenticationRef:
+        name: azure-monitor-auth
+      metadata:
+        tenantId: "22222222-2222-2222-2222-222222222222"
+        subscriptionId: "33333333-3333-3333-3333-333333333333"
+        resourceGroupName: my-rg
+        resourceURI: Microsoft.KeyVault/vaults/my-kv
+        metricName: ServiceApiHit
+        metricAggregationType: Count
+        targetValue: "30"
+    - type: azure-queue
+      authenticationRef:
+        name: queue-auth
+      metadata:
+        queueName: my-queue
+        queueLength: "5"

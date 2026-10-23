@@ -1,0 +1,168 @@
+suite: haproxy ingress and canary
+templates:
+  - templates/ingress-haproxy.yml
+  - templates/canary-haproxy.yaml
+  - templates/services.yaml
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+set:
+  ingress.haproxy.create: true
+  ingress.haproxy.host: myapp.example.com
+  ingress.haproxy.path: /myapp
+tests:
+  - it: renders the haproxy ingress pointing to the main service
+    template: templates/ingress-haproxy.yml
+    asserts:
+      - equal:
+          path: metadata.name
+          value: myapp-microservice-chart-haproxy
+      - equal:
+          path: spec.ingressClassName
+          value: haproxy
+      - equal:
+          path: metadata.annotations["haproxy.org/ssl-redirect"]
+          value: "true"
+      - equal:
+          path: spec.rules[0].http.paths
+          value:
+            - backend:
+                service:
+                  name: myapp-microservice-chart
+                  port:
+                    number: 8080
+              path: /myapp
+              pathType: ImplementationSpecific
+      - equal:
+          path: spec.tls[0].secretName
+          value: myapp-example-com
+
+  - it: adds the path rewrite snippet to the main service
+    template: templates/services.yaml
+    set:
+      ingress.haproxy.rewriteTarget: /
+    asserts:
+      - equal:
+          path: metadata.annotations["haproxy.org/backend-config-snippet"]
+          value: http-request replace-path ^/myapp/?(.*) /
+  - it: uses backendAnnotations instead of the generated snippet
+    template: templates/services.yaml
+    set:
+      ingress.haproxy.rewriteTarget: /
+      ingress.haproxy.backendAnnotations:
+        haproxy.org/backend-config-snippet: custom
+    asserts:
+      - equal:
+          path: metadata.annotations
+          value:
+            haproxy.org/backend-config-snippet: custom
+
+  - it: does not render canary resources when canary delivery is disabled
+    template: templates/canary-haproxy.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: routes canary traffic by header and weight with two services
+    set: &canary
+      canaryDelivery.create: true
+      canaryDelivery.ingress.header: true
+      canaryDelivery.ingress.headerName: X-Canary
+      canaryDelivery.ingress.headerValue: enabled
+      canaryDelivery.ingress.weightPercent: 20
+      canaryDelivery.image.repository: ghcr.io/pagopa/app
+      canaryDelivery.image.tag: "1.1.0"
+      canaryDelivery.envConfig: {}
+      canaryDelivery.envSecret: {}
+    template: templates/canary-haproxy.yaml
+    asserts:
+      - hasDocuments:
+          count: 3
+      - equal:
+          path: metadata.name
+          value: myapp-microservice-chart-canary-hdr
+        documentIndex: 0
+      - equal:
+          path: metadata.annotations["haproxy.org/route-acl"]
+          value: hdr(X-Canary) -m str enabled
+        documentIndex: 0
+      - equal:
+          path: metadata.name
+          value: myapp-microservice-chart-canary-wt
+        documentIndex: 1
+      - equal:
+          path: metadata.annotations["haproxy.org/route-acl"]
+          value: rand(100) lt 20
+        documentIndex: 1
+      - equal:
+          path: spec.selector.canaryDelivery
+          value: "true"
+        documentIndex: 1
+
+  - it: renders the canary deployment with the canary image and env
+    set:
+      <<: *canary
+      envConfig:
+        COLOR: green
+      canaryDelivery.envConfig:
+        COLOR: blue
+    template: templates/canary-haproxy.yaml
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - equal:
+          path: metadata.name
+          value: myapp-microservice-chart-canary
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/pagopa/app:1.1.0
+      - equal:
+          path: spec.selector.matchLabels.canaryDelivery
+          value: "true"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: COLOR
+            value: blue
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: CANARY
+            value: "true"
+
+  - it: adds canary backends before the main backend in the ingress
+    set:
+      <<: *canary
+    template: templates/ingress-haproxy.yml
+    asserts:
+      - lengthEqual:
+          path: spec.rules[0].http.paths
+          count: 3
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.name
+          value: myapp-microservice-chart-canary-hdr
+      - equal:
+          path: spec.rules[0].http.paths[1].backend.service.name
+          value: myapp-microservice-chart-canary-wt
+      - equal:
+          path: spec.rules[0].http.paths[2].backend.service.name
+          value: myapp-microservice-chart
+
+  - it: uses a single canary service with header only
+    set:
+      <<: *canary
+      canaryDelivery.ingress.weightPercent: 0
+    template: templates/canary-haproxy.yaml
+    documentSelector:
+      path: kind
+      value: Service
+    asserts:
+      - equal:
+          path: metadata.name
+          value: myapp-microservice-chart-canary
+      - equal:
+          path: metadata.annotations["haproxy.org/route-acl"]
+          value: hdr(X-Canary) -m str enabled

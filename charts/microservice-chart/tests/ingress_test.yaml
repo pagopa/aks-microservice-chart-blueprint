@@ -1,0 +1,84 @@
+suite: nginx ingress
+templates:
+  - templates/ingress.yaml
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+set:
+  ingress.create: true
+  ingress.host: myapp.example.com
+  ingress.path: /myapp(/|$)(.*)
+  ingress.rewriteTarget: /$2
+tests:
+  - it: is not rendered when ingress.create is false
+    set:
+      ingress.create: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders the nginx ingress with TLS
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: nginx
+      - isSubset:
+          path: metadata.annotations
+          content:
+            nginx.ingress.kubernetes.io/use-regex: "true"
+            nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+            nginx.ingress.kubernetes.io/proxy-body-size: 1m
+            nginx.ingress.kubernetes.io/rewrite-target: /$2
+      - equal:
+          path: spec.rules[0]
+          value:
+            host: myapp.example.com
+            http:
+              paths:
+                - backend:
+                    service:
+                      name: myapp-microservice-chart
+                      port:
+                        number: 8080
+                  path: /myapp(/|$)(.*)
+                  pathType: ImplementationSpecific
+      - equal:
+          path: spec.tls
+          value:
+            - hosts: [myapp.example.com]
+              secretName: myapp-example-com
+
+  - it: adds custom annotations
+    set:
+      ingress.annotations:
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    asserts:
+      - equal:
+          path: metadata.annotations["nginx.ingress.kubernetes.io/proxy-read-timeout"]
+          value: "120"
+
+  - it: adds canary annotations by header and weight
+    set:
+      canaryDelivery.create: true
+      canaryDelivery.ingress.headerName: X-Canary
+      canaryDelivery.ingress.headerValue: enabled
+      canaryDelivery.ingress.weightPercent: 10
+    asserts:
+      - isSubset:
+          path: metadata.annotations
+          content:
+            nginx.ingress.kubernetes.io/canary: "true"
+            nginx.ingress.kubernetes.io/canary-by-header: X-Canary
+            nginx.ingress.kubernetes.io/canary-by-header-value: enabled
+            nginx.ingress.kubernetes.io/canary-weight: "10"
+
+  - it: prefixes the path with /beta in bluegreen mode
+    set:
+      canaryDelivery.create: true
+      canaryDelivery.ingress.bluegreen: true
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /beta/myapp(/|$)(.*)
