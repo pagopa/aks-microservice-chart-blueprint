@@ -1,0 +1,127 @@
+# Replicas on install and upgrade. The live Deployments returned by `lookup` are mocked with kubernetesProvider
+# (replicas as !!float: the fake client cannot deep copy plain YAML ints).
+suite: deployment replicas
+templates:
+  - templates/deployments.yaml
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+set:
+  image.repository: ghcr.io/pagopa/app
+  image.tag: "1.0.0"
+kubernetesProvider:
+  scheme:
+    "apps/v1/Deployment":
+      gvr:
+        group: apps
+        version: v1
+        resource: deployments
+      namespaced: true
+  objects:
+    - apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: myapp-microservice-chart
+        namespace: testit
+      spec:
+        replicas: !!float 5
+    - apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: scaled-to-zero
+        namespace: testit
+      spec:
+        replicas: !!float 0
+tests:
+  - it: uses deployment.replicas on install
+    set:
+      deployment.replicas: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: allows zero replicas when autoscaling is disabled
+    set:
+      deployment.replicas: 0
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 0
+
+  - it: uses one replica when deployment.replicas is empty and autoscaling is disabled
+    set:
+      deployment.replicas: null
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+
+  - it: applies a deployment.replicas change on upgrade when autoscaling is disabled
+    release:
+      upgrade: true
+    set:
+      deployment.replicas: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: keeps the replicas of the live Deployment on upgrade when autoscaling is enabled
+    release:
+      upgrade: true
+    set:
+      deployment.replicas: 3
+      autoscaling.enable: true
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 5
+
+  - it: keeps zero replicas when KEDA scaled the live Deployment to zero
+    release:
+      upgrade: true
+    set:
+      fullnameOverride: scaled-to-zero
+      autoscaling.enable: true
+      autoscaling.minReplica: 0
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 0
+
+  - it: looks up the live Deployment in .Values.namespace when it differs from the release namespace
+    release:
+      upgrade: true
+      namespace: default
+    set:
+      namespace: testit
+      autoscaling.enable: true
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 5
+
+  - it: falls back to deployment.replicas on upgrade when the live Deployment does not exist
+    release:
+      upgrade: true
+    set:
+      fullnameOverride: another-app
+      deployment.replicas: 2
+      autoscaling.enable: true
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 2
+
+  - it: falls back to autoscaling.minReplica on install when deployment.replicas is not set
+    set:
+      deployment.replicas: null
+      autoscaling.enable: true
+      autoscaling.minReplica: 2
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 2
