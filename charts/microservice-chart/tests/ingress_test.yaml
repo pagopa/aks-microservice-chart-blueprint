@@ -82,3 +82,27 @@ tests:
       - equal:
           path: spec.rules[0].http.paths[0].path
           value: /beta/myapp(/|$)(.*)
+
+  - it: does not add the nginx canary annotations when the canary uses the HAProxy ingress
+    set:
+      ingress.haproxy.create: true
+      ingress.haproxy.host: myapp.example.com
+      canaryDelivery.create: true
+      canaryDelivery.ingress.header: true
+      canaryDelivery.ingress.headerName: X-Canary
+      canaryDelivery.ingress.headerValue: enabled
+      canaryDelivery.ingress.weightPercent: 20
+      canaryDelivery.ingress.bluegreen: true
+    asserts:
+      - notExists:
+          path: metadata.annotations["nginx.ingress.kubernetes.io/canary"]
+      - notExists:
+          path: metadata.annotations["nginx.ingress.kubernetes.io/canary-by-header"]
+      - notExists:
+          path: metadata.annotations["nginx.ingress.kubernetes.io/canary-weight"]
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /myapp(/|$)(.*)
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.name
+          value: myapp-microservice-chart

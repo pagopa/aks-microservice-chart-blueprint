@@ -188,3 +188,14 @@ Renders nothing when there are no annotations.
 haproxy.org/backend-config-snippet: {{ printf "http-request replace-path ^%s/?(.*) %s" $haproxy.path $haproxy.rewriteTarget | quote }}
 {{- end }}
 {{- end }}
+
+{{/*
+"true" in the legacy nginx canary mode: canaryDelivery.create without the HAProxy ingress.
+This release runs the canary image and its nginx Ingress is the canary Ingress of the stable release.
+With the HAProxy ingress the canary is an extra Deployment of this release (canary-haproxy.yaml) instead.
+*/}}
+{{- define "microservice-chart.nginxCanary" -}}
+{{- if and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create) -}}
+true
+{{- end }}
+{{- end }}
