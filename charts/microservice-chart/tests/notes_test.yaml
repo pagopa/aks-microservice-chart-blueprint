@@ -1,0 +1,42 @@
+suite: NOTES.txt
+templates:
+  - templates/NOTES.txt
+release:
+  name: myapp
+  namespace: release-ns
+chart:
+  version: 0.0.0-test
+tests:
+  - it: uses the first service port and the chart namespace for ClusterIP
+    set:
+      namespace: testit
+      service.ports: [9090, 8080]
+    asserts:
+      - matchRegexRaw:
+          pattern: kubectl --namespace testit port-forward \$POD_NAME 9090:9090
+      - matchRegexRaw:
+          pattern: Visit http://127.0.0.1:9090
+      - notMatchRegexRaw:
+          pattern: release-ns
+
+  - it: falls back to the release namespace when namespace is not set
+    asserts:
+      - matchRegexRaw:
+          pattern: kubectl --namespace release-ns port-forward \$POD_NAME 8080:8080
+
+  - it: prints the service port for LoadBalancer
+    set:
+      service.type: LoadBalancer
+      service.ports: [9090]
+    asserts:
+      - matchRegexRaw:
+          pattern: echo http://\$SERVICE_IP:9090
+      - notMatchRegexRaw:
+          pattern: "SERVICE_IP:\\s*$"
+
+  - it: prints the NodePort commands
+    set:
+      service.type: NodePort
+    asserts:
+      - matchRegexRaw:
+          pattern: services myapp-microservice-chart

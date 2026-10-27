@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 8.8.10
+
+fix: [PAYMCLOUD-1382] externalConfigMapValues and NOTES.txt
+
+- `externalConfigMapValues`: default and documentation now describe the supported format
+  `<configmap name>: {<ENV VAR NAME>: <key>}` (the old comment suggested a list that rendered invalid env vars);
+  a non empty list now fails with an explicit error, the old empty default `configMaps: []` is ignored
+- `NOTES.txt`: uses the first `service.ports` entry instead of the non existing `service.port`, and the chart
+  `namespace` (falling back to the release namespace)
+
 ## 8.8.9
 
 fix: [PAYMCLOUD-1381] SecretProviderClass
@@ -9,6 +19,69 @@ fix: [PAYMCLOUD-1381] SecretProviderClass
 - a Key Vault secret referenced more than once (`envSecret`, `initContainerEnvSecret`, `providedVolumeMount.envSecret`) is loaded once:
   duplicated objects were rejected by the CSI driver
 - empty `clientID`, `keyvaultName` and `tenantId` are rendered as empty strings instead of `null`
+
+## 8.8.8
+
+fix: [PAYMCLOUD-1380] HAProxy canary pod labels
+
+- the pods of the HAProxy canary Deployment get the `azure.workload.identity/use` label (when `azure.workloadIdentityEnabled`)
+  and the `critical` label, like the stable pods: without the first one the workload identity token was not injected
+  and the canary application could not authenticate to Azure
+
+## 8.8.7
+
+fix: [PAYMCLOUD-1379] Init containers
+
+- `tmpVolumeMount` is optional: an init container without it failed with a nil pointer error
+- `image.pullPolicy` and `image.tag` are optional, `name` and `image.repository` are required with an explicit error
+- `volumeMounts` is rendered only when there is something to mount
+- new per init container fields: `env` (Kubernetes EnvVar list, added after `initContainerEnvConfig`/`initContainerEnvSecret`),
+  `volumeMounts` (any pod volume: Key Vault secrets, PVCs, config maps, Azure File shares), `securityContext` and `resources`.
+  securityContext and resources are not inherited from the main container
+
+## 8.8.6
+
+fix: [PAYMCLOUD-1378] azureFile
+
+- new `azureFile.mounts[].mountPath`: when set, the share is also mounted in the main container (before the volume was
+  created but never mounted); without it the volume can still be mounted by the init containers
+- new `azureFile.secretName` to use an existing Secret with a custom name (default `<fullname>-azure-file`)
+- `readOnly` defaults to `false`, `name` and `shareName` are required with an explicit error
+- `azureFile` documented in `values.yaml` and README
+
+## 8.8.5
+
+fix: [PAYMCLOUD-1377] Deployment replicas
+
+- with autoscaling disabled, `deployment.replicas` is always applied (on upgrade the current replicas of the
+  Deployment were kept, so changing it had no effect); `deployment.replicas: 0` is allowed
+- with autoscaling enabled, the replicas set by KEDA are kept on upgrade, including 0 (scale to zero was reset to 1),
+  and the live Deployment is looked up in the chart `namespace`
+
+## 8.8.4
+
+fix: [PAYMCLOUD-1376] Environment variable values as strings
+
+- `envConfig` and `initContainerEnvConfig` values are rendered as quoted strings in the ConfigMaps: numbers and
+  booleans (e.g. `PORT: 8080`) made the API server reject the ConfigMap
+- canary env values and `externalConfigMapValues` keys are rendered as strings too
+
+## 8.8.3
+
+fix: [PAYMCLOUD-1375] canaryDelivery values
+
+- `canaryDelivery.image`, `canaryDelivery.envConfig` and `canaryDelivery.envSecret` are declared at `canaryDelivery`
+  level in `values.yaml`, where the templates read them: they were nested under `canaryDelivery.ingress`, so enabling
+  `canaryDelivery.create` with the defaults failed with a nil pointer error
+
+chore: [PAYMCLOUD-1374] Chart tests in CI (no chart change)
+
+- helm-unittest suites and kubeconform validation of the `ci/` scenarios on every pull request (`Chart Tests` workflow)
+- chart `.helmignore` to keep the tests out of the packaged chart
+
+## 8.1.2 - 8.8.2
+
+Not documented here, see the [GitHub releases](https://github.com/pagopa/aks-microservice-chart-blueprint/releases).
 
 ## 8.1.1
 
