@@ -687,7 +687,9 @@ haproxy canary scenario:
           labels:
             app.kubernetes.io/instance: myapp
             app.kubernetes.io/name: microservice-chart
+            azure.workload.identity/use: "true"
             canaryDelivery: "true"
+            critical: "true"
         spec:
           automountServiceAccountToken: false
           containers:

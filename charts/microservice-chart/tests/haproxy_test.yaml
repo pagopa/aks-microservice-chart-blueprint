@@ -166,3 +166,36 @@ tests:
       - equal:
           path: metadata.annotations["haproxy.org/route-acl"]
           value: hdr(X-Canary) -m str enabled
+
+  - it: adds the workload identity and critical labels to the canary pods
+    set:
+      <<: *canary
+    template: templates/canary-haproxy.yaml
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - isSubset:
+          path: spec.template.metadata.labels
+          content:
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/instance: myapp
+            canaryDelivery: "true"
+            azure.workload.identity/use: "true"
+            critical: "true"
+
+  - it: omits the workload identity label and marks non critical canary pods
+    set:
+      <<: *canary
+      azure.workloadIdentityEnabled: false
+      critical: false
+    template: templates/canary-haproxy.yaml
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - notExists:
+          path: spec.template.metadata.labels["azure.workload.identity/use"]
+      - equal:
+          path: spec.template.metadata.labels.critical
+          value: "false"

@@ -140,6 +140,10 @@ spec:
         app.kubernetes.io/name: {{ include "microservice-chart.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
         canaryDelivery: "true"
+        {{- if .Values.azure.workloadIdentityEnabled }}
+        azure.workload.identity/use: "true"
+        {{- end }}
+        critical: {{ .Values.critical | quote }}
     spec:
       automountServiceAccountToken: false
       serviceAccountName: {{ include "microservice-chart.serviceAccountName" . }}
