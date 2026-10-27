@@ -1,10 +1,4 @@
-# Minimal configuration: only the mandatory image is set.
-# secretProviderClass is disabled because with the defaults it renders an invalid SecretProviderClass
-# (empty Key Vault, no objects).
+# Minimal configuration: only the mandatory image is set, everything else uses the chart defaults.
 image:
   repository: ghcr.io/pagopa/devops-java-springboot-color
   tag: "1.0.0"
-
-# TOFIX Remove this override when fixed (BP-08).
-secretProviderClass:
-  create: false

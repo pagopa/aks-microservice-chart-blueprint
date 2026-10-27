@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.8.7](https://img.shields.io/badge/Version-8.8.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.8.8](https://img.shields.io/badge/Version-8.8.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -141,8 +141,8 @@ A Helm chart for PagoPA microservice
 | resources.requests.cpu | string | `"40m"` | cpu |
 | resources.requests.memory | string | `"96Mi"` | memory |
 | restartPolicy | string | `"Always"` | Restart policy |
-| secretProviderClass | object | `{"create":true}` | Configure secret provider with secrets to mount as environment variables |
-| secretProviderClass.create | bool | `true` | create |
+| secretProviderClass | object | `{"create":true}` | SecretProviderClass that loads the Key Vault secrets (envSecret, initContainerEnvSecret, providedVolumeMount.envSecret) |
+| secretProviderClass.create | bool | `true` | Enable the SecretProviderClass. It is created, together with the `secrets-store-inline` volume, only when at least one secret is configured |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["all"]},"readOnlyRootFilesystem":true}` | securityContext |
 | securityContext.allowPrivilegeEscalation | bool | `false` | allowPrivilegeEscalation |
 | securityContext.capabilities | object | `{"drop":["all"]}` | capabilities |

@@ -197,7 +197,23 @@ tests:
                 name: shared-values
                 key: database-db-name
 
-  - it: mounts the secrets store CSI volume by default
+  - it: does not mount the secrets store CSI volume when there are no secrets
+    asserts:
+      - notContains:
+          path: spec.template.spec.volumes
+          any: true
+          content:
+            name: secrets-store-inline
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          any: true
+          content:
+            name: secrets-store-inline
+
+  - it: mounts the secrets store CSI volume when there are secrets
+    set:
+      envSecret:
+        DB_PASSWORD: db-password
     asserts:
       - contains:
           path: spec.template.spec.containers[0].volumeMounts

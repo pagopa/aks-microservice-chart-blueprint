@@ -247,9 +247,9 @@ container:
   command: []
   args: []
 
-# -- Configure secret provider with secrets to mount as environment variables
+# -- SecretProviderClass that loads the Key Vault secrets (envSecret, initContainerEnvSecret, providedVolumeMount.envSecret)
 secretProviderClass:
-  # -- create
+  # -- (bool) Enable the SecretProviderClass. It is created, together with the `secrets-store-inline` volume, only when at least one secret is configured
   create: true
 
 # -- Configure keyvault to use inside secret prover to load secret directly

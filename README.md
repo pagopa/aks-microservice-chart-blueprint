@@ -420,6 +420,13 @@ Is possible to load env variables inside the pod, with the creation of a configm
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 ```
 
+The secrets of `envSecret`, `initContainerEnvSecret` and `providedVolumeMount.envSecret` are loaded by a single
+`SecretProviderClass`, also mounted as files in `/mnt/secrets-store`:
+
+- the `SecretProviderClass` and the `secrets-store-inline` volume are created only when at least one secret is
+  configured (and `secretProviderClass.create` is `true`);
+- a Key Vault secret referenced more than once (e.g. by the application and by an init container) is loaded once.
+
 ### `imagePullSecret`: use a Secret to pull an image from a private container image registry or repository.
 
 Specify a name of the secret to pull the image from a private registry.
