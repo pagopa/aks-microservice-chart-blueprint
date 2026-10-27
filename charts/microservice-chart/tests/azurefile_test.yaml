@@ -1,0 +1,98 @@
+suite: azure file volumes
+templates:
+  - templates/deployments.yaml
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+set:
+  image.repository: ghcr.io/pagopa/app
+  image.tag: "1.0.0"
+  azureFile.create: true
+  azureFile.mounts:
+    - name: shared-data
+      shareName: shared-data
+      mountPath: /mnt/shared-data
+      readOnly: true
+    - name: certificates
+      shareName: certificates
+tests:
+  - it: does not render Azure File volumes by default
+    set:
+      azureFile.create: false
+    asserts:
+      - notContains:
+          path: spec.template.spec.volumes
+          any: true
+          content:
+            name: shared-data
+
+  - it: renders the volumes with the default secret name and readOnly false when not set
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: shared-data
+            azureFile:
+              secretName: myapp-microservice-chart-azure-file
+              shareName: shared-data
+              readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: certificates
+            azureFile:
+              secretName: myapp-microservice-chart-azure-file
+              shareName: certificates
+              readOnly: false
+
+  - it: uses a custom secret name
+    set:
+      azureFile.secretName: my-storage-account
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[?(@.name == "shared-data")].azureFile.secretName
+          value: my-storage-account
+
+  - it: mounts in the main container only the shares with a mountPath
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: shared-data
+            mountPath: /mnt/shared-data
+            readOnly: true
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          any: true
+          content:
+            name: certificates
+
+  - it: lets init containers mount a share through tmpVolumeMount
+    set:
+      initContainers:
+        - name: copy-certificates
+          image:
+            repository: busybox
+            tag: "1.36"
+            pullPolicy: IfNotPresent
+          tmpVolumeMount:
+            create: true
+            mounts:
+              - name: certificates
+                mountPath: /mnt/certificates
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          content:
+            name: certificates
+            mountPath: /mnt/certificates
+
+  - it: fails when shareName is missing
+    set:
+      azureFile.mounts:
+        - name: shared-data
+    asserts:
+      - failedTemplate:
+          errorMessage: azureFile.mounts[0].shareName is required

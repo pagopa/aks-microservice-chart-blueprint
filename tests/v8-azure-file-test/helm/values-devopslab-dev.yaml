@@ -1,0 +1,120 @@
+# Test of azureFile (PAYMCLOUD-1378) with a real Azure File share.
+# Fill STORAGE_* in deploy.sh: it creates the Secret with the storage account credentials, then deploys.
+microservice-chart:
+  namespace: "testit"
+
+  deployment:
+    create: true
+    replicas: 1
+
+  serviceAccount:
+    name: testit-workload-identity
+
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: latest
+    pullPolicy: Always
+
+  # Key Vault is only used by scripts/deploy.sh to read the workload identity client id.
+  # The SecretProviderClass is disabled: with no secrets it would be invalid.
+  keyvault:
+    name: "dvopla-d-itn-testit-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  secretProviderClass:
+    create: false
+
+  azureFile:
+    create: true
+    secretName: v8-azure-file-test-storage
+    mounts:
+      - name: share-main
+        shareName: test-helm
+        mountPath: /mnt/share
+        readOnly: true
+      - name: share-init
+        shareName: test-helm
+        readOnly: true
+
+  initContainers:
+    - name: list-share
+      image:
+        repository: busybox
+        tag: "1.36"
+        pullPolicy: IfNotPresent
+      command: ["sh", "-c", "ls -la /mnt/share-init > /mnt/listing/share.txt && cat /mnt/listing/share.txt"]
+      tmpVolumeMount:
+        create: true
+        mounts:
+          - name: share-init
+            mountPath: /mnt/share-init
+          - name: listing
+            mountPath: /mnt/listing
+
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: logs
+        mountPath: /app/logs
+      - name: listing
+        mountPath: /mnt/listing
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "150m"
+    limits:
+      memory: "512Mi"
+      cpu: "300m"
+
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 10
+    failureThreshold: 6
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  # the pod becomes ready only if the share is mounted in the main container
+  startupProbe:
+    create: true
+    handlerType: "exec"
+    exec:
+      command: ["/bin/sh", "-c", '[ -d "/mnt/share" ]']
+    failureThreshold: 6
+    periodSeconds: 10
+    timeoutSeconds: 10
+
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+
+  securityContext:
+    allowPrivilegeEscalation: false
+
+  tolerations:
+    - effect: "NoSchedule"
+      key: "paymentWalletOnly"
+      operator: "Equal"
+      value: "true"
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node_type
+            operator: In
+            values:
+            - user

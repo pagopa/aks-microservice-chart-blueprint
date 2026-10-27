@@ -221,6 +221,17 @@ spec:
               mountPath: "/mnt/file-azure/{{ $v.name }}"
             {{- end }}
             {{- end }}
+            #<azureFile mount>
+            {{- if .Values.azureFile.create }}
+            {{- range $i, $val := .Values.azureFile.mounts }}
+            {{- if $val.mountPath }}
+            - name: {{ $val.name }}
+              mountPath: {{ $val.mountPath | quote }}
+              readOnly: {{ $val.readOnly | default false }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            #</azureFile mount>
           env:
             #envConfig
             {{- if and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create) }}
@@ -400,17 +411,17 @@ spec:
                 path: {{ $v.key }}
         {{- end }}
         {{- end }}
-          #<azureFile volume>
+        #<azureFile volume>
         {{- if .Values.azureFile.create }}
         {{- range $i, $val := .Values.azureFile.mounts }}
-        - name: {{ $val.name }}
+        - name: {{ required (printf "azureFile.mounts[%d].name is required" $i) $val.name }}
           azureFile:
-            secretName: {{ include "microservice-chart.fullname" $ }}-azure-file
-            shareName: {{ $val.shareName }}
-            readOnly: {{ $val.readOnly }}
-            {{- end }}
-            {{- end }}
-          #</azureFile volume>
+            secretName: {{ $.Values.azureFile.secretName | default (printf "%s-azure-file" (include "microservice-chart.fullname" $)) }}
+            shareName: {{ required (printf "azureFile.mounts[%d].shareName is required" $i) $val.shareName }}
+            readOnly: {{ $val.readOnly | default false }}
+        {{- end }}
+        {{- end }}
+        #</azureFile volume>
       restartPolicy: {{ .Values.restartPolicy }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
        {{- include "microservice-chart.nodeSelectorBlock" . | nindent 6 }}

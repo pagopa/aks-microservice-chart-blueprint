@@ -1,0 +1,10 @@
+apiVersion: v2
+name: v8-azure-file-test
+description: Test of the azureFile volumes (main container mount and init container mount) with a real Azure File share
+type: application
+version: 1.0.0
+appVersion: 1.0.0
+dependencies:
+- name: microservice-chart
+  version: ">=8.0.0-0"
+  repository: file://../../../charts/microservice-chart
