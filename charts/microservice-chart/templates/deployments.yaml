@@ -9,11 +9,17 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     reloader.stakater.com/auto: "true"
-{{- $cur := lookup "apps/v1" "Deployment" .Release.Namespace (include "microservice-chart.fullname" .) }}
-{{- $replicas := (default .Values.autoscaling.minReplica .Values.deployment.replicas) }}
-{{- $existing := (dig "spec" "replicas" nil $cur) }}
-{{- if and .Release.IsUpgrade (not (empty $existing)) }}
-{{- $replicas = $existing }}
+{{- $replicas := .Values.deployment.replicas }}
+{{- if kindIs "invalid" $replicas }}
+{{- $replicas = 1 }}
+{{- end }}
+{{- if .Values.autoscaling.enable }}
+{{- $replicas = default .Values.autoscaling.minReplica .Values.deployment.replicas }}
+{{- $namespace := .Values.namespace | default .Release.Namespace }}
+{{- $cur := lookup "apps/v1" "Deployment" $namespace (include "microservice-chart.fullname" .) }}
+{{- if and .Release.IsUpgrade (hasKey ($cur.spec | default dict) "replicas") }}
+{{- $replicas = $cur.spec.replicas }}
+{{- end }}
 {{- end }}
 spec:
   revisionHistoryLimit: {{ default 10 .Values.deployment.revisionHistoryLimit }}
