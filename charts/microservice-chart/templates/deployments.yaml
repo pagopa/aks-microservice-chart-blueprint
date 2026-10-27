@@ -288,12 +288,16 @@ spec:
             {{- end }}
             #external configmap values
             {{- range $key, $valMap := .Values.externalConfigMapValues }}
+            {{- if kindIs "map" $valMap }}
             {{- range $internKey, $internVal := $valMap }}
             - name: {{ $internKey }}
               valueFrom:
                 configMapKeyRef:
                   name: {{ $key }}
                   key: {{ $internVal | toString | quote }}
+            {{- end }}
+            {{- else if $valMap }}
+            {{- fail (printf "externalConfigMapValues.%s must map each env var name to a key of the config map %s, e.g. {DATABASE_DB_NAME: database-db-name} (see README externalConfigMapValues)" $key $key) }}
             {{- end }}
             {{- end }}
         {{- with .Values.sidecars }}

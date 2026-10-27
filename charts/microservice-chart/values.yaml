@@ -197,9 +197,10 @@ externalConfigMapFiles:
 externalConfigMapFilesCustomPath: "/mnt/file-config-external"
 
 
-externalConfigMapValues:
-  # -- (list) Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}]
-  configMaps: []
+# -- Load keys of config maps already present in the cluster as environment variables.
+# Format: `<config map name>: {<ENV VAR NAME>: <key inside the config map>}`,
+# e.g. `{shared-values: {DATABASE_DB_NAME: database-db-name}}`. See README `externalConfigMapValues`
+externalConfigMapValues: {}
 
 #
 # Volumes

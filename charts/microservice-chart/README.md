@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.8.8](https://img.shields.io/badge/Version-8.8.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.8.9](https://img.shields.io/badge/Version-8.8.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -53,7 +53,7 @@ A Helm chart for PagoPA microservice
 | externalConfigMapFiles | object | {} | Configure values from config maps external to chart. E.g already present into cluster, see documentation |
 | externalConfigMapFiles.configMaps | list | `[]` | Config maps to mount as files: e.g. [{name: "configmap", key: "user.xml", mountPath: "/config/user.xml" }] |
 | externalConfigMapFilesCustomPath | string | `"/mnt/file-config-external"` | CustomPath to allow to choose where to put your files |
-| externalConfigMapValues.configMaps | list | `[]` | Config maps to mount as files: e.g. [{name: "configmap", key: "mykey"}] |
+| externalConfigMapValues | object | `{}` | Load keys of config maps already present in the cluster as environment variables. Format: `<config map name>: {<ENV VAR NAME>: <key inside the config map>}`, e.g. `{shared-values: {DATABASE_DB_NAME: database-db-name}}`. See README `externalConfigMapValues` |
 | fullnameOverride | string | `""` | Helm chart fullname override |
 | image | object | {} | image: configuration for the container |
 | image.pullPolicy | string | `"Always"` | Pull policy to use |

@@ -458,27 +458,32 @@ the default file path is `/mnt/file-config/<file name>`
 
 ### `externalConfigMapValues`: load values from others configmaps and load as env variables
 
-> usefull when you have a shared configmap and you want to load his values.
+> useful when you have a shared configmap and you want to load its values.
 
-- `ENV VARIABLE NAME`: how the variable must be named inside pod, very usefull for example for spring that have some problems with variables that have hippen in the name
-- `key inside config maps`: which key to load inside the env variable name
+The value is a map: for each config map already present in the cluster, a map from the env variable name to the key
+inside the config map.
 
-**NOTE** External config file template use [range flow control](https://helm.sh/docs/chart_template_guide/control_structures/)
+- `<configmap name>`: name of the existing config map
+- `<ENV VARIABLE NAME>`: how the variable must be named inside the pod, useful for example for Spring, which has some
+  problems with variables that have a hyphen in the name
+- `<key inside config map>`: which key of the config map to load in the env variable
 
 ```yaml
-
   externalConfigMapValues:
     <configmap name>:
-      <ENV VARIABLE NAME>: <key inside config maps>
+      <ENV VARIABLE NAME>: <key inside config map>
 
   externalConfigMapValues:
     external-configmap-values-complete-1:
-      DATABASE_DB_NANE: database-db-name
+      DATABASE_DB_NAME: database-db-name
 
     external-configmap-values-complete-2:
       PLAYER-INITIAL-LIVES: player-initial-lives
       UI_PROPERTIES_FILE_NAME: ui-properties-file-name
 ```
+
+> ⚠️ The list format `configMaps: [{name: ..., key: ...}]` suggested by the old `values.yaml` comment is not supported:
+> the chart fails with an explicit error. An empty `configMaps: []`, the old default, is ignored.
 
 ### `externalConfigMapFiles`: load files values from others configmaps and load inside pod as files
 
