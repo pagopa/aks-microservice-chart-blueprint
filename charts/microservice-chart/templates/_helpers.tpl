@@ -137,3 +137,33 @@ Default topologySpreadConstraints configuration
   topologyKey: kubernetes.io/hostname
   whenUnsatisfiable: DoNotSchedule
 {{- end }}
+
+{{- define "microservice-chart.secretProviderClass.objects" -}}
+{{- $envSecret := deepCopy (.Values.envSecret | default dict) }}
+{{- if .Values.canaryDelivery.create }}
+{{- $envSecret = mergeOverwrite $envSecret (deepCopy (.Values.canaryDelivery.envSecret | default dict)) }}
+{{- end }}
+{{- $objects := list }}
+{{- range $_, $objectName := $envSecret }}
+{{- $objects = append $objects $objectName }}
+{{- end }}
+{{- range $_, $objectName := .Values.initContainerEnvSecret }}
+{{- $objects = append $objects $objectName }}
+{{- end }}
+{{- if .Values.providedVolumeMount.create }}
+{{- range $_, $objectName := .Values.providedVolumeMount.envSecret }}
+{{- $objects = append $objects $objectName }}
+{{- end }}
+{{- end }}
+{{- $objects | uniq | toJson }}
+{{- end }}
+
+{{/*
+"true" when the SecretProviderClass and its secrets-store-inline volume are rendered:
+secretProviderClass.create is enabled and there is at least one secret to load.
+*/}}
+{{- define "microservice-chart.secretProviderClass.enabled" -}}
+{{- if and .Values.secretProviderClass.create (include "microservice-chart.secretProviderClass.objects" . | fromJsonArray) -}}
+true
+{{- end }}
+{{- end }}

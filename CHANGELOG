@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 8.8.9
+
+fix: [PAYMCLOUD-1381] SecretProviderClass
+
+- the SecretProviderClass and the `secrets-store-inline` volume are created only when at least one secret is configured:
+  with the defaults the chart rendered a SecretProviderClass with an empty Key Vault and the pod stayed in `ContainerCreating`
+- a Key Vault secret referenced more than once (`envSecret`, `initContainerEnvSecret`, `providedVolumeMount.envSecret`) is loaded once:
+  duplicated objects were rejected by the CSI driver
+- empty `clientID`, `keyvaultName` and `tenantId` are rendered as empty strings instead of `null`
+
 ## 8.1.1
 
 add imagePullSecrets support

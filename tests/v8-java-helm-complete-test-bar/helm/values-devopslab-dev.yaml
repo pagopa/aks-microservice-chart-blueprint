@@ -42,6 +42,9 @@ microservice-chart:
   initContainerEnvConfig:
     INIT_APP: bar
 
+  initContainerEnvSecret:
+    INIT_KV_SECRET: dvopla-d-itn-dev-aks-apiserver-url
+
   initContainers:
     - name: check-pod-setup
       image:
@@ -55,9 +58,11 @@ microservice-chart:
           test "$INIT_APP" = "bar"
           test "$TARGET" = "check-pod-setup"
           test -n "$POD_NAME"
+          test -n "$INIT_KV_SECRET"
           test -s /mnt/secrets-store/dvopla-d-itn-dev-aks-apiserver-url
           test -d /csv
           grep -q configuration /config/logback.xml
+          sleep 5
           echo "init container checks passed"
       env:
         - name: TARGET

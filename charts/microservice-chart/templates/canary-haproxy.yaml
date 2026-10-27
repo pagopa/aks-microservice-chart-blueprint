@@ -220,7 +220,7 @@ spec:
                   key: {{ $value }}
             {{- end }}
             {{- end }}
-          {{- if or .Values.tmpVolumeMount.create .Values.persistentVolumeClaimsMounts.create .Values.secretProviderClass.create }}
+          {{- if or .Values.tmpVolumeMount.create .Values.persistentVolumeClaimsMounts.create (include "microservice-chart.secretProviderClass.enabled" .) }}
           volumeMounts:
             {{- if .Values.tmpVolumeMount.create }}
             {{- range $i, $val := .Values.tmpVolumeMount.mounts }}
@@ -234,13 +234,13 @@ spec:
               mountPath: {{ $val.mountPath }}
             {{- end }}
             {{- end }}
-            {{- if .Values.secretProviderClass.create }}
+            {{- if include "microservice-chart.secretProviderClass.enabled" . }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
             {{- end }}
           {{- end }}
-      {{- if or .Values.tmpVolumeMount.create .Values.persistentVolumeClaimsMounts.create .Values.secretProviderClass.create }}
+      {{- if or .Values.tmpVolumeMount.create .Values.persistentVolumeClaimsMounts.create (include "microservice-chart.secretProviderClass.enabled" .) }}
       volumes:
         {{- if .Values.tmpVolumeMount.create }}
         {{- range $i, $val := .Values.tmpVolumeMount.mounts }}
@@ -255,7 +255,7 @@ spec:
             claimName: {{ $val.pvcName }}
         {{- end }}
         {{- end }}
-        {{- if .Values.secretProviderClass.create }}
+        {{- if include "microservice-chart.secretProviderClass.enabled" . }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
