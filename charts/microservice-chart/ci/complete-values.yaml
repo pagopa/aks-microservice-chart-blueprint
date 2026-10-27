@@ -69,6 +69,32 @@ initContainers:
           mountPath: /tmp
         - name: certificates
           mountPath: /mnt/certificates
+  - name: wait-for-config
+    image:
+      repository: busybox
+      tag: "1.36"
+    command: ["sh", "-c", "test -f /config/logback.xml"]
+    securityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        memory: 32Mi
+    env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+    volumeMounts:
+      - name: file-config
+        mountPath: /config/logback.xml
+        subPath: logback.xml
+        readOnly: true
 
 configMapFromFile:
   logback.xml: |-

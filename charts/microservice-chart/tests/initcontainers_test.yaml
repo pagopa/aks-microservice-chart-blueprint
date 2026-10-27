@@ -1,0 +1,223 @@
+suite: init containers
+templates:
+  - templates/deployments.yaml
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+set:
+  image.repository: ghcr.io/pagopa/app
+  image.tag: "1.0.0"
+tests:
+  - it: renders a minimal init container without tmpVolumeMount, env, volumeMounts or pull policy
+    set:
+      initContainers:
+        - name: wait
+          image:
+            repository: busybox
+            tag: "1.36"
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers
+          value:
+            - name: wait
+              image: busybox:1.36
+
+  - it: renders the image without tag when the tag is not set
+    set:
+      initContainers:
+        - name: wait
+          image:
+            repository: busybox
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: busybox
+
+  - it: does not inherit securityContext and resources of the main container
+    set:
+      initContainers:
+        - name: wait
+          image:
+            repository: busybox
+            tag: "1.36"
+    asserts:
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext
+      - notExists:
+          path: spec.template.spec.initContainers[0].resources
+
+  - it: renders securityContext, resources and imagePullPolicy set on the init container
+    set:
+      initContainers:
+        - name: migrations
+          image:
+            repository: ghcr.io/pagopa/migrations
+            tag: "1.0.0"
+            pullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].imagePullPolicy
+          value: IfNotPresent
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext
+          value:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+      - equal:
+          path: spec.template.spec.initContainers[0].resources
+          value:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+
+  - it: appends per init container env vars to the global init container env
+    set:
+      initContainerEnvConfig:
+        INIT_MODE: migrate
+      initContainers:
+        - name: first
+          image:
+            repository: busybox
+          env:
+            - name: TARGET
+              value: first
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+        - name: second
+          image:
+            repository: busybox
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].env
+          value:
+            - name: INIT_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: myapp-microservice-chart-init
+                  key: INIT_MODE
+            - name: TARGET
+              value: first
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+      - equal:
+          path: spec.template.spec.initContainers[1].env
+          value:
+            - name: INIT_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: myapp-microservice-chart-init
+                  key: INIT_MODE
+
+  - it: renders only the per init container env when there is no global init env
+    set:
+      initContainers:
+        - name: first
+          image:
+            repository: busybox
+          env:
+            - name: TARGET
+              value: first
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].env
+          value:
+            - name: TARGET
+              value: first
+
+  - it: mounts pod volumes (secrets store, pvc, config map) through volumeMounts
+    set:
+      persistentVolumeClaimsMounts:
+        create: true
+        mounts:
+          - name: csv
+            mountPath: /csv
+            pvcName: my-pvc
+      configMapFromFile:
+        logback.xml: "<configuration />"
+      initContainers:
+        - name: prepare
+          image:
+            repository: busybox
+          tmpVolumeMount:
+            create: true
+            mounts:
+              - name: tmp
+                mountPath: /tmp
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: /mnt/secrets-store
+              readOnly: true
+            - name: csv
+              mountPath: /csv
+            - name: file-config
+              mountPath: /config/logback.xml
+              subPath: logback.xml
+              readOnly: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          value:
+            - name: tmp
+              mountPath: /tmp
+            - name: secrets-store-inline
+              mountPath: /mnt/secrets-store
+              readOnly: true
+            - name: csv
+              mountPath: /csv
+            - name: file-config
+              mountPath: /config/logback.xml
+              subPath: logback.xml
+              readOnly: true
+
+  - it: omits volumeMounts when tmpVolumeMount is disabled and no volumeMounts are set
+    set:
+      initContainers:
+        - name: wait
+          image:
+            repository: busybox
+          tmpVolumeMount:
+            create: false
+            mounts:
+              - name: tmp
+                mountPath: /tmp
+    asserts:
+      - notExists:
+          path: spec.template.spec.initContainers[0].volumeMounts
+
+  - it: fails when the init container has no name
+    set:
+      initContainers:
+        - image:
+            repository: busybox
+    asserts:
+      - failedTemplate:
+          errorMessage: initContainers[0].name is required
+
+  - it: fails when the init container has no image repository
+    set:
+      initContainers:
+        - name: wait
+    asserts:
+      - failedTemplate:
+          errorMessage: initContainers[0].image.repository is required

@@ -39,6 +39,58 @@ microservice-chart:
           </root>
       </configuration>
 
+  initContainerEnvConfig:
+    INIT_APP: bar
+
+  initContainers:
+    - name: check-pod-setup
+      image:
+        repository: busybox
+        tag: "1.36"
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          echo "INIT_APP=$INIT_APP TARGET=$TARGET POD_NAME=$POD_NAME"
+          test "$INIT_APP" = "bar"
+          test "$TARGET" = "check-pod-setup"
+          test -n "$POD_NAME"
+          test -s /mnt/secrets-store/dvopla-d-itn-dev-aks-apiserver-url
+          test -d /csv
+          grep -q configuration /config/logback.xml
+          echo "init container checks passed"
+      env:
+        - name: TARGET
+          value: check-pod-setup
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+      volumeMounts:
+        - name: secrets-store-inline
+          mountPath: /mnt/secrets-store
+          readOnly: true
+        - name: csv
+          mountPath: /csv
+          readOnly: true
+        - name: file-config
+          mountPath: /config/logback.xml
+          subPath: logback.xml
+          readOnly: true
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          memory: 32Mi
+
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
     tag: latest

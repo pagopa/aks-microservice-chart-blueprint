@@ -57,7 +57,7 @@ assert_contains "$rendered" 'key: init-password'
 assert_not_contains "$rendered" 'APPLICATION_NORMAL'
 assert_not_contains "$rendered" 'APPLICATION_PASSWORD'
 init_config_map="$(awk 'BEGIN { RS="---" } /kind: ConfigMap/ && /name: init-env-test-microservice-chart-init/ { print }' <<<"$rendered_chart")"
-assert_contains "$init_config_map" 'INIT_NORMAL: value'
+assert_contains "$init_config_map" 'INIT_NORMAL: "value"'
 secret_provider="$(awk 'BEGIN { RS="---" } /kind: SecretProviderClass/ { print }' <<<"$rendered_chart")"
 assert_contains "$secret_provider" 'key: init-password'
 assert_contains "$secret_provider" 'objectName: init-password'

@@ -453,13 +453,16 @@ postman-test:
   # -- env variable name path (e.g `dev.postman_environment.json``)
   envVariablesFile: ""
 
-# -- Environment config to use for init containers
+# -- Environment config for all the init containers (stored in the `<fullname>-init` ConfigMap)
 initContainerEnvConfig: {}
 
-# -- Load secrets as environment variables for init containers
+# -- Key Vault secrets loaded as environment variables in all the init containers (requires secretProviderClass.create)
 initContainerEnvSecret: {}
 
-# -- Init Containers
+# -- (list) Init containers. Each item: `name` and `image.repository` (required), `image.tag`, `image.pullPolicy`,
+# `command`, `args`, `env` (list of Kubernetes EnvVar, added after initContainerEnvConfig/initContainerEnvSecret),
+# `volumeMounts` (list of Kubernetes VolumeMount, any pod volume), `tmpVolumeMount` (`create` + `mounts` by volume name),
+# `securityContext` and `resources`. securityContext and resources are not inherited from the main container. See README `initContainers`
 initContainers: []
 
 # -- Mount Azure File shares as pod volumes (in-tree `azureFile` volume). See README `azureFile`
