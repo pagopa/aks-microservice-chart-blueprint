@@ -17,7 +17,12 @@ envConfig:
 envSecret:
   MY_KV_SECRET: my-kv-secret
 
+# nginx and HAProxy ingresses together: the nginx Ingress must stay a regular (non canary) Ingress
 ingress:
+  create: true
+  host: testit.itn.internal.devopslab.pagopa.it
+  path: /testit/foo(/|$)(.*)
+  rewriteTarget: /$2
   haproxy:
     create: true
     host: testit.itn.internal.devopslab.pagopa.it

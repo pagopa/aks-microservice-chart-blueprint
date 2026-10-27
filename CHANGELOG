@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 8.9.1
+
+fix: [PAYMCLOUD-1427] nginx Ingress with the HAProxy canary
+
+- with `canaryDelivery.create` and `ingress.haproxy.create`, the nginx Ingress (`ingress.create`) got the nginx canary
+  annotations (`canary`, `canary-by-header`, `canary-weight`) and the `/beta` path in bluegreen mode: nginx treated it as
+  the canary of a missing primary Ingress and stopped routing the traffic. The nginx canary annotations are now added
+  only in the legacy nginx canary mode (`canaryDelivery.create` without the HAProxy ingress)
+
 ## 8.9.0
 
 feat: [PAYMCLOUD-1385] values.schema.json

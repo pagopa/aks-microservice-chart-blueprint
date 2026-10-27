@@ -83,8 +83,12 @@ microservice-chart:
     ports:
       - 8080
 
+  # nginx and HAProxy ingresses together with the HAProxy canary: the nginx Ingress must keep serving the stable
+  # release (it must not get the nginx canary annotations)
   ingress:
-    create: false
+    create: true
+    host: testit.itn.internal.devopslab.pagopa.it
+    rewriteTarget: /$2
     servicePort: 8080
     forceSslRedirect: true
     path: "/testit/test-haproxy(/|$)(.*)"
