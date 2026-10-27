@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 8.8.10
+
+fix: [PAYMCLOUD-1382] externalConfigMapValues and NOTES.txt
+
+- `externalConfigMapValues`: default and documentation now describe the supported format
+  `<configmap name>: {<ENV VAR NAME>: <key>}` (the old comment suggested a list that rendered invalid env vars);
+  a non empty list now fails with an explicit error, the old empty default `configMaps: []` is ignored
+- `NOTES.txt`: uses the first `service.ports` entry instead of the non existing `service.port`, and the chart
+  `namespace` (falling back to the release namespace)
+
 ## 8.8.9
 
 fix: [PAYMCLOUD-1381] SecretProviderClass

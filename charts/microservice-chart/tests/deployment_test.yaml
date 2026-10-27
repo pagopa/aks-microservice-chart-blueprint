@@ -424,3 +424,21 @@ tests:
               configMapKeyRef:
                 name: myapp-microservice-chart
                 key: CANARY
+
+  - it: ignores the legacy empty externalConfigMapValues.configMaps list
+    set:
+      externalConfigMapValues:
+        configMaps: []
+    asserts:
+      - isNullOrEmpty:
+          path: spec.template.spec.containers[0].env
+
+  - it: fails with a clear message when externalConfigMapValues uses the list format
+    set:
+      externalConfigMapValues:
+        configMaps:
+          - name: shared-values
+            key: database-db-name
+    asserts:
+      - failedTemplate:
+          errorPattern: externalConfigMapValues.configMaps must map each env var name to a key of the config map configMaps
