@@ -67,6 +67,8 @@ initContainers:
       mounts:
         - name: tmp
           mountPath: /tmp
+        - name: certificates
+          mountPath: /mnt/certificates
 
 configMapFromFile:
   logback.xml: |-
@@ -97,6 +99,18 @@ tmpVolumeMount:
       mountPath: /tmp
     - name: logs
       mountPath: /app/logs
+
+azureFile:
+  create: true
+  secretName: testit-storage-account
+  mounts:
+    - name: shared-data
+      shareName: shared-data
+      mountPath: /mnt/shared-data
+      readOnly: true
+    # no mountPath: mounted only by the init container (see initContainers[0].tmpVolumeMount)
+    - name: certificates
+      shareName: certificates
 
 persistentVolumeClaimsMounts:
   create: true

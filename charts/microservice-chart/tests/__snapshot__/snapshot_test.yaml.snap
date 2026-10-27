@@ -286,6 +286,9 @@ complete scenario:
                   name: shared-files-1
                   readOnly: true
                   subPath: user-interface.xml
+                - mountPath: /mnt/shared-data
+                  name: shared-data
+                  readOnly: true
           dnsConfig:
             options:
               - name: ndots
@@ -319,6 +322,8 @@ complete scenario:
               volumeMounts:
                 - mountPath: /tmp
                   name: tmp
+                - mountPath: /mnt/certificates
+                  name: certificates
           nodeSelector:
             critical: "false"
           restartPolicy: Always
@@ -383,6 +388,16 @@ complete scenario:
                     path: user-interface.xml
                 name: shared-files
               name: shared-files-1
+            - azureFile:
+                readOnly: true
+                secretName: testit-storage-account
+                shareName: shared-data
+              name: shared-data
+            - azureFile:
+                readOnly: false
+                secretName: testit-storage-account
+                shareName: certificates
+              name: certificates
   7: |
     apiVersion: networking.k8s.io/v1
     kind: Ingress

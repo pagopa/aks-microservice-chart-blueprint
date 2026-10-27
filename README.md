@@ -525,6 +525,58 @@ This volume use a pvc to persist the data
         pvcName: blueprint-hdd-pvc
 ```
 
+### `azureFile`: mount Azure File shares
+
+Mounts one or more [Azure File](https://learn.microsoft.com/en-us/azure/aks/azure-files-volume) shares as pod volumes.
+
+- `name`: volume name (required)
+- `shareName`: name of the share in the storage account (required)
+- `mountPath`: where to mount the share in the main container. Without it the volume is only defined at pod level,
+  so it can be mounted by the init containers (see below)
+- `readOnly`: default `false`
+
+The storage account credentials are read from an **existing** Secret, which the chart does not create. It must
+contain the `azurestorageaccountname` and `azurestorageaccountkey` keys and it is named `<fullname>-azure-file`,
+or `azureFile.secretName` when set.
+
+```yaml
+  azureFile:
+    create: true
+    secretName: my-storage-account   # optional, default: <fullname>-azure-file
+    mounts:
+      - name: shared-data
+        shareName: shared-data
+        mountPath: /mnt/shared-data
+        readOnly: true
+      - name: certificates           # no mountPath: used only by the init container below
+        shareName: certificates
+        readOnly: true
+
+  # an init container mounts a share by listing its volume name in tmpVolumeMount.mounts
+  initContainers:
+    - name: copy-certificates
+      image:
+        repository: busybox
+        tag: "1.36"
+        pullPolicy: IfNotPresent
+      command: ["sh", "-c", "cp /mnt/certificates/* /mnt/truststore/"]
+      tmpVolumeMount:
+        create: true
+        mounts:
+          - name: certificates
+            mountPath: /mnt/certificates
+          - name: truststore
+            mountPath: /mnt/truststore
+
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: truststore
+        mountPath: /mnt/truststore
+```
+
 ### `PodDisruptionBudget`
 
 ```yaml

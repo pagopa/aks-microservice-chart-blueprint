@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.8.4](https://img.shields.io/badge/Version-8.8.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.8.5](https://img.shields.io/badge/Version-8.8.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -21,7 +21,10 @@ A Helm chart for PagoPA microservice
 | azure | object | `{"workloadIdentityClientId":"","workloadIdentityEnabled":true}` | Azure configuration (e.g. Workload identities) |
 | azure.workloadIdentityClientId | string | `""` | Azure Workload Identity Client ID (e.g. qwerty123-a1aa-1234-xyza-qwerty123) |
 | azure.workloadIdentityEnabled | bool | `true` | Enable workload identity |
-| azureFile | object | `{"create":false}` | Azure File |
+| azureFile | object | - | Mount Azure File shares as pod volumes (in-tree `azureFile` volume). See README `azureFile` |
+| azureFile.create | bool | `false` | Create the Azure File volumes |
+| azureFile.mounts | list | `[]` | Shares to mount. Each item: `name` (volume name, required), `shareName` (Azure File share, required), `mountPath` (optional: mount in the main container; without it the volume can be mounted only by the init containers), `readOnly` (default false) |
+| azureFile.secretName | string | `""` | Existing Secret with the `azurestorageaccountname` and `azurestorageaccountkey` keys, not created by the chart. Default: `<fullname>-azure-file` |
 | canaryDelivery | object | - | This section allow to configure canary deployment |
 | canaryDelivery.create | bool | `false` | Beta/Enable Canary/BlueGreen Deployment |
 | canaryDelivery.envConfig | object | `{}` | Environment config to use for the canary container |

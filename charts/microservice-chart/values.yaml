@@ -462,6 +462,13 @@ initContainerEnvSecret: {}
 # -- Init Containers
 initContainers: []
 
-# -- Azure File
+# -- Mount Azure File shares as pod volumes (in-tree `azureFile` volume). See README `azureFile`
+# @default -- -
 azureFile:
+  # -- (bool) Create the Azure File volumes
   create: false
+  # -- Existing Secret with the `azurestorageaccountname` and `azurestorageaccountkey` keys, not created by the chart. Default: `<fullname>-azure-file`
+  secretName: ""
+  # -- (list) Shares to mount. Each item: `name` (volume name, required), `shareName` (Azure File share, required), `mountPath`
+  # (optional: mount in the main container; without it the volume can be mounted only by the init containers), `readOnly` (default false)
+  mounts: []
