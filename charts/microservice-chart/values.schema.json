@@ -1,0 +1,1215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "microservice-chart values",
+  "description": "Values of the PagoPA microservice chart. Unknown keys are allowed (v1 schema): only the types of the known keys and the required fields of list items are checked.",
+  "type": "object",
+  "properties": {
+    "namespace": {
+      "type": "string",
+      "description": "Namespace of the resources. Default: the release namespace"
+    },
+    "nameOverride": {
+      "type": "string"
+    },
+    "fullnameOverride": {
+      "type": "string"
+    },
+    "terminationGracePeriodSeconds": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deployment": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "description": "Create the Deployment"
+        },
+        "replicas": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Number of replicas",
+          "minimum": 0
+        },
+        "forceRedeploy": {
+          "type": "boolean",
+          "description": "Recreate the pods at every release"
+        },
+        "revisionHistoryLimit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ndots": {
+          "type": [
+            "integer",
+            "string"
+          ],
+          "description": "DNS ndots option"
+        },
+        "topologySpreadConstraints": {
+          "type": "object",
+          "properties": {
+            "create": {
+              "type": "boolean"
+            },
+            "useDefaultConfiguration": {
+              "type": "boolean",
+              "description": "Spread the pods across zones and nodes"
+            },
+            "config": {
+              "type": "array",
+              "description": "Custom topologySpreadConstraints",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "hostAliases": {
+          "type": "array",
+          "description": "Kubernetes hostAliases",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "description": "Deployment strategy",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "RollingUpdate",
+            "Recreate"
+          ]
+        },
+        "rollingUpdate": {
+          "type": "object",
+          "properties": {
+            "maxUnavailable": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "maxSurge": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "image": {
+      "type": "object",
+      "description": "Container image",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "description": "Container image repository"
+        },
+        "tag": {
+          "type": "string",
+          "description": "Container image tag. Quote numeric tags (e.g. \"1.10\"): an unquoted number is rejected"
+        },
+        "pullPolicy": {
+          "type": "string",
+          "enum": [
+            "Always",
+            "IfNotPresent",
+            "Never"
+          ]
+        }
+      }
+    },
+    "imagePullSecrets": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Secret used to pull the image"
+        }
+      }
+    },
+    "sidecars": {
+      "type": "array",
+      "description": "Sidecar containers (Kubernetes Container objects)",
+      "items": {
+        "type": "object"
+      }
+    },
+    "livenessProbe": {
+      "type": "object",
+      "description": "livenessProbe of the main container",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "description": "Enable the livenessProbe"
+        },
+        "handlerType": {
+          "type": "string",
+          "description": "Probe handler",
+          "enum": [
+            "httpGet",
+            "exec",
+            "tcpSocket"
+          ]
+        },
+        "httpGet": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "port": {
+              "type": [
+                "integer",
+                "string"
+              ],
+              "description": "Port number or name"
+            }
+          }
+        },
+        "exec": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "array",
+              "description": "Command, e.g. [\"/bin/sh\", \"-c\", \"test -f /tmp/ready\"]",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "tcpSocket": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "type": [
+                "integer",
+                "string"
+              ],
+              "description": "Port number or name"
+            }
+          }
+        },
+        "initialDelaySeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failureThreshold": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "periodSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "successThreshold": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "terminationGracePeriodSeconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "readinessProbe": {
+      "type": "object",
+      "description": "readinessProbe of the main container",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "description": "Enable the readinessProbe"
+        },
+        "handlerType": {
+          "type": "string",
+          "description": "Probe handler",
+          "enum": [
+            "httpGet",
+            "exec",
+            "tcpSocket"
+          ]
+        },
+        "httpGet": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "port": {
+              "type": [
+                "integer",
+                "string"
+              ],
+              "description": "Port number or name"
+            }
+          }
+        },
+        "exec": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "array",
+              "description": "Command, e.g. [\"/bin/sh\", \"-c\", \"test -f /tmp/ready\"]",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "tcpSocket": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "type": [
+                "integer",
+                "string"
+              ],
+              "description": "Port number or name"
+            }
+          }
+        },
+        "initialDelaySeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failureThreshold": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "periodSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "successThreshold": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "startupProbe": {
+      "type": "object",
+      "description": "startupProbe of the main container",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "description": "Enable the startupProbe"
+        },
+        "handlerType": {
+          "type": "string",
+          "description": "Probe handler",
+          "enum": [
+            "httpGet",
+            "exec",
+            "tcpSocket"
+          ]
+        },
+        "httpGet": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "port": {
+              "type": [
+                "integer",
+                "string"
+              ],
+              "description": "Port number or name"
+            }
+          }
+        },
+        "exec": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "array",
+              "description": "Command, e.g. [\"/bin/sh\", \"-c\", \"test -f /tmp/ready\"]",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "tcpSocket": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "type": [
+                "integer",
+                "string"
+              ],
+              "description": "Port number or name"
+            }
+          }
+        },
+        "initialDelaySeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failureThreshold": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "periodSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "successThreshold": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "terminationGracePeriodSeconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "properties": {
+        "preStop": {
+          "type": "object",
+          "properties": {
+            "create": {
+              "type": "boolean"
+            },
+            "command": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "envConfig": {
+      "type": "object",
+      "description": "Environment variables stored in the chart ConfigMap: <ENV VAR NAME>: <value>",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      }
+    },
+    "envSecret": {
+      "type": "object",
+      "description": "Environment variables loaded from Key Vault: <ENV VAR NAME>: <Key Vault secret name>",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "configMapFromFile": {
+      "type": "object",
+      "description": "Files mounted from the chart ConfigMap: <file name>: <content>",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "configMapFromFileCustomPath": {
+      "type": "string"
+    },
+    "envFieldRef": {
+      "type": "object",
+      "description": "Environment variables from the pod fields: <ENV VAR NAME>: <field path, e.g. metadata.name>",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "externalConfigMapFiles": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "configMaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Existing config map"
+              },
+              "key": {
+                "type": "string"
+              },
+              "mountPath": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "key"
+            ]
+          }
+        }
+      }
+    },
+    "externalConfigMapFilesCustomPath": {
+      "type": "string"
+    },
+    "externalConfigMapValues": {
+      "type": "object",
+      "description": "Keys of existing config maps loaded as environment variables: <config map name>: {<ENV VAR NAME>: <key>}",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": {
+              "type": [
+                "string",
+                "number",
+                "boolean"
+              ]
+            }
+          },
+          {
+            "type": "array",
+            "maxItems": 0,
+            "description": "Legacy empty default (configMaps: [])"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "providedVolumeMount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "envSecret": {
+          "type": "object",
+          "description": "Key Vault secrets synced in the chart Secret",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "folders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "readOnly": {
+                "type": "boolean"
+              },
+              "mountOptions": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        }
+      }
+    },
+    "tmpVolumeMount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "mounts": {
+          "type": "array",
+          "description": "emptyDir volumes",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Volume name"
+              },
+              "mountPath": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "mountPath"
+            ]
+          }
+        }
+      }
+    },
+    "persistentVolumeClaimsMounts": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "mounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Volume name"
+              },
+              "mountPath": {
+                "type": "string"
+              },
+              "pvcName": {
+                "type": "string",
+                "description": "Existing PVC"
+              }
+            },
+            "required": [
+              "name",
+              "mountPath",
+              "pvcName"
+            ]
+          }
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "description": "Resources of the main container",
+      "properties": {
+        "requests": {
+          "type": "object",
+          "properties": {
+            "memory": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "cpu": {
+              "type": [
+                "string",
+                "number"
+              ]
+            }
+          }
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "memory": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "cpu": {
+              "type": [
+                "string",
+                "number"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "container": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "secretProviderClass": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "description": "Enable the SecretProviderClass (created only when at least one secret is configured)"
+        }
+      }
+    },
+    "keyvault": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Key Vault name"
+        },
+        "tenantId": {
+          "type": "string"
+        }
+      }
+    },
+    "podAnnotations": {
+      "type": "object",
+      "description": "Pod annotations",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "description": "Kubernetes PodSecurityContext"
+    },
+    "securityContext": {
+      "type": "object",
+      "description": "Kubernetes SecurityContext of the main container"
+    },
+    "nodeSelector": {
+      "type": "object",
+      "description": "Node selector",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "critical": {
+      "type": "boolean",
+      "description": "Critical workload. false: non critical nodes, -non-core suffix"
+    },
+    "tolerations": {
+      "type": "array",
+      "description": "Kubernetes tolerations",
+      "items": {
+        "type": "object"
+      }
+    },
+    "affinity": {
+      "type": "object",
+      "description": "Kubernetes affinity"
+    },
+    "restartPolicy": {
+      "type": "string"
+    },
+    "autoscaling": {
+      "type": "object",
+      "description": "KEDA autoscaling",
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "description": "Enable KEDA autoscaling"
+        },
+        "minReplica": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxReplica": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pollingInterval": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cooldownPeriod": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "triggerAuthentications": {
+          "type": "array",
+          "description": "KEDA TriggerAuthentications",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "TriggerAuthentication name"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        "triggers": {
+          "type": "array",
+          "description": "KEDA triggers",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "KEDA scaler type, e.g. cpu, cron, azure-queue"
+              },
+              "metricType": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object"
+              },
+              "authenticationRef": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "advanced": {
+          "type": "object",
+          "description": "KEDA advanced configuration"
+        }
+      }
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Service account annotations",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "automount": {
+          "type": "boolean"
+        }
+      }
+    },
+    "serviceMonitor": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "interval": {
+                "type": "string"
+              },
+              "targetPort": {
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              },
+              "path": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "prometheusManaged": {
+          "type": "boolean",
+          "description": "Azure managed Prometheus"
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClusterIP",
+            "NodePort",
+            "LoadBalancer"
+          ]
+        },
+        "ports": {
+          "type": "array",
+          "description": "Ports of the Service and of the container",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          }
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "description": "Create the nginx Ingress"
+        },
+        "host": {
+          "type": "string"
+        },
+        "servicePort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "path": {
+          "type": "string"
+        },
+        "pathType": {
+          "type": "string",
+          "enum": [
+            "ImplementationSpecific",
+            "Prefix",
+            "Exact"
+          ]
+        },
+        "forceSslRedirect": {
+          "type": "boolean"
+        },
+        "rewriteTarget": {
+          "type": "string"
+        },
+        "proxyBodySize": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Ingress annotations",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "haproxy": {
+          "type": "object",
+          "properties": {
+            "create": {
+              "type": "boolean",
+              "description": "Create the HAProxy Ingress"
+            },
+            "host": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
+            "rewriteTarget": {
+              "type": "string"
+            },
+            "annotations": {
+              "type": "object",
+              "description": "HAProxy Ingress annotations",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "backendAnnotations": {
+              "type": "object",
+              "description": "Annotations of the backend Services",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "canaryDelivery": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "description": "Enable the canary deployment"
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "boolean"
+            },
+            "bluegreen": {
+              "type": "boolean"
+            },
+            "headerName": {
+              "type": "string"
+            },
+            "headerValue": {
+              "type": "string"
+            },
+            "weightPercent": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string",
+              "description": "Container image tag (quote numeric tags)"
+            }
+          }
+        },
+        "envConfig": {
+          "type": "object",
+          "description": "Canary env config, merged with envConfig",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          }
+        },
+        "envSecret": {
+          "type": "object",
+          "description": "Canary env secrets, merged with envSecret",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "podDisruptionBudget": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "minAvailable": {
+          "type": [
+            "integer",
+            "string"
+          ],
+          "description": "Number or percentage, mutually exclusive with maxUnavailable"
+        },
+        "maxUnavailable": {
+          "type": [
+            "integer",
+            "string"
+          ],
+          "description": "Number or percentage, mutually exclusive with minAvailable"
+        }
+      }
+    },
+    "azure": {
+      "type": "object",
+      "properties": {
+        "workloadIdentityEnabled": {
+          "type": "boolean"
+        },
+        "workloadIdentityClientId": {
+          "type": "string",
+          "description": "Workload identity client id"
+        }
+      }
+    },
+    "postman-test": {
+      "type": "object",
+      "properties": {
+        "run": {
+          "type": "boolean"
+        },
+        "repoName": {
+          "type": "string"
+        },
+        "dir": {
+          "type": "string"
+        },
+        "collectionName": {
+          "type": "string"
+        },
+        "envVariablesFile": {
+          "type": "string"
+        }
+      }
+    },
+    "initContainerEnvConfig": {
+      "type": "object",
+      "description": "Env config of all the init containers",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      }
+    },
+    "initContainerEnvSecret": {
+      "type": "object",
+      "description": "Key Vault secrets of all the init containers",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "initContainers": {
+      "type": "array",
+      "description": "Init containers",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "object",
+            "properties": {
+              "repository": {
+                "type": "string"
+              },
+              "tag": {
+                "type": "string",
+                "description": "Container image tag (quote numeric tags)"
+              },
+              "pullPolicy": {
+                "type": "string",
+                "enum": [
+                  "Always",
+                  "IfNotPresent",
+                  "Never"
+                ]
+              }
+            },
+            "required": [
+              "repository"
+            ]
+          },
+          "command": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "env": {
+            "type": "array",
+            "description": "Kubernetes EnvVar list",
+            "items": {
+              "type": "object"
+            }
+          },
+          "volumeMounts": {
+            "type": "array",
+            "description": "Kubernetes VolumeMount list",
+            "items": {
+              "type": "object"
+            }
+          },
+          "tmpVolumeMount": {
+            "type": "object",
+            "properties": {
+              "create": {
+                "type": "boolean"
+              },
+              "mounts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Volume name"
+                    },
+                    "mountPath": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "mountPath"
+                  ]
+                }
+              }
+            }
+          },
+          "securityContext": {
+            "type": "object",
+            "description": "Kubernetes SecurityContext"
+          },
+          "resources": {
+            "type": "object",
+            "description": "Kubernetes ResourceRequirements"
+          }
+        },
+        "required": [
+          "name",
+          "image"
+        ]
+      }
+    },
+    "azureFile": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "secretName": {
+          "type": "string",
+          "description": "Existing Secret with the storage account credentials"
+        },
+        "mounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "shareName": {
+                "type": "string"
+              },
+              "mountPath": {
+                "type": "string"
+              },
+              "readOnly": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "shareName"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -15,8 +15,8 @@ terminationGracePeriodSeconds: 30
 deployment:
   # -- (bool) Create or not the deployment manifest
   create: true
-  # -- (int) Number of replicas. With autoscaling enabled it is used only on install (falls back to autoscaling.minReplica when empty)
-  # -- on upgrade the replicas currently set by KEDA on the Deployment are kept
+  # -- (int) Number of replicas. With autoscaling enabled it is used only on install (falls back to autoscaling.minReplica when empty):
+  # on upgrade the replicas currently set by KEDA on the Deployment are kept
   replicas: 1
   # -- (bool) Force redeploy container
   forceRedeploy: false

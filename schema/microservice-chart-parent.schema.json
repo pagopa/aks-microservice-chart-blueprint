@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "values of a chart that uses microservice-chart as dependency",
+  "description": "Validates and autocompletes the values under the microservice-chart key. Use it with the yaml-language-server modeline, see README 'Values schema'.",
+  "type": "object",
+  "properties": {
+    "microservice-chart": {
+      "$ref": "../charts/microservice-chart/values.schema.json"
+    }
+  }
+}

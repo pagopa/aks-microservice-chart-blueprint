@@ -1,0 +1,133 @@
+# values.schema.json (v1): wrong types and missing required fields of list items are rejected,
+# unknown keys are still allowed.
+suite: values schema
+templates:
+  - templates/deployments.yaml
+release:
+  name: myapp
+  namespace: testit
+chart:
+  version: 0.0.0-test
+set:
+  image.repository: ghcr.io/pagopa/app
+  image.tag: "1.0.0"
+tests:
+  - it: accepts the chart defaults
+    set: {}
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: accepts unknown keys (v1 schema is permissive)
+    set:
+      myCustomKey: value
+      autoscaling.enabled: true
+      deployment.somethingNew: 1
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: accepts numbers and booleans in envConfig
+    set:
+      envConfig:
+        PORT: 8080
+        DEBUG: true
+        NAME: app
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: accepts numeric and string ports and percentage PDB values
+    set:
+      livenessProbe.httpGet.port: http
+      readinessProbe.tcpSocket.port: 8080
+      podDisruptionBudget.maxUnavailable: 50%
+      resources.limits.cpu: 0.5
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: rejects an unquoted numeric image tag (YAML would turn 1.10 into 1.1)
+    set:
+      image.tag: 1.10
+    asserts:
+      - failedTemplate:
+          errorPattern: "/image/tag': got number, want string"
+
+  - it: rejects a string number of replicas
+    set:
+      deployment.replicas: three
+    asserts:
+      - failedTemplate:
+          errorPattern: "/deployment/replicas'"
+
+  - it: rejects a non boolean toggle
+    set:
+      autoscaling.enable: "yes"
+    asserts:
+      - failedTemplate:
+          errorPattern: "/autoscaling/enable': got string, want boolean"
+
+  - it: rejects a nested object in envConfig
+    set:
+      envConfig:
+        DATABASE:
+          host: localhost
+    asserts:
+      - failedTemplate:
+          errorPattern: "/envConfig/DATABASE'"
+
+  - it: rejects a non string Key Vault secret name in envSecret
+    set:
+      envSecret:
+        DB_PASSWORD: 1234
+    asserts:
+      - failedTemplate:
+          errorPattern: "/envSecret/DB_PASSWORD': got number, want string"
+
+  - it: rejects service ports that are not port numbers
+    set:
+      service.ports: ["http"]
+    asserts:
+      - failedTemplate:
+          errorPattern: "/service/ports/0': got string, want integer"
+
+  - it: rejects an unknown probe handler type
+    set:
+      livenessProbe.handlerType: grpc
+    asserts:
+      - failedTemplate:
+          errorPattern: "/livenessProbe/handlerType'"
+
+  - it: rejects an unknown service type
+    set:
+      service.type: ExternalName
+    asserts:
+      - failedTemplate:
+          errorPattern: "/service/type'"
+
+  - it: rejects a canary weight above 100
+    set:
+      canaryDelivery.ingress.weightPercent: 150
+    asserts:
+      - failedTemplate:
+          errorPattern: "/canaryDelivery/ingress/weightPercent'"
+
+  - it: rejects a KEDA trigger without type
+    set:
+      autoscaling.triggers:
+        - metadata:
+            value: "60"
+    asserts:
+      - failedTemplate:
+          errorPattern: "/autoscaling/triggers/0': missing property 'type'"
+
+  - it: rejects a PVC mount without pvcName
+    set:
+      persistentVolumeClaimsMounts.create: true
+      persistentVolumeClaimsMounts.mounts:
+        - name: csv
+          mountPath: /csv
+    asserts:
+      - failedTemplate:
+          errorPattern: "/persistentVolumeClaimsMounts/mounts/0': missing property 'pvcName'"

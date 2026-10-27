@@ -163,4 +163,4 @@ tests:
             provider: azure-workload
     asserts:
       - failedTemplate:
-          errorPattern: autoscaling.triggerAuthentications\[0\].name is required
+          errorPattern: "/autoscaling/triggerAuthentications/0': missing property 'name'"

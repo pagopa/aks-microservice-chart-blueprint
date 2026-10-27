@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 8.9.0
+
+feat: [PAYMCLOUD-1385] values.schema.json
+
+- the chart validates the values with a JSON schema on install/upgrade/template/lint: wrong types (e.g. `enable: "yes"`,
+  a nested object in `envConfig`, a number in `envSecret`), not allowed values (`service.type`, probe `handlerType`,
+  `image.pullPolicy`) and missing required fields of list items (`autoscaling.triggers[].type`,
+  `autoscaling.triggerAuthentications[].name`, `initContainers[].name`/`image`, `azureFile.mounts[].name`/`shareName`,
+  PVC/tmp/external config map mounts) fail with an explicit error. Unknown keys are still allowed
+- ⚠️ image tags must be strings: quote numeric tags (`tag: "1.10"`), an unquoted number made the chart fail (and YAML
+  turns `1.10` into `1.1`)
+- `schema/microservice-chart-parent.schema.json` enables autocompletion in VS Code/IntelliJ for the values of the
+  charts that use microservice-chart as dependency (see README "Values schema")
+
 ## 8.8.12
 
 fix: [PAYMCLOUD-1384] Probe defaults and HAProxy backend annotations
