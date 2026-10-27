@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.8.9](https://img.shields.io/badge/Version-8.8.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.8.10](https://img.shields.io/badge/Version-8.8.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -100,15 +100,15 @@ A Helm chart for PagoPA microservice
 | livenessProbe.terminationGracePeriodSeconds | int | `30` | terminationGracePeriodSeconds |
 | livenessProbe.timeoutSeconds | int | `1` | timeoutSeconds |
 | nameOverride | string | `""` | Helm chart name override |
-| namespace | string | `""` | Namespace in which deploy the microservice |
+| namespace | string | `""` | Namespace of the resources. Default: the release namespace |
 | nodeSelector | object | `{}` | K8s node selectors |
 | persistentVolumeClaimsMounts | object | `{"create":false,"mounts":[]}` | Configure optional volume that will be mount (using a PVC) |
 | persistentVolumeClaimsMounts.mounts | list | `[]` | Mounts with pvc volume: (e.g. [{name: "tmp", mountPath: "/tmp", pvcName: "xyz"}]]) |
 | podAnnotations | object | `{}` | podAnnotations |
-| podDisruptionBudget | object | `{"create":false,"maxUnavailable":"","minAvailable":0}` | generate PodDisruptionBudget |
-| podDisruptionBudget.create | bool | `false` | create |
-| podDisruptionBudget.maxUnavailable | mutually exclusive with minAvailable | `""` | Max number of pods unavailable before destroy node |
-| podDisruptionBudget.minAvailable | mutually exclusive with maxUnavailable | `0` | Min number of pods that must be alive before destroy node |
+| podDisruptionBudget | object | `{"create":false,"maxUnavailable":"","minAvailable":""}` | generate PodDisruptionBudget |
+| podDisruptionBudget.create | bool | `false` | Create the PodDisruptionBudget. Requires exactly one of minAvailable and maxUnavailable |
+| podDisruptionBudget.maxUnavailable | string | `""` | Max number of pods (a number or a percentage) that can be unavailable during a voluntary disruption. Mutually exclusive with minAvailable |
+| podDisruptionBudget.minAvailable | string | `""` | Min number of pods (a number or a percentage, e.g. "50%") that must stay available during a voluntary disruption (e.g. node drain). Mutually exclusive with maxUnavailable |
 | podSecurityContext | object | `{"seccompProfile":{"type":"RuntimeDefault"}}` | podSecurityContext |
 | podSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | seccompProfile |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` | type |
@@ -143,10 +143,10 @@ A Helm chart for PagoPA microservice
 | restartPolicy | string | `"Always"` | Restart policy |
 | secretProviderClass | object | `{"create":true}` | SecretProviderClass that loads the Key Vault secrets (envSecret, initContainerEnvSecret, providedVolumeMount.envSecret) |
 | secretProviderClass.create | bool | `true` | Enable the SecretProviderClass. It is created, together with the `secrets-store-inline` volume, only when at least one secret is configured |
-| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["all"]},"readOnlyRootFilesystem":true}` | securityContext |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true}` | securityContext |
 | securityContext.allowPrivilegeEscalation | bool | `false` | allowPrivilegeEscalation |
-| securityContext.capabilities | object | `{"drop":["all"]}` | capabilities |
-| securityContext.capabilities.drop | list | `["all"]` | drop |
+| securityContext.capabilities | object | `{"drop":["ALL"]}` | capabilities |
+| securityContext.capabilities.drop | list | `["ALL"]` | drop |
 | securityContext.readOnlyRootFilesystem | bool | `true` | readOnlyRootFilesystem |
 | service.create | bool | `true` | create the service manifest |
 | service.ports | list | `[8080]` | Which ports use (! this port is used even inside the deployment) |

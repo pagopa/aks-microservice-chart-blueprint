@@ -249,7 +249,7 @@ complete scenario:
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop:
-                    - all
+                    - ALL
                 readOnlyRootFilesystem: true
               startupProbe:
                 exec:
@@ -467,6 +467,15 @@ complete scenario:
     apiVersion: policy/v1
     kind: PodDisruptionBudget
     metadata:
+      labels:
+        app.kubernetes.io/instance: myapp
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: microservice-chart
+        app.kubernetes.io/version: 1.0.0
+        azure.workload.identity/use: "true"
+        canaryDelivery: "false"
+        helm.sh/blueprint-version: 0.0.0-test
+        helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart-non-core
       namespace: testit
     spec:
@@ -615,7 +624,7 @@ haproxy canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart-canary-hdr
-      namespace: null
+      namespace: testit
     spec:
       ports:
         - name: app-port-8080-svc
@@ -644,7 +653,7 @@ haproxy canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart-canary-wt
-      namespace: null
+      namespace: testit
     spec:
       ports:
         - name: app-port-8080-svc
@@ -672,7 +681,7 @@ haproxy canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart-canary
-      namespace: null
+      namespace: testit
     spec:
       replicas: 1
       selector:
@@ -738,7 +747,7 @@ haproxy canary scenario:
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop:
-                    - all
+                    - ALL
                 readOnlyRootFilesystem: true
               volumeMounts:
                 - mountPath: /tmp
@@ -775,7 +784,7 @@ haproxy canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
   6: |
     apiVersion: apps/v1
     kind: Deployment
@@ -792,7 +801,7 @@ haproxy canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       replicas: 1
       revisionHistoryLimit: 3
@@ -866,7 +875,7 @@ haproxy canary scenario:
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop:
-                    - all
+                    - ALL
                 readOnlyRootFilesystem: true
               volumeMounts:
                 - mountPath: /tmp
@@ -897,7 +906,7 @@ haproxy canary scenario:
         haproxy.org/ssl-redirect: "true"
         kubernetes.io/ingress.class: haproxy
       name: myapp-microservice-chart-haproxy
-      namespace: null
+      namespace: testit
     spec:
       ingressClassName: haproxy
       rules:
@@ -943,7 +952,7 @@ haproxy canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       parameters:
         clientID: 11111111-1111-1111-1111-111111111111
@@ -980,7 +989,7 @@ haproxy canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       ports:
         - name: app-port-8080-svc
@@ -1013,7 +1022,7 @@ keda multiple trigger authentication scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: azure-monitor-auth
-      namespace: null
+      namespace: testit
     spec:
       podIdentity:
         identityId: 11111111-1111-1111-1111-111111111111
@@ -1032,7 +1041,7 @@ keda multiple trigger authentication scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: queue-auth
-      namespace: null
+      namespace: testit
     spec:
       secretTargetRef:
         - key: queueConnectionString
@@ -1052,7 +1061,7 @@ keda multiple trigger authentication scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       advanced:
         horizontalPodAutoscalerConfig:
@@ -1097,7 +1106,7 @@ keda multiple trigger authentication scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       replicas: 1
       revisionHistoryLimit: 3
@@ -1161,7 +1170,7 @@ keda multiple trigger authentication scenario:
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop:
-                    - all
+                    - ALL
                 readOnlyRootFilesystem: true
               volumeMounts:
                 - mountPath: /tmp
@@ -1189,7 +1198,7 @@ keda multiple trigger authentication scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       ports:
         - name: app-port-8080-svc
@@ -1224,7 +1233,7 @@ minimal scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       replicas: 1
       revisionHistoryLimit: 3
@@ -1288,7 +1297,7 @@ minimal scenario:
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop:
-                    - all
+                    - ALL
                 readOnlyRootFilesystem: true
               volumeMounts:
                 - mountPath: /tmp
@@ -1316,7 +1325,7 @@ minimal scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       ports:
         - name: app-port-8080-svc
@@ -1352,7 +1361,7 @@ nginx canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
   3: |
     apiVersion: apps/v1
     kind: Deployment
@@ -1369,7 +1378,7 @@ nginx canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       replicas: 1
       revisionHistoryLimit: 3
@@ -1448,7 +1457,7 @@ nginx canary scenario:
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop:
-                    - all
+                    - ALL
                 readOnlyRootFilesystem: true
               volumeMounts:
                 - mountPath: /tmp
@@ -1485,7 +1494,7 @@ nginx canary scenario:
         nginx.ingress.kubernetes.io/rewrite-target: /$2
         nginx.ingress.kubernetes.io/use-regex: "true"
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       ingressClassName: nginx
       rules:
@@ -1517,7 +1526,7 @@ nginx canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       parameters:
         clientID: 11111111-1111-1111-1111-111111111111
@@ -1552,7 +1561,7 @@ nginx canary scenario:
         helm.sh/blueprint-version: 0.0.0-test
         helm.sh/chart: microservice-chart-1.0.0
       name: myapp-microservice-chart
-      namespace: null
+      namespace: testit
     spec:
       ports:
         - name: app-port-8080-svc

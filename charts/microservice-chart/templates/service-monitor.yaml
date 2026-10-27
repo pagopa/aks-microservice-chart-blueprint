@@ -7,7 +7,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "microservice-chart.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
   labels:
     release: prometheus
     {{- include "microservice-chart.labels" . | nindent 4 }}

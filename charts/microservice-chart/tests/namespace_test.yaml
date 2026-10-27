@@ -1,0 +1,87 @@
+# Every rendered resource must have a namespace: .Values.namespace or, when empty, the release namespace.
+suite: resource namespace
+templates:
+  - templates/autoscaling.yaml
+  - templates/canary-haproxy.yaml
+  - templates/configmap.yaml
+  - templates/deployments.yaml
+  - templates/ingress-haproxy.yml
+  - templates/ingress.yaml
+  - templates/pdb.yaml
+  - templates/secretproviderclass-kv.yaml
+  - templates/service-monitor.yaml
+  - templates/serviceaccount.yaml
+  - templates/services.yaml
+release:
+  name: myapp
+  namespace: release-ns
+chart:
+  version: 0.0.0-test
+values:
+  - ../ci/complete-values.yaml
+tests:
+  - it: uses the release namespace when namespace is empty
+    templates:
+      - templates/autoscaling.yaml
+      - templates/configmap.yaml
+      - templates/deployments.yaml
+      - templates/ingress.yaml
+      - templates/pdb.yaml
+      - templates/secretproviderclass-kv.yaml
+      - templates/service-monitor.yaml
+      - templates/serviceaccount.yaml
+      - templates/services.yaml
+    set:
+      namespace: ""
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: release-ns
+
+  - it: uses .Values.namespace when set
+    templates:
+      - templates/autoscaling.yaml
+      - templates/configmap.yaml
+      - templates/deployments.yaml
+      - templates/ingress.yaml
+      - templates/pdb.yaml
+      - templates/secretproviderclass-kv.yaml
+      - templates/service-monitor.yaml
+      - templates/serviceaccount.yaml
+      - templates/services.yaml
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: testit
+
+  - it: uses the release namespace for the haproxy canary resources and the KEDA TriggerAuthentications
+    templates:
+      - templates/autoscaling.yaml
+      - templates/canary-haproxy.yaml
+      - templates/ingress-haproxy.yml
+    set:
+      namespace: ""
+      ingress.create: false
+      ingress.haproxy:
+        create: true
+        host: myapp.example.com
+        path: /myapp
+      canaryDelivery:
+        create: true
+        ingress:
+          header: true
+          weightPercent: 20
+        image:
+          repository: ghcr.io/pagopa/app
+          tag: "1.1.0"
+      autoscaling.triggerAuthentications:
+        - name: auth-a
+          workloadIdentity:
+            provider: azure-workload
+        - name: auth-b
+          workloadIdentity:
+            provider: azure-workload
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: release-ns

@@ -1,4 +1,4 @@
-{{- $namespace := .Values.namespace | default .Release.Namespace }}
+{{- $namespace := include "microservice-chart.namespace" . }}
 {{- $fullname := include "microservice-chart.fullname" . }}
 {{- $port := first (.Values.service.ports | default (list 8080)) }}
 1. Get the application URL by running these commands:

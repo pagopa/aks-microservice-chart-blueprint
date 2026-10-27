@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "microservice-chart.fullname" . }}-haproxy
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
   annotations:
     kubernetes.io/ingress.class: haproxy
     haproxy.org/ssl-redirect: {{ .Values.ingress.forceSslRedirect | quote }}

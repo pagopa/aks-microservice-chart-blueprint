@@ -68,3 +68,30 @@ tests:
       - equal:
           path: data.enabled
           value: "true"
+
+  - it: quotes the merged canary envConfig values in the legacy nginx canary mode
+    set:
+      envConfig:
+        PORT: 8080
+      canaryDelivery.create: true
+      canaryDelivery.envConfig:
+        DEBUG: true
+    asserts:
+      - equal:
+          path: data
+          value:
+            CANARY: "true"
+            DEBUG: "true"
+            PORT: "8080"
+
+  - it: includes the canary envConfig even when the stable envConfig is empty
+    set:
+      canaryDelivery.create: true
+      canaryDelivery.envConfig:
+        ONLY_CANARY: "yes"
+    asserts:
+      - equal:
+          path: data
+          value:
+            CANARY: "true"
+            ONLY_CANARY: "yes"

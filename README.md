@@ -649,11 +649,18 @@ Each init container accepts:
 
 ### `PodDisruptionBudget`
 
+Limits how many pods can be stopped at the same time by a voluntary disruption, e.g. a node drain during a cluster
+upgrade. Set **exactly one** of `minAvailable` and `maxUnavailable` (a number or a percentage): the chart fails when
+both or none are set.
+
 ```yaml
   podDisruptionBudget:
     create: true
-    minAvailable: 0
+    minAvailable: 1          # or maxUnavailable: 1 / "50%"
 ```
+
+> ⚠️ With a single replica, `minAvailable: 1` (or `maxUnavailable: 0`) blocks the node drain: use it only with
+> at least 2 replicas.
 
 ### `Affinity/HA (nodeAffinity & podAntiAffinity)`
 

@@ -442,3 +442,9 @@ tests:
     asserts:
       - failedTemplate:
           errorPattern: externalConfigMapValues.configMaps must map each env var name to a key of the config map configMaps
+
+  - it: drops ALL capabilities by default
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.capabilities.drop
+          value: ["ALL"]

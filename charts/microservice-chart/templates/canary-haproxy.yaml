@@ -9,7 +9,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "microservice-chart.fullname" . }}-canary-hdr
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
@@ -37,7 +37,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "microservice-chart.fullname" . }}-canary-wt
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
@@ -65,7 +65,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "microservice-chart.fullname" . }}-canary
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
@@ -93,7 +93,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "microservice-chart.fullname" . }}-canary
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
@@ -122,7 +122,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "microservice-chart.fullname" . }}-canary
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
@@ -205,14 +205,14 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
-            {{- range $key, $val := (mergeOverwrite .Values.envConfig .Values.canaryDelivery.envConfig) }}
+            {{- range $key, $val := (mergeOverwrite (deepCopy (.Values.envConfig | default dict)) (.Values.canaryDelivery.envConfig | default dict)) }}
             - name: {{ $key }}
               value: {{ $val | toString | quote }}
             {{- end }}
             - name: CANARY
               value: "true"
             {{- if .Values.secretProviderClass.create }}
-            {{- range $name, $value := (mergeOverwrite .Values.envSecret .Values.canaryDelivery.envSecret) }}
+            {{- range $name, $value := (mergeOverwrite (deepCopy (.Values.envSecret | default dict)) (.Values.canaryDelivery.envSecret | default dict)) }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:
