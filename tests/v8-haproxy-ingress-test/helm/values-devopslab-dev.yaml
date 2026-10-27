@@ -46,6 +46,10 @@ microservice-chart:
     TMPDIR: "/tmp"
     JAVA_TOOL_OPTIONS: "-Djava.io.tmpdir=/tmp"
 
+  podDisruptionBudget:
+    create: true
+    minAvailable: 1
+
   tmpVolumeMount:
     create: true
     mounts:
