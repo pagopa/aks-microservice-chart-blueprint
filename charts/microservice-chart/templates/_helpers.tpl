@@ -174,3 +174,17 @@ secretProviderClass.create is enabled and there is at least one secret to load.
 true
 {{- end }}
 {{- end }}
+
+{{/*
+Annotations of the Services used as HAProxy backends (main Service and canary Services):
+ingress.haproxy.backendAnnotations when set, otherwise the path rewrite snippet when ingress.haproxy.rewriteTarget is set.
+Renders nothing when there are no annotations.
+*/}}
+{{- define "microservice-chart.haproxyBackendAnnotations" -}}
+{{- $haproxy := .Values.ingress.haproxy }}
+{{- if $haproxy.backendAnnotations }}
+{{- toYaml $haproxy.backendAnnotations }}
+{{- else if $haproxy.rewriteTarget }}
+haproxy.org/backend-config-snippet: {{ printf "http-request replace-path ^%s/?(.*) %s" $haproxy.path $haproxy.rewriteTarget | quote }}
+{{- end }}
+{{- end }}

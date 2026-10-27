@@ -755,7 +755,12 @@ Example of a pod that will be stopped after 10 seconds.
       value: "true"
 ```
 
-### Probe: Liveness, Readiness, Starup
+### Probe: Liveness, Readiness, Startup
+
+Defaults for the three probes: `periodSeconds: 10`, `failureThreshold: 3`, `timeoutSeconds: 1`,
+`successThreshold: 1`, `initialDelaySeconds: 1` (the Kubernetes defaults, except the initial delay). With these values a
+container is restarted after about 30 seconds of failing liveness probes. For slow starting applications (e.g. Java)
+prefer a `startupProbe` to a long `initialDelaySeconds`: liveness and readiness start only after the startup probe succeeds.
 
 #### `livenessProbe`
 

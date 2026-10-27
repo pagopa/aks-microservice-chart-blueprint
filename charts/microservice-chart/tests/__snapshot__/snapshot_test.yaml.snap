@@ -231,9 +231,9 @@ complete scenario:
                   name: app-port-9090
                   protocol: TCP
               readinessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 tcpSocket:
                   port: 8080
@@ -257,9 +257,9 @@ complete scenario:
                     - /bin/sh
                     - -c
                     - test -f /tmp/ready
-                failureThreshold: 1
+                failureThreshold: 3
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 terminationGracePeriodSeconds: 30
                 timeoutSeconds: 1
@@ -713,12 +713,12 @@ haproxy canary scenario:
               image: ghcr.io/pagopa/devops-java-springboot-color:1.1.0
               imagePullPolicy: Always
               livenessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 terminationGracePeriodSeconds: 30
                 timeoutSeconds: 1
@@ -728,12 +728,12 @@ haproxy canary scenario:
                   name: app-port-8080
                   protocol: TCP
               readinessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 1
               resources:
@@ -841,12 +841,12 @@ haproxy canary scenario:
               image: ghcr.io/pagopa/devops-java-springboot-color:1.0.0
               imagePullPolicy: Always
               livenessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 terminationGracePeriodSeconds: 30
                 timeoutSeconds: 1
@@ -856,12 +856,12 @@ haproxy canary scenario:
                   name: app-port-8080
                   protocol: TCP
               readinessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 1
               resources:
@@ -1136,12 +1136,12 @@ keda multiple trigger authentication scenario:
               image: ghcr.io/pagopa/devops-java-springboot-color:1.0.0
               imagePullPolicy: Always
               livenessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 terminationGracePeriodSeconds: 30
                 timeoutSeconds: 1
@@ -1151,12 +1151,12 @@ keda multiple trigger authentication scenario:
                   name: app-port-8080
                   protocol: TCP
               readinessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 1
               resources:
@@ -1263,12 +1263,12 @@ minimal scenario:
               image: ghcr.io/pagopa/devops-java-springboot-color:1.0.0
               imagePullPolicy: Always
               livenessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 terminationGracePeriodSeconds: 30
                 timeoutSeconds: 1
@@ -1278,12 +1278,12 @@ minimal scenario:
                   name: app-port-8080
                   protocol: TCP
               readinessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 1
               resources:
@@ -1423,12 +1423,12 @@ nginx canary scenario:
               image: ghcr.io/pagopa/devops-java-springboot-color:1.1.0
               imagePullPolicy: Always
               livenessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 terminationGracePeriodSeconds: 30
                 timeoutSeconds: 1
@@ -1438,12 +1438,12 @@ nginx canary scenario:
                   name: app-port-8080
                   protocol: TCP
               readinessProbe:
-                failureThreshold: 1
+                failureThreshold: 3
                 httpGet:
                   path: /alive
                   port: 9999
                 initialDelaySeconds: 1
-                periodSeconds: 1
+                periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 1
               resources:

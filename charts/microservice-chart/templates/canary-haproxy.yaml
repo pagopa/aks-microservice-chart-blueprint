@@ -1,9 +1,5 @@
 {{- if and .Values.ingress.haproxy.create .Values.canaryDelivery.create -}}
-{{- $backendSnippet := "" -}}
-{{- if .Values.ingress.haproxy.backendAnnotations -}}
-{{- else if and .Values.ingress.haproxy.rewriteTarget .Values.ingress.haproxy.path -}}
-{{- $backendSnippet = printf "http-request replace-path ^%s/?(.*) %s" .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget -}}
-{{- end -}}
+{{- $backendAnnotations := include "microservice-chart.haproxyBackendAnnotations" . -}}
 {{- if and .Values.canaryDelivery.ingress.header .Values.canaryDelivery.ingress.weightPercent }}
 apiVersion: v1
 kind: Service
@@ -14,10 +10,8 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     haproxy.org/route-acl: {{ printf "hdr(%s) -m str %s" .Values.canaryDelivery.ingress.headerName .Values.canaryDelivery.ingress.headerValue | quote }}
-    {{- if .Values.ingress.haproxy.backendAnnotations }}
-    {{- toYaml .Values.ingress.haproxy.backendAnnotations | nindent 4 }}
-    {{- else if $backendSnippet }}
-    haproxy.org/backend-config-snippet: {{ $backendSnippet | quote }}
+    {{- with $backendAnnotations }}
+    {{- . | nindent 4 }}
     {{- end }}
 spec:
   type: {{ .Values.service.type }}
@@ -42,10 +36,8 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     haproxy.org/route-acl: {{ printf "rand(100) lt %d" (int .Values.canaryDelivery.ingress.weightPercent) | quote }}
-    {{- if .Values.ingress.haproxy.backendAnnotations }}
-    {{- toYaml .Values.ingress.haproxy.backendAnnotations | nindent 4 }}
-    {{- else if $backendSnippet }}
-    haproxy.org/backend-config-snippet: {{ $backendSnippet | quote }}
+    {{- with $backendAnnotations }}
+    {{- . | nindent 4 }}
     {{- end }}
 spec:
   type: {{ .Values.service.type }}
@@ -70,10 +62,8 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     haproxy.org/route-acl: {{ printf "hdr(%s) -m str %s" .Values.canaryDelivery.ingress.headerName .Values.canaryDelivery.ingress.headerValue | quote }}
-    {{- if .Values.ingress.haproxy.backendAnnotations }}
-    {{- toYaml .Values.ingress.haproxy.backendAnnotations | nindent 4 }}
-    {{- else if $backendSnippet }}
-    haproxy.org/backend-config-snippet: {{ $backendSnippet | quote }}
+    {{- with $backendAnnotations }}
+    {{- . | nindent 4 }}
     {{- end }}
 spec:
   type: {{ .Values.service.type }}
@@ -98,10 +88,8 @@ metadata:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
     haproxy.org/route-acl: {{ printf "rand(100) lt %d" (int .Values.canaryDelivery.ingress.weightPercent) | quote }}
-    {{- if .Values.ingress.haproxy.backendAnnotations }}
-    {{- toYaml .Values.ingress.haproxy.backendAnnotations | nindent 4 }}
-    {{- else if $backendSnippet }}
-    haproxy.org/backend-config-snippet: {{ $backendSnippet | quote }}
+    {{- with $backendAnnotations }}
+    {{- . | nindent 4 }}
     {{- end }}
 spec:
   type: {{ .Values.service.type }}

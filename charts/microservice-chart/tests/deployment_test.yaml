@@ -448,3 +448,23 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].securityContext.capabilities.drop
           value: ["ALL"]
+
+  - it: uses periodSeconds 10 and failureThreshold 3 by default for all the probes
+    set:
+      startupProbe.create: true
+    asserts:
+      - isSubset:
+          path: spec.template.spec.containers[0].livenessProbe
+          content:
+            periodSeconds: 10
+            failureThreshold: 3
+      - isSubset:
+          path: spec.template.spec.containers[0].readinessProbe
+          content:
+            periodSeconds: 10
+            failureThreshold: 3
+      - isSubset:
+          path: spec.template.spec.containers[0].startupProbe
+          content:
+            periodSeconds: 10
+            failureThreshold: 3

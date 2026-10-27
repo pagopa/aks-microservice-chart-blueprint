@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 8.8.12
+
+fix: [PAYMCLOUD-1384] Probe defaults and HAProxy backend annotations
+
+- default `periodSeconds: 10` and `failureThreshold: 3` (the Kubernetes defaults) for `livenessProbe`,
+  `readinessProbe` and `startupProbe`: with 1 and 1 a single slow response restarted the container.
+  ⚠️ Releases that rely on the defaults now detect a failing container after ~30s instead of ~1s
+- a single helper renders the HAProxy backend annotations of the main and canary Services
+  (`ingress.haproxy.backendAnnotations`, otherwise the `rewriteTarget` path rewrite snippet): the canary Services
+  no longer skip the rewrite when `ingress.haproxy.path` is empty
+
 ## 8.8.11
 
 fix: [PAYMCLOUD-1383] Robustness

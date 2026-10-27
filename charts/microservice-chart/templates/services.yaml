@@ -6,12 +6,11 @@ metadata:
   namespace: {{ include "microservice-chart.namespace" . }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
-  {{- if and .Values.ingress.haproxy.create .Values.ingress.haproxy.backendAnnotations }}
+  {{- if .Values.ingress.haproxy.create }}
+  {{- with include "microservice-chart.haproxyBackendAnnotations" . }}
   annotations:
-    {{- toYaml .Values.ingress.haproxy.backendAnnotations | nindent 4 }}
-  {{- else if and .Values.ingress.haproxy.create .Values.ingress.haproxy.rewriteTarget }}
-  annotations:
-    haproxy.org/backend-config-snippet: {{ printf "http-request replace-path ^%s/?(.*) %s" .Values.ingress.haproxy.path .Values.ingress.haproxy.rewriteTarget | quote }}
+    {{- . | nindent 4 }}
+  {{- end }}
   {{- end }}
 spec:
   type: {{ .Values.service.type }}
