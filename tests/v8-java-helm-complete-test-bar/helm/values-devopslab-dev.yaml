@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../../schema/microservice-chart-parent.schema.json
 microservice-chart:
   namespace: "testit"
 

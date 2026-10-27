@@ -212,7 +212,7 @@ tests:
             repository: busybox
     asserts:
       - failedTemplate:
-          errorMessage: initContainers[0].name is required
+          errorPattern: "/initContainers/0': missing property 'name'"
 
   - it: fails when the init container has no image repository
     set:
@@ -220,4 +220,4 @@ tests:
         - name: wait
     asserts:
       - failedTemplate:
-          errorMessage: initContainers[0].image.repository is required
+          errorPattern: "/initContainers/0': missing property 'image'"

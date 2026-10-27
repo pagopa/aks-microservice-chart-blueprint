@@ -95,4 +95,4 @@ tests:
         - name: shared-data
     asserts:
       - failedTemplate:
-          errorMessage: azureFile.mounts[0].shareName is required
+          errorPattern: "/azureFile/mounts/0': missing property 'shareName'"

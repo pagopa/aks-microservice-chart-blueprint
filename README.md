@@ -109,6 +109,42 @@ Change version of the dependency and run the update:
 cd helm && helm dep update .
 ```
 
+## Values schema
+
+The chart ships a JSON schema (`charts/microservice-chart/values.schema.json`). Helm uses it on every
+`helm install/upgrade/template/lint`, so a wrong value fails **before** the deploy with a clear message, e.g.:
+
+```text
+microservice-chart:
+- at '/autoscaling/enable': got string, want boolean
+```
+
+It checks the types of the known values (e.g. booleans, integers, `envConfig` values that must be scalars, image tags
+that must be strings), a few allowed values (`service.type`, probe `handlerType`, `image.pullPolicy`) and the required
+fields of list items (e.g. `autoscaling.triggers[].type`, `initContainers[].name`, `azureFile.mounts[].shareName`).
+
+> ℹ️ This first version is permissive: unknown keys are allowed, so a typo in a key name (e.g. `autoscaling.enabled`)
+> is not reported yet.
+
+> ⚠️ Quote numeric image tags (`tag: "1.10"`): YAML reads `1.10` as the number `1.1`, so an unquoted numeric tag is rejected.
+
+### Autocompletion in VS Code / IntelliJ
+
+With the [YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) (VS Code) or the
+built-in YAML support (IntelliJ), add this line at the top of your `values-<env>.yaml`, where the values are under the
+`microservice-chart` key:
+
+```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/pagopa/aks-microservice-chart-blueprint/main/schema/microservice-chart-parent.schema.json
+microservice-chart:
+  image:
+    repository: ghcr.io/pagopa/my-app
+```
+
+You get autocompletion, descriptions on hover and errors while you type. Replace `main` with a release tag (e.g.
+`microservice-chart-8.9.0`) to pin the schema to the chart version you use. If you use the chart with an `alias`,
+copy `schema/microservice-chart-parent.schema.json` and rename the `microservice-chart` property.
+
 ## 🧭 Template/App mandatory resources and configuration
 
 To work as expect this template must request:

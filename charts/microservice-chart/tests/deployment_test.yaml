@@ -441,7 +441,7 @@ tests:
             key: database-db-name
     asserts:
       - failedTemplate:
-          errorPattern: externalConfigMapValues.configMaps must map each env var name to a key of the config map configMaps
+          errorPattern: "/externalConfigMapValues/configMaps': 'anyOf' failed"
 
   - it: drops ALL capabilities by default
     asserts:
