@@ -90,10 +90,10 @@ livenessProbe:
     port: 9999
   # -- initialDelaySeconds
   initialDelaySeconds: 1
-  # -- failureThreshold
-  failureThreshold: 1
-  # -- periodSeconds
-  periodSeconds: 1
+  # -- failureThreshold (Kubernetes default)
+  failureThreshold: 3
+  # -- periodSeconds (Kubernetes default)
+  periodSeconds: 10
   # -- successThreshold
   successThreshold: 1
   # -- timeoutSeconds
@@ -124,10 +124,10 @@ readinessProbe:
     port: 9999
   # -- initialDelaySeconds
   initialDelaySeconds: 1
-  # -- failureThreshold
-  failureThreshold: 1
-  # -- periodSeconds
-  periodSeconds: 1
+  # -- failureThreshold (Kubernetes default)
+  failureThreshold: 3
+  # -- periodSeconds (Kubernetes default)
+  periodSeconds: 10
   # -- successThreshold
   successThreshold: 1
   # -- timeoutSeconds
@@ -156,10 +156,10 @@ startupProbe:
     port: 9999
   # -- initialDelaySeconds
   initialDelaySeconds: 1
-  # -- failureThreshold
-  failureThreshold: 1
-  # -- periodSeconds
-  periodSeconds: 1
+  # -- failureThreshold (Kubernetes default)
+  failureThreshold: 3
+  # -- periodSeconds (Kubernetes default)
+  periodSeconds: 10
   # -- successThreshold
   successThreshold: 1
   # -- timeoutSeconds

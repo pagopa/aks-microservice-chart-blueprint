@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.8.10](https://img.shields.io/badge/Version-8.8.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.8.11](https://img.shields.io/badge/Version-8.8.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -87,13 +87,13 @@ A Helm chart for PagoPA microservice
 | livenessProbe | object | {} | LivenessProbe |
 | livenessProbe.exec | object | `{"command":[]}` | exec options |
 | livenessProbe.exec.command | list | `[]` | Command can be in yaml or array version e.g.: command: ["/bin/sh", "-c", '[ -d "/csv" ]'] |
-| livenessProbe.failureThreshold | int | `1` | failureThreshold |
+| livenessProbe.failureThreshold | int | `3` | failureThreshold (Kubernetes default) |
 | livenessProbe.handlerType | string | `"httpGet"` | Choose the probe type: "httpGet" or "exec" or "tcpSocket" |
 | livenessProbe.httpGet | object | `{"path":"/alive","port":9999}` | httpGet options |
 | livenessProbe.httpGet.path | string | `"/alive"` | path |
 | livenessProbe.httpGet.port | int | `9999` | port |
 | livenessProbe.initialDelaySeconds | int | `1` | initialDelaySeconds |
-| livenessProbe.periodSeconds | int | `1` | periodSeconds |
+| livenessProbe.periodSeconds | int | `10` | periodSeconds (Kubernetes default) |
 | livenessProbe.successThreshold | int | `1` | successThreshold |
 | livenessProbe.tcpSocket | object | `{"port":9999}` | tcpSocket options |
 | livenessProbe.tcpSocket.port | int | `9999` | tcpSocket.port |
@@ -122,13 +122,13 @@ A Helm chart for PagoPA microservice
 | readinessProbe | object | {} | ReadinessProbe |
 | readinessProbe.exec | object | `{"command":[]}` | exec options |
 | readinessProbe.exec.command | list | `[]` | Command can be in yaml or array version e.g.: command: ["/bin/sh", "-c", '[ -d "/csv" ]'] |
-| readinessProbe.failureThreshold | int | `1` | failureThreshold |
+| readinessProbe.failureThreshold | int | `3` | failureThreshold (Kubernetes default) |
 | readinessProbe.handlerType | string | `"httpGet"` | Choose the probe type: "httpGet" or "exec" or "tcpSocket" |
 | readinessProbe.httpGet | object | `{"path":"/alive","port":9999}` | httpGet options |
 | readinessProbe.httpGet.path | string | `"/alive"` | path |
 | readinessProbe.httpGet.port | int | `9999` | port |
 | readinessProbe.initialDelaySeconds | int | `1` | initialDelaySeconds |
-| readinessProbe.periodSeconds | int | `1` | periodSeconds |
+| readinessProbe.periodSeconds | int | `10` | periodSeconds (Kubernetes default) |
 | readinessProbe.successThreshold | int | `1` | successThreshold |
 | readinessProbe.tcpSocket | object | `{"port":9999}` | tcpSocket options |
 | readinessProbe.tcpSocket.port | int | `9999` | tcpSocket.port |
@@ -161,13 +161,13 @@ A Helm chart for PagoPA microservice
 | startupProbe | object | {} | startupProbe |
 | startupProbe.exec | object | `{"command":[]}` | exec options |
 | startupProbe.exec.command | list | `[]` | Command can be in yaml or array version e.g.: command: ["/bin/sh", "-c", '[ -d "/csv" ]'] |
-| startupProbe.failureThreshold | int | `1` | failureThreshold |
+| startupProbe.failureThreshold | int | `3` | failureThreshold (Kubernetes default) |
 | startupProbe.handlerType | string | `"httpGet"` | Choose the probe type: "httpGet" or "exec" or "tcpSocket" |
 | startupProbe.httpGet | object | `{"path":"/alive","port":9999}` | httpGet options |
 | startupProbe.httpGet.path | string | `"/alive"` | path |
 | startupProbe.httpGet.port | int | `9999` | port |
 | startupProbe.initialDelaySeconds | int | `1` | initialDelaySeconds |
-| startupProbe.periodSeconds | int | `1` | periodSeconds |
+| startupProbe.periodSeconds | int | `10` | periodSeconds (Kubernetes default) |
 | startupProbe.successThreshold | int | `1` | successThreshold |
 | startupProbe.tcpSocket | object | `{"port":9999}` | tcpSocket options |
 | startupProbe.tcpSocket.port | int | `9999` | tcpSocket.port |

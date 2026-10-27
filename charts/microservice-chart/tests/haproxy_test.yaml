@@ -236,3 +236,71 @@ tests:
           value:
             COLOR: "green"
         template: templates/configmap.yaml
+
+  - it: uses the same rewrite snippet on the main and canary services
+    set:
+      <<: *canary
+      ingress.haproxy.rewriteTarget: /
+    templates:
+      - templates/services.yaml
+      - templates/canary-haproxy.yaml
+    documentSelector:
+      path: kind
+      value: Service
+      matchMany: true
+    asserts:
+      - equal:
+          path: metadata.annotations["haproxy.org/backend-config-snippet"]
+          value: http-request replace-path ^/myapp/?(.*) /
+
+  - it: uses backendAnnotations on the main and canary services
+    set:
+      <<: *canary
+      ingress.haproxy.rewriteTarget: /
+      ingress.haproxy.backendAnnotations:
+        haproxy.org/backend-config-snippet: custom
+        haproxy.org/timeout-server: 30s
+    templates:
+      - templates/services.yaml
+      - templates/canary-haproxy.yaml
+    documentSelector:
+      path: kind
+      value: Service
+      matchMany: true
+    asserts:
+      - isSubset:
+          path: metadata.annotations
+          content:
+            haproxy.org/backend-config-snippet: custom
+            haproxy.org/timeout-server: 30s
+
+  - it: adds the rewrite snippet to the canary services also when the haproxy path is empty, like the main service
+    set:
+      <<: *canary
+      ingress.haproxy.path: ""
+      ingress.haproxy.rewriteTarget: /
+    templates:
+      - templates/services.yaml
+      - templates/canary-haproxy.yaml
+    documentSelector:
+      path: kind
+      value: Service
+      matchMany: true
+    asserts:
+      - equal:
+          path: metadata.annotations["haproxy.org/backend-config-snippet"]
+          value: http-request replace-path ^/?(.*) /
+
+  - it: renders no backend annotations without rewriteTarget and backendAnnotations
+    set:
+      <<: *canary
+    templates:
+      - templates/services.yaml
+      - templates/canary-haproxy.yaml
+    documentSelector:
+      path: kind
+      value: Service
+      matchMany: true
+    asserts:
+      - notExists:
+          path: metadata.annotations["haproxy.org/backend-config-snippet"]
