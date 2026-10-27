@@ -1,6 +1,6 @@
 # microservice-chart
 
-![Version: 8.8.5](https://img.shields.io/badge/Version-8.8.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 8.8.6](https://img.shields.io/badge/Version-8.8.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A Helm chart for PagoPA microservice
 
@@ -77,9 +77,9 @@ A Helm chart for PagoPA microservice
 | ingress.proxyBodySize | string | `"1m"` | the size allowed by nginx.ingress.kubernetes.io/proxy-body-size for client request body |
 | ingress.rewriteTarget | string | `"/$1"` | the rewrite target for ingress |
 | ingress.servicePort | int | `8080` | service port to reach |
-| initContainerEnvConfig | object | `{}` | Environment config to use for init containers |
-| initContainerEnvSecret | object | `{}` | Load secrets as environment variables for init containers |
-| initContainers | list | `[]` | Init Containers |
+| initContainerEnvConfig | object | `{}` | Environment config for all the init containers (stored in the `<fullname>-init` ConfigMap) |
+| initContainerEnvSecret | object | `{}` | Key Vault secrets loaded as environment variables in all the init containers (requires secretProviderClass.create) |
+| initContainers | list | `[]` | Init containers. Each item: `name` and `image.repository` (required), `image.tag`, `image.pullPolicy`, `command`, `args`, `env` (list of Kubernetes EnvVar, added after initContainerEnvConfig/initContainerEnvSecret), `volumeMounts` (list of Kubernetes VolumeMount, any pod volume), `tmpVolumeMount` (`create` + `mounts` by volume name), `securityContext` and `resources`. securityContext and resources are not inherited from the main container. See README `initContainers` |
 | keyvault | object | `{"name":"","tenantId":""}` | Configure keyvault to use inside secret prover to load secret directly |
 | keyvault.name | string | `""` | Key vault name |
 | keyvault.tenantId | string | `""` | Tenant ID |

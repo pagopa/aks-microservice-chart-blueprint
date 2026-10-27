@@ -324,6 +324,44 @@ complete scenario:
                   name: tmp
                 - mountPath: /mnt/certificates
                   name: certificates
+            - command:
+                - sh
+                - -c
+                - test -f /config/logback.xml
+              env:
+                - name: INIT_MODE
+                  valueFrom:
+                    configMapKeyRef:
+                      key: INIT_MODE
+                      name: myapp-microservice-chart-non-core-init
+                - name: INIT_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: init-db-password
+                      name: myapp-microservice-chart-non-core
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+              image: busybox:1.36
+              name: wait-for-config
+              resources:
+                limits:
+                  memory: 32Mi
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - mountPath: /config/logback.xml
+                  name: file-config
+                  readOnly: true
+                  subPath: logback.xml
           nodeSelector:
             critical: "false"
           restartPolicy: Always

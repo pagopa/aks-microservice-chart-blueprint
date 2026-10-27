@@ -577,6 +577,64 @@ or `azureFile.secretName` when set.
         mountPath: /mnt/truststore
 ```
 
+### `initContainers`: run containers before the application starts
+
+Each init container accepts:
+
+- `name` and `image.repository` (required), `image.tag`, `image.pullPolicy`
+- `command`, `args`
+- `env`: list of Kubernetes [EnvVar](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#environment-variables),
+  added after the variables shared by all the init containers (`initContainerEnvConfig`, `initContainerEnvSecret`)
+- `volumeMounts`: list of Kubernetes VolumeMount. They can reference any pod volume created by the chart:
+  `secrets-store-inline` (Key Vault secrets as files), the PVCs of `persistentVolumeClaimsMounts`, `file-config`
+  (`configMapFromFile`), the `azureFile` shares, the `tmpVolumeMount` emptyDirs
+- `tmpVolumeMount`: `create` + `mounts`, a shortcut to mount pod volumes by name (only `name` and `mountPath`)
+- `securityContext` and `resources`
+
+> ℹ️ `securityContext` and `resources` are **not** inherited from the main container: set them on each init
+> container, otherwise the init container runs without them.
+
+```yaml
+  # shared by all the init containers
+  initContainerEnvConfig:
+    MIGRATION_MODE: "apply"
+  initContainerEnvSecret:
+    DB_PASSWORD: db-password          # Key Vault secret name
+
+  initContainers:
+    - name: migrations
+      image:
+        repository: ghcr.io/pagopa/migrations
+        tag: "1.0.0"
+        pullPolicy: IfNotPresent
+      command: ["/bin/sh", "-c", "./migrate.sh"]
+      env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+      volumeMounts:
+        - name: secrets-store-inline   # Key Vault secrets as files
+          mountPath: /mnt/secrets-store
+          readOnly: true
+      tmpVolumeMount:
+        create: true
+        mounts:
+          - name: tmp
+            mountPath: /tmp
+      securityContext:
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+```
+
 ### `PodDisruptionBudget`
 
 ```yaml

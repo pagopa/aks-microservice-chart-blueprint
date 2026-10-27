@@ -307,30 +307,42 @@ spec:
       {{- end }}
       {{- if .Values.initContainers }}
       initContainers:
-        {{- range .Values.initContainers }}
-        - name: {{ .name }}
-          imagePullPolicy: {{ .image.pullPolicy }}
-          image: "{{ .image.repository }}:{{ .image.tag }}"
-          {{- if not (empty .command) }}
+        {{- range $i, $init := .Values.initContainers }}
+        {{- $image := $init.image | default dict }}
+        {{- $tmpVolumeMount := $init.tmpVolumeMount | default dict }}
+        - name: {{ required (printf "initContainers[%d].name is required" $i) $init.name }}
+          image: "{{ required (printf "initContainers[%d].image.repository is required" $i) $image.repository }}{{ with $image.tag }}:{{ . }}{{ end }}"
+        {{- with $image.pullPolicy }}
+          imagePullPolicy: {{ . }}
+        {{- end }}
+          {{- if not (empty $init.command) }}
           command:
-            {{- toYaml .command | nindent 12 }}
+            {{- toYaml $init.command | nindent 12 }}
           {{- end }}
-          {{- if not (empty .args) }}
+          {{- if not (empty $init.args) }}
           args:
-            {{- toYaml .args | nindent 12 }}
+            {{- toYaml $init.args | nindent 12 }}
           {{- end }}
-          {{- if or $.Values.initContainerEnvConfig (and $.Values.secretProviderClass.create $.Values.initContainerEnvSecret) }}
+          {{- with $init.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $init.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or $.Values.initContainerEnvConfig (and $.Values.secretProviderClass.create $.Values.initContainerEnvSecret) $init.env }}
           env:
             #initContainerEnvConfig
-            {{- range $key, $val := $.Values.initContainerEnvConfig }}
+          {{- range $key, $val := $.Values.initContainerEnvConfig }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
                   name: {{ include "microservice-chart.fullname" $ }}-init
                   key: {{ $key }}
-            {{- end }}
+          {{- end }}
             #initContainerEnvSecret
-            {{- if $.Values.secretProviderClass.create }}
+          {{- if $.Values.secretProviderClass.create }}
             {{- range $name, $value := $.Values.initContainerEnvSecret }}
             - name: {{ $name }}
               valueFrom:
@@ -338,14 +350,21 @@ spec:
                   name: {{ include "microservice-chart.fullname" $ }}
                   key: {{ $value }}
             {{- end }}
+          {{- end }}
+            {{- with $init.env }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- end }}
+          {{- if or (and $tmpVolumeMount.create $tmpVolumeMount.mounts) $init.volumeMounts }}
           volumeMounts:
-            #<tmp folders>
-            {{- if .tmpVolumeMount.create }}
-            {{- range $i, $val := .tmpVolumeMount.mounts }}
-            - name: {{ $val.name }}
-              mountPath: {{ $val.mountPath }}
+            {{- if $tmpVolumeMount.create }}
+            {{- range $tmpVolumeMount.mounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+            {{- end }}
+            {{- end }}
+            {{- with $init.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- end }}
         {{- end }}
