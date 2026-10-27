@@ -1,4 +1,4 @@
-# -- Namespace in which deploy the microservice
+# -- Namespace of the resources. Default: the release namespace
 namespace: ""
 
 # -- Helm chart name override
@@ -280,7 +280,7 @@ securityContext:
   capabilities:
     # -- drop
     drop:
-      - all
+      - ALL
 
 # -- K8s node selectors
 nodeSelector: {}
@@ -426,11 +426,11 @@ canaryDelivery:
 
 # -- generate PodDisruptionBudget
 podDisruptionBudget:
-  # -- create
+  # -- (bool) Create the PodDisruptionBudget. Requires exactly one of minAvailable and maxUnavailable
   create: false
-  # -- (mutually exclusive with maxUnavailable) Min number of pods that must be alive before destroy node
-  minAvailable: 0
-  # -- (mutually exclusive with minAvailable) Max number of pods unavailable before destroy node
+  # -- Min number of pods (a number or a percentage, e.g. "50%") that must stay available during a voluntary disruption (e.g. node drain). Mutually exclusive with maxUnavailable
+  minAvailable: ""
+  # -- Max number of pods (a number or a percentage) that can be unavailable during a voluntary disruption. Mutually exclusive with minAvailable
   maxUnavailable: ""
 
 # -- Azure configuration (e.g. Workload identities)

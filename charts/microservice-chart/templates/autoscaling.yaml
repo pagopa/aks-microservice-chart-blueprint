@@ -16,7 +16,7 @@ apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
   name: {{ required "autoscaling.triggerAuthentications[].name is required" .name }}
-  namespace: {{ $.Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" $ }}
   labels:
 {{ include "microservice-chart.labels" $ | indent 4 }}
 spec:
@@ -28,7 +28,7 @@ apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
   name: {{ $fullName }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
 spec:
   podIdentity:
     provider: azure-workload
@@ -41,7 +41,7 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: {{ $fullName }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 3 }}
 spec:

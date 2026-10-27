@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 8.8.11
+
+fix: [PAYMCLOUD-1383] Robustness
+
+- every resource gets a namespace: `namespace`, falling back to the release namespace (it was rendered empty when
+  `namespace` was not set)
+- default `securityContext.capabilities.drop` is `ALL` (it was `all`, not recognized by Pod Security Admission `restricted`)
+- `podDisruptionBudget`: exactly one of `minAvailable` and `maxUnavailable` is required, the chart fails otherwise
+  (it rendered a PodDisruptionBudget without constraints); `minAvailable: 0` is now rendered; the PodDisruptionBudget
+  gets the common labels.
+  ⚠️ `podDisruptionBudget.create: true` without `minAvailable`/`maxUnavailable` now fails: the old default
+  `minAvailable: 0` was ignored, set it explicitly
+- the canary merges of `envConfig`/`envSecret` and the non critical `nodeSelector` no longer modify `.Values`
+- legacy nginx canary: the merged `envConfig` values in the ConfigMap are quoted strings (numbers and booleans made the
+  API server reject it) and the canary `envConfig` is used even when the stable `envConfig` is empty
+
 ## 8.8.10
 
 fix: [PAYMCLOUD-1382] externalConfigMapValues and NOTES.txt

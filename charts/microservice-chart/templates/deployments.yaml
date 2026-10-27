@@ -4,7 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "microservice-chart.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
   labels:
     {{- include "microservice-chart.labels" . | nindent 4 }}
   annotations:
@@ -15,7 +15,7 @@ metadata:
 {{- end }}
 {{- if .Values.autoscaling.enable }}
 {{- $replicas = default .Values.autoscaling.minReplica .Values.deployment.replicas }}
-{{- $namespace := .Values.namespace | default .Release.Namespace }}
+{{- $namespace := include "microservice-chart.namespace" . }}
 {{- $cur := lookup "apps/v1" "Deployment" $namespace (include "microservice-chart.fullname" .) }}
 {{- if and .Release.IsUpgrade (hasKey ($cur.spec | default dict) "replicas") }}
 {{- $replicas = $cur.spec.replicas }}
@@ -235,7 +235,7 @@ spec:
           env:
             #envConfig
             {{- if and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create) }}
-            {{- range $key, $val := (mergeOverwrite .Values.envConfig .Values.canaryDelivery.envConfig) }}
+            {{- range $key, $val := (mergeOverwrite (deepCopy (.Values.envConfig | default dict)) (.Values.canaryDelivery.envConfig | default dict)) }}
             - name: {{ $key }}
               valueFrom:
                 configMapKeyRef:
@@ -254,7 +254,7 @@ spec:
             # Secret provider class
             {{- if or .Values.secretProviderClass.create }}
             {{- if and .Values.canaryDelivery.create (not .Values.ingress.haproxy.create) }}
-            {{- range $name, $value := (mergeOverwrite .Values.envSecret .Values.canaryDelivery.envSecret) }}
+            {{- range $name, $value := (mergeOverwrite (deepCopy (.Values.envSecret | default dict)) (.Values.canaryDelivery.envSecret | default dict)) }}
             - name: {{ $name }}
               valueFrom:
                 secretKeyRef:

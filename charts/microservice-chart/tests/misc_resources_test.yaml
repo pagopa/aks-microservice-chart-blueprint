@@ -130,3 +130,44 @@ tests:
     asserts:
       - isAPIVersion:
           of: azmonitoring.coreos.com/v1
+
+  - it: renders the PodDisruptionBudget with the common labels
+    template: templates/pdb.yaml
+    set:
+      podDisruptionBudget.create: true
+      podDisruptionBudget.minAvailable: 1
+    asserts:
+      - isSubset:
+          path: metadata.labels
+          content:
+            app.kubernetes.io/name: microservice-chart
+            app.kubernetes.io/instance: myapp
+            app.kubernetes.io/managed-by: Helm
+
+  - it: allows an explicit minAvailable of zero
+    template: templates/pdb.yaml
+    set:
+      podDisruptionBudget.create: true
+      podDisruptionBudget.minAvailable: 0
+    asserts:
+      - equal:
+          path: spec.minAvailable
+          value: 0
+
+  - it: fails when the PodDisruptionBudget has neither minAvailable nor maxUnavailable
+    template: templates/pdb.yaml
+    set:
+      podDisruptionBudget.create: true
+    asserts:
+      - failedTemplate:
+          errorMessage: podDisruptionBudget.create requires podDisruptionBudget.minAvailable or podDisruptionBudget.maxUnavailable
+
+  - it: fails when the PodDisruptionBudget has both minAvailable and maxUnavailable
+    template: templates/pdb.yaml
+    set:
+      podDisruptionBudget.create: true
+      podDisruptionBudget.minAvailable: 1
+      podDisruptionBudget.maxUnavailable: 1
+    asserts:
+      - failedTemplate:
+          errorMessage: podDisruptionBudget.minAvailable and podDisruptionBudget.maxUnavailable are mutually exclusive, set only one of them

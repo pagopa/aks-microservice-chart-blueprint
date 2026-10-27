@@ -1,16 +1,26 @@
 {{- if .Values.podDisruptionBudget.create }}
+{{- $pdb := .Values.podDisruptionBudget }}
+{{- $hasMinAvailable := not (or (kindIs "invalid" $pdb.minAvailable) (eq (toString $pdb.minAvailable) "")) }}
+{{- $hasMaxUnavailable := not (or (kindIs "invalid" $pdb.maxUnavailable) (eq (toString $pdb.maxUnavailable) "")) }}
+{{- if and $hasMinAvailable $hasMaxUnavailable }}
+{{- fail "podDisruptionBudget.minAvailable and podDisruptionBudget.maxUnavailable are mutually exclusive, set only one of them" }}
+{{- end }}
+{{- if not (or $hasMinAvailable $hasMaxUnavailable) }}
+{{- fail "podDisruptionBudget.create requires podDisruptionBudget.minAvailable or podDisruptionBudget.maxUnavailable" }}
+{{- end }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ include "microservice-chart.fullname" . }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "microservice-chart.namespace" . }}
+  labels:
+    {{- include "microservice-chart.labels" . | nindent 4 }}
 spec:
-{{- if .Values.podDisruptionBudget.minAvailable }}
-  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
-{{- end }}
-{{- if .Values.podDisruptionBudget.maxUnavailable }}
-  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
-{{- end }}
+  {{- if $hasMinAvailable }}
+  minAvailable: {{ $pdb.minAvailable }}
+  {{- else }}
+  maxUnavailable: {{ $pdb.maxUnavailable }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "microservice-chart.selectorLabels" . | nindent 6 }}

@@ -3,6 +3,8 @@ templates:
   - templates/ingress-haproxy.yml
   - templates/canary-haproxy.yaml
   - templates/services.yaml
+  - templates/deployments.yaml
+  - templates/configmap.yaml
 release:
   name: myapp
   namespace: testit
@@ -199,3 +201,38 @@ tests:
       - equal:
           path: spec.template.metadata.labels.critical
           value: "false"
+
+  - it: does not leak canary env config and secrets into the stable Deployment and ConfigMap
+    templates:
+      - templates/canary-haproxy.yaml
+      - templates/configmap.yaml
+      - templates/deployments.yaml
+    set:
+      <<: *canary
+      envConfig:
+        COLOR: green
+      envSecret:
+        DB_PASSWORD: db-password
+      canaryDelivery.envConfig:
+        COLOR: blue
+        CANARY_ONLY_CONFIG: "true"
+      canaryDelivery.envSecret:
+        CANARY_ONLY_SECRET: canary-only-secret
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: CANARY_ONLY_SECRET
+        template: templates/deployments.yaml
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
+            name: CANARY_ONLY_CONFIG
+        template: templates/deployments.yaml
+      - equal:
+          path: data
+          value:
+            COLOR: "green"
+        template: templates/configmap.yaml

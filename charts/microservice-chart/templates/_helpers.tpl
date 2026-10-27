@@ -30,6 +30,13 @@ When critical is false, appends "-non-core" suffix to resource names.
 {{- end }}
 
 {{/*
+Namespace of the resources: .Values.namespace, falling back to the release namespace.
+*/}}
+{{- define "microservice-chart.namespace" -}}
+{{- .Values.namespace | default .Release.Namespace }}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "microservice-chart.chart" -}}
@@ -98,7 +105,7 @@ tolerations:
 NodeSelector block: adds nodeSelector for critical=false when critical=false.
 */}}
 {{- define "microservice-chart.nodeSelectorBlock" -}}
-{{- $nodeSelector := .Values.nodeSelector | default dict }}
+{{- $nodeSelector := deepCopy (.Values.nodeSelector | default dict) }}
 {{- if not .Values.critical }}
 {{- $nonCriticalNodeSelector := dict "critical" "false" }}
 {{- $nodeSelector = merge $nodeSelector $nonCriticalNodeSelector }}
